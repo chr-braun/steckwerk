@@ -103,6 +103,21 @@ def stechpalme(cx: float, cy: float, laenge: float, breite: float, winkel: float
     return poly(rand, fill)
 
 
+def rundes_polygon(punkte: Sequence[Pt], r: float, fill: str = "#000") -> str:
+    """Polygon mit abgerundeten Ecken (r = Abstand des Rundungsbeginns von der Ecke)."""
+    n = len(punkte)
+    d = ""
+    for i in range(n):
+        p0, p1, p2 = punkte[i - 1], punkte[i], punkte[(i + 1) % n]
+        def weg(a: Pt, b: Pt) -> Pt:
+            ln = math.hypot(b[0] - a[0], b[1] - a[1]) or 1.0
+            k = min(r, ln / 2.2) / ln
+            return (b[0] + (a[0] - b[0]) * k, b[1] + (a[1] - b[1]) * k)
+        a, b = weg(p0, p1), weg(p2, p1)
+        d += ("M" if i == 0 else "L") + f"{_f(a[0])} {_f(a[1])} Q{_f(p1[0])} {_f(p1[1])} {_f(b[0])} {_f(b[1])} "
+    return path(d + "Z", fill)
+
+
 HERZ_D = ("M100 178 C60 145 12 112 12 66 C12 36 34 16 60 16 C78 16 92 27 100 42 "
           "C108 27 122 16 140 16 C166 16 188 36 188 66 C188 112 140 145 100 178 Z")
 
@@ -321,8 +336,8 @@ def hexenhut() -> str:
     teile.append(linie("M72 116 Q100 122 126 116"))
     teile.append(linie("M70 134 Q100 140 130 134"))
     teile.append(linie("M86 114 L116 114 L116 138 L86 138 Z"))
-    teile.append(poly(stern_pts(96, 94, 9, 4), "#fff"))
-    teile.append(poly(stern_pts(104, 66, 6, 2.8), "#fff"))
+    teile.append(rundes_polygon(stern_pts(96, 94, 10, 4.4), 1.6, "#fff"))
+    teile.append(rundes_polygon(stern_pts(104, 66, 6.5, 3), 1.2, "#fff"))
     teile.append(linie("M98 40 Q104 34 112 34"))
     teile.append(linie("M30 152 Q100 164 170 152"))
     return svg(*teile)
@@ -372,10 +387,12 @@ def kuerbis() -> str:
              ellipse(128, 120, 40, 58), ellipse(100, 118, 40, 62),
              path("M92 62 C90 50 94 38 104 28 L114 32 C106 42 104 52 106 62 Z"),
              path("M104 60 C118 42 140 36 154 46 C144 50 138 60 128 66 C118 70 108 68 104 60 Z")]
-    teile.append(poly([(60, 110), (88, 110), (74, 86)], "#fff"))
-    teile.append(poly([(112, 110), (140, 110), (126, 86)], "#fff"))
-    teile.append(poly([(92, 132), (108, 132), (100, 120)], "#fff"))
-    teile.append(path("M52 142 Q100 190 148 142 Q100 160 52 142 Z", "#fff"))
+    teile.append(rundes_polygon([(60, 110), (88, 110), (74, 86)], 4, "#fff"))
+    teile.append(rundes_polygon([(112, 110), (140, 110), (126, 86)], 4, "#fff"))
+    teile.append(rundes_polygon([(92, 132), (108, 132), (100, 120)], 3, "#fff"))
+    teile.append(path("M56 146 Q100 188 144 146 Q100 162 56 146 Z", "#fff"))
+    teile.append(kreis(57, 145, 4, "#fff"))
+    teile.append(kreis(143, 145, 4, "#fff"))
     teile.append(poly([(76, 140), (88, 140), (88, 158), (76, 156)]))
     teile.append(poly([(112, 140), (124, 140), (124, 156), (112, 158)]))
     teile.append(linie("M114 58 Q130 50 146 47"))

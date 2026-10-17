@@ -11,7 +11,7 @@ import os
 import random
 import sys
 
-from steckwerk import Assembly, Part, arc_points, bezier_q, circle, min_distance, oriented, point_in_polygon, rect
+from steckwerk import Assembly, Part, arc_points, circle, min_distance, oriented, point_in_polygon
 from models import _deko as dk
 from models._font import STYLES, fit_text, unsupported
 from models._shapes import union_circle
@@ -42,11 +42,33 @@ INFO = dict(
 )
 
 
-def _scale_to(poly, S):
-    x0, y0, x1, y1 = g.poly_bbox(poly)
-    k = S / max(x1 - x0, y1 - y0)
-    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-    return [((x - cx) * k, (y - cy) * k) for x, y in poly], k, cx, cy
+# Figuren aus der Motiv-Bibliothek der Engine: Umriss, Innenformen und Gravurdetails kommen von dort
+# (dieselben Motive wie in den Motiv-Vorlagen). Je Motiv: Platz für den Namen (Mitte, Breite, Höhe als
+# Anteil der Größe) und die bevorzugte Lage der Öse (x als Anteil der Größe).
+BIBLIOTHEK = {
+    "fledermaus": dict(),
+    "geist": dict(text=((0.0, -0.25), 0.34, 0.08)),
+    "totenkopf": dict(),
+    "katze": dict(oese=0.05),
+    "hexenhut": dict(text=((0.0, -0.33), 0.56, 0.05), oese=0.2),
+    "kuerbis": dict(text=((0.0, 0.19), 0.30, 0.06)),
+}
+
+
+def _aus_bibliothek(mid, S):
+    import motive as mt
+    m = mt.load(mid)
+    fl = max(m["flaechen"], key=lambda f: abs(g.signed_area(f["aussen"])))
+    poly = mt.place(fl["aussen"], 0.0, 0.0, S)
+    holes = [g.dedupe(mt.place(h, 0.0, 0.0, S), 0.25) for h in fl["loecher"]]
+    lines = [mt.place(li, 0.0, 0.0, S) for li in m["linien"]]
+    return poly, holes, lines
+
+
+def _oese_x(poly, S, bevorzugt):
+    """x der Öse: höchster Punkt nahe der bevorzugten Stelle (sonst der höchste überhaupt)."""
+    nah = [p for p in poly if abs(p[0] - bevorzugt * S) < 0.25 * S]
+    return max(nah or poly, key=lambda p: p[1])[0]
 
 
 def _eyelet(outline, x, y_top, r, web):
@@ -69,73 +91,15 @@ def build_one(cfg, name, motiv, S, text, schrift, rng, web):
     eng = []                                   # (punkte, geschlossen)
     put = []                                   # geschlossene Ornamente (nur ganz)
     text_box = None
-    if motiv == "fledermaus":
-        base = g.bat_unit(0.35)
-        poly, k, cx, cy = _scale_to(base, S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        for s_ in (1, -1):
-            sh = (s_ * 0.10, 0.075)
-            for tip in ((0.50, 0.185), (0.40, 0.005), (0.28, -0.05), (0.15, -0.085)):
-                tp = (s_ * tip[0] * 0.93, tip[1] * 0.85 + 0.01)
-                eng.append(([T_(sh), T_(((sh[0] + tp[0]) / 2, (sh[1] + tp[1]) / 2 + 0.02)), T_(tp)], False))
-            holes.append(circle(*T_((s_ * 0.022, 0.05)), max(0.010 * S, 0.9), 0.05))
-        top = max(p[1] for p in poly if abs(p[0]) < 0.02 * S) if any(abs(p[0]) < 0.02 * S for p in poly) else 0
-        eye_x, eye_y = 0.0, T_((0, 0.085))[1]
-    elif motiv == "geist":
-        poly, k, cx, cy = _scale_to(g.ghost_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        for s_ in (1, -1):
-            e = [(x + s_ * 0.085, y + 0.30) for x, y in g._ellipse_pts(0, 0, 0.05, 0.075, 0, 2 * math.pi, 22)[:-1]]
-            holes.append([T_(p) for p in e])
-        holes.append([T_((x, y + 0.15)) for x, y in g._ellipse_pts(0, 0, 0.05, 0.065, 0, 2 * math.pi, 22)[:-1]])
-        for s_ in (1, -1):                                     # Stofffalten
-            eng.append(([T_((s_ * 0.18, -0.05)), T_((s_ * 0.20, -0.25)), T_((s_ * 0.24, -0.40))], False))
-            eng.append(([T_((s_ * 0.06, -0.20)), T_((s_ * 0.05, -0.34))], False))
-        text_box = (T_((0, -0.07)), 0.40 * S, 0.12 * S)
-        eye_x, eye_y = 0.0, T_((0, 0.50))[1]
-    elif motiv == "totenkopf":
-        poly, k, cx, cy = _scale_to(g.skull_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        holes = [[T_((x / S0, y / S0)) for x, y in h] for S0 in (1.0,) for h in g.skull_holes(0, 0, 1.0)]
-        eng.append(([T_((0.0, 0.48)), T_((0.02, 0.40)), T_((-0.02, 0.33)), T_((0.01, 0.26))], False))   # Naht
-        eng.append(([T_((-0.30, 0.30)), T_((-0.22, 0.34)), T_((-0.16, 0.30))], False))
-        eng.append(([T_((0.22, 0.42)), T_((0.26, 0.34)), T_((0.33, 0.30)), T_((0.30, 0.22))], False))  # Riss
-        eng.append(([T_((-0.25, -0.26)), T_((0.25, -0.26))], False))
-        eye_x, eye_y = 0.0, T_((0, 0.50))[1]
-    elif motiv == "katze":
-        poly, k, cx, cy = _scale_to(g.cat_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        put.append([T_(p) for p in [(0.02, 0.22), (0.05, 0.245), (0.08, 0.22), (0.05, 0.205)]])   # Auge
-        for dy in (-0.01, 0.02):                                                                 # Schnurrhaare
-            eng.append(([T_((0.06, 0.12 + dy)), T_((0.14, 0.13 + dy * 2))], False))
-        eng.append(([T_((-0.12, 0.08)), T_((-0.02, 0.05)), T_((0.07, 0.08))], False))           # Halsband
-        put.append(circle(*T_((-0.02, 0.025)), 0.018 * S, 0.05))                               # Glöckchen
-        eng.append(([T_((-0.20, -0.30)), T_((-0.16, -0.10))], False))
-        eye_x, eye_y = T_((-0.10, 0.30))[0], T_((-0.1, 0.36))[1]
-    elif motiv == "hexenhut":
-        poly, k, cx, cy = _scale_to(g.hat_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        eng.append(([T_((-0.21, -0.16)), T_((-0.02, -0.15)), T_((0.20, -0.16))], False))      # Hutband
-        eng.append(([T_((-0.215, -0.20)), T_((-0.02, -0.19)), T_((0.205, -0.20))], False))
-        bw, bh = 0.07, 0.06
-        holes.append([T_(p) for p in rect(-0.035, -0.205, bw, bh)])                             # Schnalle
-        for (x, y, r) in ((-0.05, 0.02, 0.03), (0.05, 0.10, 0.022), (0.0, -0.08, 0.018), (0.08, 0.22, 0.02)):
-            put.append([T_(p) for p in g.place([(math.cos(math.pi / 2 + i * math.pi / 5) * (1 if i % 2 == 0 else 0.45),
-                                                    math.sin(math.pi / 2 + i * math.pi / 5) * (1 if i % 2 == 0 else 0.45))
-                                                   for i in range(10)], x, y, r)])
-        text_box = (T_((0.0, -0.31)), 0.70 * S, 0.06 * S)
-        eye_x, eye_y = T_((0.31, 0.36))[0], T_((0.31, 0.37))[1]
-    elif motiv == "kuerbis":
-        pk = g.pumpkin(0.0, 0.0, 1.0, 0.80)
-        poly, k, cx, cy = _scale_to(pk, S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        holes = [[T_(p) for p in h] for h in g.pumpkin_face("klassisch", 0.0, 0.40, 0.74, 0.55)]
-        for s_ in (-1, 1):
-            for f in (0.18, 0.36):
-                eng.append((bezier_q(T_((s_ * f * 0.3, 0.70)), T_((s_ * (0.1 + f), 0.40)), T_((s_ * f * 0.35, 0.04)),
-                                     16), False))
-        text_box = None if not text else (T_((0.0, 0.62)), 0.36 * S, 0.06 * S)
-        eye_x, eye_y = T_((0.03, 0.98))[0], max(p[1] for p in poly)
+    if motiv in BIBLIOTHEK:
+        poly, holes, lines = _aus_bibliothek(motiv, S)
+        eng += [(li, False) for li in lines]
+        bx = BIBLIOTHEK[motiv]
+        if bx.get("text"):
+            (tx, ty), tw, th = bx["text"]
+            text_box = ((tx * S, ty * S), tw * S, th * S)
+        eye_x = _oese_x(poly, S, bx.get("oese", 0.0))
+        eye_y = max(p[1] for p in poly)
     elif motiv == "spinnennetz":
         R = S / 2
         poly = circle(0.0, 0.0, R, cfg.arc_tolerance)
@@ -161,6 +125,8 @@ def build_one(cfg, name, motiv, S, text, schrift, rng, web):
                 min_distance(h, outline, limit=web) >= web and min_distance(h, eye_hole, limit=web) >= web and \
                 all(min_distance(h, q, limit=web) >= web for q in part.holes):
             part.add_hole(h)
+        elif motiv in BIBLIOTHEK:
+            eng.append((h, True))                    # zu fein zum Ausschneiden: als Umriss gravieren
     cv = dk.Canvas(part, margin=0.9, hole_margin=0.9, seed=cfg.seed)
     for p_ in put:
         cv.put(p_, True, reserve=0.6)
@@ -171,6 +137,10 @@ def build_one(cfg, name, motiv, S, text, schrift, rng, web):
             for st in strokes:
                 cv.draw(st)
             cv.block_strokes([(st, False) for st in strokes], 0.6)
+            xs = [x for st in strokes for x, _ in st]
+            ys = [y for st in strokes for _, y in st]
+            if xs:
+                cv.block_box((min(xs), min(ys), max(xs), max(ys)), 1.2)   # Details nicht durch den Namen
         except ValueError:
             pass
     for pts, closed in eng:
