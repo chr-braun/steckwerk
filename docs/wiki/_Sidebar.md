@@ -2,6 +2,7 @@
 
 - [Start](Home.md)
 - [Downloads](Downloads.md)
+- [Steckwerk Desktop](Steckwerk-Desktop.md)
 - [Installation](Installation.md)
 - [Bedienung](Bedienung.md)
 - [Material und Laser](Material-und-Laser.md)

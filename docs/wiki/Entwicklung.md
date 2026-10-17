@@ -24,7 +24,9 @@ updater.py        Update-Kanal lesen, Prüfsummen, Installieren
 assistent.py      Ollama-Assistent (nur localhost/eigenes Netz)
 bildgen.py        Motiv zeichnen: Ollama und OpenRouter, Kostenschätzung, Monatslimit
 models/           alle Modelle; _deko.py = Gestaltungs-Baukasten, _font.py = Einlinien-Schrift
-packaging/        build_macos.py, make_icon.py, update_kanal.py
+packaging/        build_macos.py, make_icon.py, update_kanal.py, motive_bauen.py (eingebaute Motive zeichnen)
+packaging/swift/  Steckwerk Desktop: SteckwerkCore (Client, Modelle, Formularlogik, Vorschau),
+                  SteckwerkDesktop (SwiftUI), bridge_start.py (Engine für die App), build_app.sh, make_dmg.sh
 tests/            pytest
 ```
 
@@ -49,12 +51,24 @@ python3 -m pip install pytest
 python3 -m pytest -q
 ```
 
-Stand 2.4.0: 1157 Tests, grün auf Python 3.9 und 3.13. Auf GitHub laufen sie bei jedem Push (Python 3.9 und
+Stand 17.10.2026: 1318 Python-Tests, dazu 56 Swift-Tests. Die Swift-Tests laufen in CI auf macOS,
+inklusive Integrationstest gegen die echte Engine. Auf GitHub laufen sie bei jedem Push (Python 3.9 und
 3.12, Linux und macOS). Abgedeckt sind jede Gestaltungsoption, Engine, Validator (positiv und negativ),
 jedes Modell, CLI, Weboberfläche, App-Betrieb, Pakete, Motive, Updater und der Assistent (mit
 nachgebautem Ollama/OpenRouter-Server).
 
 Oberfläche testen: `python3 webui.py --port 8799 --no-browser` und Screenshots mit Playwright.
+
+## Steckwerk Desktop bauen
+
+```bash
+cd packaging/swift
+swift build && swift test            # Tests mit STECKWERK_ROOT=<Repo> für den Integrationstest
+./build_app.sh ../dist               # App-Bundle mit eingebauter Engine (nur macOS)
+./make_dmg.sh                        # DMG mit Programme-Verknüpfung
+```
+
+Unter Linux bauen und testen nur der Kern `SteckwerkCore`; die Oberfläche entsteht auf macOS.
 
 ## Neue Version veröffentlichen
 

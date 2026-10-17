@@ -26,14 +26,15 @@ fertige SVG werden kontrolliert. Gibt es auch nur einen Fehler, wird nichts gesc
 
 | | |
 |---|---|
-| Programm | Steckwerk **2.6.0** (16.10.2026) |
+| Programm | Steckwerk **2.8.0** im Quellcode (17.10.2026) · Mac-App-Zip im Download-Ordner noch 2.6.0 |
 | Pakete im Update-Kanal | Grundlagen 2.0.0 · Wohnen 1.0.0 · Weihnachten 2.0.0 · Halloween 1.3.0 · Mehrlagig 1.2.0 · Wichtel 1.0.1 |
-| Tests | 1157 grün (Python 3.13; CI zusätzlich 3.9) |
+| Tests | 1318 Python-Tests grün · 56 Swift-Tests (Desktop-App) grün |
 | Repo | `chr-braun/laserforge` (umbenannt in `chr-braun/steckwerk`), Lizenz MIT |
 
 ## Seiten
 
 - [Downloads](Downloads.md) – Mac-App und alle Pakete zum Herunterladen
+- [Steckwerk Desktop](Steckwerk-Desktop.md) – native Mac-App ohne Browser (DMG aus dem CI)
 
 - [Installation](Installation.md) – Mac-App, Weboberfläche, Python
 - [Bedienung](Bedienung.md) – Oberfläche, Export, Tastenkürzel, Kommandozeile

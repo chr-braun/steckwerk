@@ -31,6 +31,11 @@ Update-Schlüssel automatisch übernommen und die alte `Laserforge.app` ersetzt.
 
 **Deinstallieren:** App in den Papierkorb, optional die Ordner oben löschen.
 
+## Native Mac-App (ohne Browser)
+
+Zusätzlich gibt es die Steckwerk Desktop App mit eigenem Fenster und eingebauter Engine. Sie wird als DMG
+aus dem CI geladen. Anleitung: [Steckwerk Desktop](Steckwerk-Desktop.md).
+
 ## Updates
 
 Ab 1.7.0 aktualisiert sich Steckwerk selbst, siehe [Updates](Updates.md). Ausnahme: Von 1.7.0 auf 2.0.0
