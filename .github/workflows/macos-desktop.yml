@@ -1,0 +1,51 @@
+name: macOS Desktop
+
+# Baut und testet die native App „Steckwerk Desktop“ (SwiftUI) auf einem macOS-Runner.
+on:
+  push:
+    paths:
+      - "packaging/swift/**"
+      - ".github/workflows/macos-desktop.yml"
+      - "bildgen.py"
+      - "webui.py"
+  pull_request:
+    paths:
+      - "packaging/swift/**"
+      - ".github/workflows/macos-desktop.yml"
+      - "bildgen.py"
+      - "webui.py"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Swift build & test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift --version
+      - name: Bauen
+        working-directory: packaging/swift
+        run: swift build -v
+      - name: Tests
+        working-directory: packaging/swift
+        run: swift test
+      - name: Engine-Start (bridge_start.py)
+        run: python3 -m pip install pytest && python3 -m pytest -q tests/test_bridge_start.py
+      - name: App-Bundle packen
+        working-directory: packaging/swift
+        run: ./build_app.sh ../dist
+      - name: App startet und findet die Engine
+        run: |
+          APP="packaging/dist/Steckwerk Desktop.app"
+          test -x "$APP/Contents/MacOS/SteckwerkDesktop"
+          test -f "$APP/Contents/Resources/steckwerk/webui.py"
+          test -f "$APP/Contents/Resources/steckwerk/bridge_start.py"
+          python3 "$APP/Contents/Resources/steckwerk/bridge_start.py" --engine "$APP/Contents/Resources/steckwerk" --parent $$ > port.txt &
+          for i in $(seq 1 50); do grep -q STECKWERK_PORT port.txt 2>/dev/null && break; sleep 0.2; done
+          PORT=$(sed -n 's/STECKWERK_PORT=//p' port.txt)
+          curl -sf -X POST -H 'X-Steckwerk: 1' "http://127.0.0.1:$PORT/api/ping"
+          curl -sf -X POST -H 'X-Steckwerk: 1' -d '{"model":"wichtelhaus"}' "http://127.0.0.1:$PORT/api/generate" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["ok"], d.get("error"); print(d["assemblies"][0]["summary"])'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Steckwerk-Desktop-macOS
+          path: packaging/dist/*.zip
