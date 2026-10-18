@@ -9,9 +9,7 @@ Stand 17.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
   und den Stand 2.8.0 auf den Zielbranch `claude/project-thread-y7q7zo`. Prüfen und mergen liegt bei dir.
 - **Halloween-Paket:** Die Anhänger sind überarbeitet, das Paket trägt aber noch Version 1.3.0. Für ein Update im
   Kanal muss die Version erhöht, das Paket neu gepackt und in den Kanal gestellt werden.
-- **Weihnachtsanhänger, Zuckerstange:** Die Stechpalme auf der Stange wirkt wie eine zweite Figur. Sie soll
-  weg, die Schleife bleibt. Noch nicht geändert.
-- **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind bis auf die Zuckerstange in Ordnung.
+- **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind in Ordnung.
 - **Mac-Zip im Download-Ordner** ist noch 2.6.0. Die neue Desktop-App gibt es als Artefakt aus dem CI.
 
 ## Zum Ausprobieren bei dir
