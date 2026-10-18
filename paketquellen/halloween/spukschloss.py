@@ -27,6 +27,43 @@ def _lib():
 
 g = _lib()
 DEBUG = False
+_here = os.path.dirname(os.path.abspath(__file__))
+
+
+def _sub(name):
+    path = os.path.join(_here, name + ".py")
+    key = "swpaket_halloween_" + name
+    mod = sys.modules.get(key)
+    if mod is None or getattr(mod, "__file__", None) != path:
+        spec = importlib.util.spec_from_file_location(key, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[key] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
+SP = _sub("_spuk")
+_SIL = {}
+
+
+def _sil(key, make, size, cfg):
+    """Silhouette einer Figur in Originalgröße als kerf-fester Durchbruch (zwischengespeichert)."""
+    size = round(size, 1)
+    k = (key, size, cfg.min_web, cfg.kerf)
+    if k not in _SIL:
+        _SIL[k] = SP.silhouette_loch(make(size), cfg)
+    return _SIL[k]
+
+
+def _setze(poly, x, y, s=None, ang=0.0, flip=False):
+    """Polygon (schon in Originalgröße) drehen, spiegeln und verschieben."""
+    k = 1.0
+    ca, sa = math.cos(ang), math.sin(ang)
+    out = []
+    for px, py in poly:
+        px, py = (-px if flip else px) * k, py * k
+        out.append((x + px * ca - py * sa, y + px * sa + py * ca))
+    return out
 
 SCENES = [("spukhaus", "Spukhaus"), ("friedhof", "Friedhof"), ("hexenhaus", "Hexenhaus")]
 SKIES = [("fledermaeuse", "Fledermäuse vor dem Mond"), ("hexe", "Hexe auf dem Besen"),
@@ -352,9 +389,17 @@ def build(cfg, name="spukschloss", width=260.0, szene="spukhaus", himmel="beides
         sx = -0.07 * W
         top_y = ys + math.sqrt(max((R - bw) ** 2 - (sx - cxl) ** 2, 0.0)) + bw * 0.5
         sp_y = ys + 0.36 * W
-        for grow in (1.0, 1.2, 1.45, 1.75):           # kleine Szenen: Spinne größer, sonst verkleben die Beine
-            sp = g.spider(sx, sp_y - (grow - 1) * 0.3 * sp_S, sp_S * grow, max(web, 1.2), thread_top=top_y)
-            if g.polygon_ok(oriented(sp, True)) and g.min_gap(sp, 3) >= 0.15:
+        for grow in (1.0, 1.25, 1.5):                 # kleine Szenen: Spinne größer, sonst verkleben die Beine
+            S_ = sp_S * grow * 1.15
+            cy_ = sp_y - (grow - 1) * 0.3 * sp_S
+            fig = SP.spinne(S_, cfg, sx, cy_, 0.0, zeichnung=False)
+            fig.line([(sx, cy_ + 0.05 * S_), (sx + 0.01 * S_, (cy_ + top_y) / 2), (sx, top_y)],
+                     max(SP.wmin(cfg), 0.025 * S_))
+            try:
+                sp = g.dedupe(SP.silhouette(fig, cfg), 0.12)
+            except ValueError:
+                continue
+            if g.polygon_ok(oriented(sp, True)):
                 spider_cands.append(sp)
         spider_poly = spider_cands[0] if spider_cands else None
 
@@ -531,20 +576,21 @@ def build(cfg, name="spukschloss", width=260.0, szene="spukhaus", himmel="beides
     moon_items = []
     inner_r = rm - max(web * 1.5, 0.05 * rm)
     if himmel in ("hexe", "beides"):
-        wu = g.witch_unit()
-        s = 1.55 * rm
-        moon_items.append(g.place(wu, mx - 0.05 * rm, my - 0.05 * rm, s, ang=0.12))
+        wu = _sil("hexe", lambda S: SP.hexe(S, cfg), 1.62 * rm, cfg)
+        moon_items.append(_setze(wu, mx - 0.02 * rm, my - 0.12 * rm, ang=0.12))
     nb = fledermaeuse if himmel in ("fledermaeuse", "beides") else 0
     if himmel == "beides":
         nb = min(nb, 3)
     tries = 0
     while nb > 0 and tries < 400:
         tries += 1
-        sz = rm * rng.uniform(0.42, 0.62) * (0.8 if himmel == "beides" else 1.0)
+        sz = rm * rng.choice((0.62, 0.74, 0.86)) * (0.85 if himmel == "beides" else 1.0)
         a = rng.uniform(0, 2 * math.pi)
         rr = rng.uniform(0, inner_r - sz * 0.5)
         bx, by = mx + rr * math.cos(a), my + rr * math.sin(a)
-        bat = g.place(g.bat_unit(rng.uniform(-1, 1)), bx, by, sz, ang=rng.uniform(-0.35, 0.35), flip=rng.random() < 0.5)
+        pose = rng.choice(["segeln", "kurve", "segeln", "hoch"])
+        bu = _sil("fm_" + pose, lambda S, pose=pose: SP.fledermaus(S, pose, cfg, augen=False)[0], sz, cfg)
+        bat = _setze(bu, bx, by, ang=rng.uniform(-0.35, 0.35), flip=rng.random() < 0.5)
         if any(math.hypot(p[0] - mx, p[1] - my) > inner_r for p in bat):
             continue
         if any(min_distance(bat, it, limit=web * 1.5) < web * 1.5 for it in moon_items):

@@ -1,12 +1,21 @@
 # Halloween
 
-**Spukschloss-Fensterbild** – gotischer Bogen mit Scherenschnitt-Szene, Mond, Fledermäusen und Spinnennetz.
+**Spukschloss-Fensterbild** – gotischer Bogen mit Scherenschnitt-Szene, Mond, Fledermäusen und Spinnennetz. Vor dem
+Mond fliegt die Hexe mit Hut, Hakennase, wehenden Haaren und Umhang, hinten auf dem Besen sitzt ihre Katze; die
+Spinne hängt mit gegliederten Beinen am Faden.
 
-**Kürbis-Leuchte** – geschnitzter Kürbis mit Stiel, Blatt und Ranke, leuchtet mit Teelicht.
+**Kürbis-Leuchte** – bauchiger Kürbis aus sieben Rippen-Buckeln mit gekerbtem Stiel, Blatt mit Adern und eingerollter
+Ranke. Sieben Gesichter: klassisch, gruselig mit Brauen und Fangzähnen, fröhlich mit Bäckchen, Katze mit
+Schlitzpupillen und Schnurrhaaren, Fledermäuse vor der Mondsichel, Hexe vor dem Vollmond, Spinnennetz mit hängender
+Spinne. Um die Schnitzkanten läuft eine gravierte Schale. Leuchtet mit Teelicht.
 
-**Grabstein** – mit Grabspruch, Ornament, Rissen und Efeu, auf Wunsch mit Gespenst dahinter.
+**Grabstein** – auf einem Sockel mit Fugen, mit Grabspruch im Doppelrahmen, Ornament (Totenkopf mit gekreuzten
+Knochen, Fledermaus oder Kreuz als Durchbruch), feinen Rissen, abgeplatzten Kanten, Moos und Grasbüscheln. Efeu
+rankt mit dreilappigen Blättern über die Kante, das Gespenst schaut dahinter hervor. Das Kreuz hat Kleeblattenden.
 
-**Halloween-Anhänger** – Fledermaus, Gespenst, Totenkopf, Katze, Hexenhut, Kürbis und Spinnennetz mit Öse.
+**Halloween-Anhänger** – Fledermaus mit Flügelknochen, Gespenst, Totenkopf mit Zahnreihen und Nähten, sitzende Katze
+mit Mandelaugen und Glöckchen, Hexenhut mit Schnalle, Sternen, Mond und Flicken, Kürbis mit Blatt und Ranke,
+Spinnennetz mit Kreuzspinne – jeweils mit Öse.
 
 **Spinnennetz** – filigranes Netz mit durchhängenden Fäden, Tautropfen, Riss und Kreuzspinnen. Rund mit Öse,
 als Ecknetz (Viertelkreis) für die Fensterecke oder als Untersetzer mit graviertem Netz. Größe, Ringe, Speichen
@@ -20,7 +29,8 @@ als einzelne Teile, 150–500 mm groß. Gelenke mit Musterklammern, Schrauben od
 hat zwei Löcher zum Auffädeln.
 
 **Süßigkeitenschale** – gesteckte Schale als Hexenkessel oder Kürbis. Vorder- und Rückwand mit Silhouette und
-ausgeschnittenem Gesicht, Fledermäusen oder Spinnennetz, Seitenwände mit Zapfen, Boden mit graviertem Netz.
+ausgeschnittenem Gesicht (klassisch, gruselig, fröhlich oder Katze), Fledermäusen oder Spinnennetz, beim Kessel
+mit Rührlöffel, Seitenwände mit Zapfen, Boden mit graviertem Netz.
 
 Steckwerk prüft alle Stege, Zapfen und Schlitze für den Laser. Zu feine Details werden bei kleinen Größen
 automatisch vereinfacht oder weggelassen – die Hinweise beim Modell sagen, was passiert ist.

@@ -1,20 +1,18 @@
 """
 Halloween-Anhänger – filigrane Hänger für Zweige, Fenster und Geschenke.
 
-Fledermaus, Gespenst, Totenkopf, Katze, Hexenhut, Kürbis und Spinnennetz – jeweils mit
-Durchbrüchen und feinen Gravuren (Flügelknochen, Stofffalten, Schädelnähte, Sterne …) und einer
-Aufhängeöse. Mit „alle“ entsteht das ganze Set auf einmal. Ein Name kann eingraviert werden.
+Fledermaus, Gespenst, Totenkopf, Katze, Hexenhut, Kürbis und Spinnennetz – fein gezeichnet mit
+Durchbrüchen (Flügelknochen, Zahnreihen, Schnurrhaare, Sterne und Mond, Blattadern, Netzfäden) und
+Gravuren (Schädelnähte, Brauen, Fell, Flicken mit Stichen) und einer Aufhängeöse. Mit „alle“ entsteht das ganze Set auf einmal. Ein Name kann eingraviert werden.
 """
 import importlib.util
 import math
 import os
-import random
 import sys
 
-from steckwerk import Assembly, Part, arc_points, bezier_q, circle, min_distance, oriented, point_in_polygon, rect
+from steckwerk import Assembly
 from models import _deko as dk
 from models._font import STYLES, fit_text, unsupported
-from models._shapes import union_circle
 from pakete import bibliothek, num, sel, txt
 
 
@@ -42,139 +40,113 @@ INFO = dict(
 )
 
 
-def _scale_to(poly, S):
-    x0, y0, x1, y1 = g.poly_bbox(poly)
-    k = S / max(x1 - x0, y1 - y0)
-    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-    return [((x - cx) * k, (y - cy) * k) for x, y in poly], k, cx, cy
+_here = os.path.dirname(os.path.abspath(__file__))
 
 
-def _eyelet(outline, x, y_top, r, web):
-    """Öse oben anfügen: Ring mit Loch. Liefert (Kontur, Lochkreis)."""
-    for dy in (0.35, 0.5, 0.65):
-        for dx in (0.0, 0.5, -0.5, 1.0, -1.0):
-            cx, cy = x + dx * r, y_top + dy * r
-            try:
-                out = union_circle(outline, cx, cy, r)
-            except ValueError:
-                continue
-            hole = circle(cx, cy, r - max(web * 1.3, 0.38 * r), 0.05)
-            if g.polygon_ok(oriented(out, True)) and min_distance(hole, out, limit=web) >= web:
-                return out, hole
-    raise ValueError("Öse passt nicht – Anhänger größer wählen")
+def _sub(name):
+    path = os.path.join(_here, name + ".py")
+    key = "swpaket_halloween_" + name
+    mod = sys.modules.get(key)
+    if mod is None or getattr(mod, "__file__", None) != path:
+        spec = importlib.util.spec_from_file_location(key, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[key] = mod
+        spec.loader.exec_module(mod)
+    return mod
 
 
-def build_one(cfg, name, motiv, S, text, schrift, rng, web):
-    holes = []
-    eng = []                                   # (punkte, geschlossen)
-    put = []                                   # geschlossene Ornamente (nur ganz)
-    text_box = None
+SP = _sub("_spuk")
+K = SP.K
+
+
+def _netz_scheibe(S, cfg):
+    """Runder Anhänger: Rand, Netz mit durchhängenden Fäden und Tautropfen, Kreuzspinne in der Mitte."""
+    w = SP.wmin(cfg)
+    R = S / 2
+    rand = max(1.4 * w, 0.035 * S)
+    f = SP.Figur()
+    f.add(K.circle(0.0, 0.0, R, 96))
+    f.cut(K.circle(0.0, 0.0, R - rand, 96))
+    ringe = max(3, min(6, int((R - rand) / (2.2 * w + 2.4))))
+    speichen = max(8, min(14, int(S / 8)))
+    netz, _, _, _, radii = SP.netz(0.0, 0.0, R - rand * 0.3, math.pi / 2, math.pi / 2 + SP.TAU, ringe, speichen, w,
+                                   cfg.seed, False, True, voll=True)
+    f.merge(netz)
+    a = math.radians(-40)
+    r0 = radii[max(0, ringe // 2 - 1)]
+    sp_ = (0.40 * S, cfg, r0 * math.cos(a), r0 * math.sin(a), a - math.pi / 2 + 0.35)
+    f.merge(SP.spinne_frei(*sp_))
+    f.merge(SP.spinne(*sp_))
+    f.gravur = netz.gravur
+    return f
+
+
+def figur(motiv, S, cfg):
+    """Figur des Motivs (Größe S) und das Feld für den Namen ((x, y), Breite, Höhe) oder None."""
     if motiv == "fledermaus":
-        base = g.bat_unit(0.35)
-        poly, k, cx, cy = _scale_to(base, S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        for s_ in (1, -1):
-            sh = (s_ * 0.10, 0.075)
-            for tip in ((0.50, 0.185), (0.40, 0.005), (0.28, -0.05), (0.15, -0.085)):
-                tp = (s_ * tip[0] * 0.93, tip[1] * 0.85 + 0.01)
-                eng.append(([T_(sh), T_(((sh[0] + tp[0]) / 2, (sh[1] + tp[1]) / 2 + 0.02)), T_(tp)], False))
-            holes.append(circle(*T_((s_ * 0.022, 0.05)), max(0.010 * S, 0.9), 0.05))
-        top = max(p[1] for p in poly if abs(p[0]) < 0.02 * S) if any(abs(p[0]) < 0.02 * S for p in poly) else 0
-        eye_x, eye_y = 0.0, T_((0, 0.085))[1]
-    elif motiv == "geist":
-        poly, k, cx, cy = _scale_to(g.ghost_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        for s_ in (1, -1):
-            e = [(x + s_ * 0.085, y + 0.30) for x, y in g._ellipse_pts(0, 0, 0.05, 0.075, 0, 2 * math.pi, 22)[:-1]]
-            holes.append([T_(p) for p in e])
-        holes.append([T_((x, y + 0.15)) for x, y in g._ellipse_pts(0, 0, 0.05, 0.065, 0, 2 * math.pi, 22)[:-1]])
-        for s_ in (1, -1):                                     # Stofffalten
-            eng.append(([T_((s_ * 0.18, -0.05)), T_((s_ * 0.20, -0.25)), T_((s_ * 0.24, -0.40))], False))
-            eng.append(([T_((s_ * 0.06, -0.20)), T_((s_ * 0.05, -0.34))], False))
-        text_box = (T_((0, -0.07)), 0.40 * S, 0.12 * S)
-        eye_x, eye_y = 0.0, T_((0, 0.50))[1]
-    elif motiv == "totenkopf":
-        poly, k, cx, cy = _scale_to(g.skull_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        holes = [[T_((x / S0, y / S0)) for x, y in h] for S0 in (1.0,) for h in g.skull_holes(0, 0, 1.0)]
-        eng.append(([T_((0.0, 0.48)), T_((0.02, 0.40)), T_((-0.02, 0.33)), T_((0.01, 0.26))], False))   # Naht
-        eng.append(([T_((-0.30, 0.30)), T_((-0.22, 0.34)), T_((-0.16, 0.30))], False))
-        eng.append(([T_((0.22, 0.42)), T_((0.26, 0.34)), T_((0.33, 0.30)), T_((0.30, 0.22))], False))  # Riss
-        eng.append(([T_((-0.25, -0.26)), T_((0.25, -0.26))], False))
-        eye_x, eye_y = 0.0, T_((0, 0.50))[1]
+        f, _ = SP.fledermaus(S, "segeln", cfg)
+        return SP.eingepasst(f, S), None
+    if motiv == "geist":
+        f, _ = SP.gespenst(S, cfg)
+        f = SP.eingepasst(f, S)
+        return f, ((0.0, -0.06 * S), 0.34 * S, 0.09 * S)
+    if motiv == "totenkopf":
+        return SP.eingepasst(SP.totenkopf(S, cfg), S), None
+    if motiv == "katze":
+        return SP.eingepasst(SP.katze(S, cfg), S), None
+    if motiv == "hexenhut":
+        f = SP.eingepasst(SP.hexenhut(S, cfg), S)
+        return f, ((0.0, -0.25 * S), 0.62 * S, 0.055 * S)
+    if motiv == "kuerbis":
+        f, _ = SP.kuerbis(S, cfg, "klassisch", cfg.seed)
+        return SP.eingepasst(f, S), ((0.0, 0.0), 0.0, 0.0)
+    if motiv == "spinnennetz":
+        return _netz_scheibe(S, cfg), None
+    raise ValueError(motiv)
+
+
+def build_one(cfg, name, motiv, S, text, schrift, notes):
+    f, feld = figur(motiv, S, cfg)
+    gr = list(getattr(f, "gravur", []))
+    # Öse oben an der höchsten Stelle nahe der Mitte (Hexenhut: an der Spitze, Katze: am Ohr)
+    x0, y0, x1, y1 = f.bbox()
+    d = max(2.5, min(5.0, 0.05 * S))
+    if motiv == "hexenhut":
+        xs = [q for s_, p in f.ops if s_ == "+" for q in p]
+        tip = max(xs, key=lambda q: q[1] + 0.25 * q[0])
+        ort, eins0 = (tip[0], tip[1]), 0.7
     elif motiv == "katze":
-        poly, k, cx, cy = _scale_to(g.cat_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        put.append([T_(p) for p in [(0.02, 0.22), (0.05, 0.245), (0.08, 0.22), (0.05, 0.205)]])   # Auge
-        for dy in (-0.01, 0.02):                                                                 # Schnurrhaare
-            eng.append(([T_((0.06, 0.12 + dy)), T_((0.14, 0.13 + dy * 2))], False))
-        eng.append(([T_((-0.12, 0.08)), T_((-0.02, 0.05)), T_((0.07, 0.08))], False))           # Halsband
-        put.append(circle(*T_((-0.02, 0.025)), 0.018 * S, 0.05))                               # Glöckchen
-        eng.append(([T_((-0.20, -0.30)), T_((-0.16, -0.10))], False))
-        eye_x, eye_y = T_((-0.10, 0.30))[0], T_((-0.1, 0.36))[1]
-    elif motiv == "hexenhut":
-        poly, k, cx, cy = _scale_to(g.hat_unit(), S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        eng.append(([T_((-0.21, -0.16)), T_((-0.02, -0.15)), T_((0.20, -0.16))], False))      # Hutband
-        eng.append(([T_((-0.215, -0.20)), T_((-0.02, -0.19)), T_((0.205, -0.20))], False))
-        bw, bh = 0.07, 0.06
-        holes.append([T_(p) for p in rect(-0.035, -0.205, bw, bh)])                             # Schnalle
-        for (x, y, r) in ((-0.05, 0.02, 0.03), (0.05, 0.10, 0.022), (0.0, -0.08, 0.018), (0.08, 0.22, 0.02)):
-            put.append([T_(p) for p in g.place([(math.cos(math.pi / 2 + i * math.pi / 5) * (1 if i % 2 == 0 else 0.45),
-                                                    math.sin(math.pi / 2 + i * math.pi / 5) * (1 if i % 2 == 0 else 0.45))
-                                                   for i in range(10)], x, y, r)])
-        text_box = (T_((0.0, -0.31)), 0.70 * S, 0.06 * S)
-        eye_x, eye_y = T_((0.31, 0.36))[0], T_((0.31, 0.37))[1]
-    elif motiv == "kuerbis":
-        pk = g.pumpkin(0.0, 0.0, 1.0, 0.80)
-        poly, k, cx, cy = _scale_to(pk, S)
-        T_ = lambda p: ((p[0] - cx) * k, (p[1] - cy) * k)
-        holes = [[T_(p) for p in h] for h in g.pumpkin_face("klassisch", 0.0, 0.40, 0.74, 0.55)]
-        for s_ in (-1, 1):
-            for f in (0.18, 0.36):
-                eng.append((bezier_q(T_((s_ * f * 0.3, 0.70)), T_((s_ * (0.1 + f), 0.40)), T_((s_ * f * 0.35, 0.04)),
-                                     16), False))
-        text_box = None if not text else (T_((0.0, 0.62)), 0.36 * S, 0.06 * S)
-        eye_x, eye_y = T_((0.03, 0.98))[0], max(p[1] for p in poly)
-    elif motiv == "spinnennetz":
-        R = S / 2
-        poly = circle(0.0, 0.0, R, cfg.arc_tolerance)
-        holes = g.web(0.0, 0.0, R - max(web, 1.4) * 1.2, math.radians(90), math.radians(450), 5, 12,
-                      max(web, 1.4))[1]
-        put.append(g.spider(0.0, -0.02 * S, 0.30 * S, 0.5))
-        eye_x, eye_y = 0.0, R
-        holes = [h for h in holes if not any(point_in_polygon(p, put[-1]) for p in h) and
-                 min_distance(h, put[-1], limit=1.0) >= 1.0]
+        xe = -0.13 * (x1 - x0) + (x0 + x1) / 2
+        ort, eins0 = (xe, SP.oberkante(f, xe, 0.02 * S)), 0.6
     else:
-        raise ValueError(motiv)
-    if motiv not in ("spinnennetz",):
-        poly = oriented(poly, True)
-    # Öse oben
-    r_e = max(0.07 * S, 3.4)
-    top_pts = [p for p in poly if abs(p[0] - eye_x) < r_e * 0.6]
-    y_top = max(p[1] for p in top_pts) if top_pts else eye_y
-    outline, eye_hole = _eyelet(poly, eye_x, y_top, r_e, web)
-    part = Part(f"{name}", outline)
-    part.add_hole(eye_hole)
-    for h in holes:
-        if g.hole_ok(h, 0.3) and abs(g.signed_area(h)) > 2.0 and \
-                min_distance(h, outline, limit=web) >= web and min_distance(h, eye_hole, limit=web) >= web and \
-                all(min_distance(h, q, limit=web) >= web for q in part.holes):
-            part.add_hole(h)
-    cv = dk.Canvas(part, margin=0.9, hole_margin=0.9, seed=cfg.seed)
-    for p_ in put:
-        cv.put(p_, True, reserve=0.6)
-    if text and text_box:
-        (tx, ty), bw_, bh_ = text_box
+        xm = (x0 + x1) / 2
+        ort, eins0 = (xm, SP.oberkante(f, xm, 0.06 * S)), 0.45
+    part = None
+    for eins in (eins0, eins0 - 0.2, eins0 - 0.4, eins0 - 0.6):
+        g_ = SP.Figur(list(f.ops))
+        loch = SP.oese(g_, ort[0], ort[1], d, cfg, einsatz=eins)
+        try:
+            part = SP.teil(name, g_, cfg, notes, [loch])
+            break
+        except ValueError:
+            continue
+    if part is None:
+        raise ValueError(f"{name}: Öse passt nicht – Anhänger größer wählen")
+    if motiv == "katze" and getattr(f, "gloeckchen", None):
+        gx, gy, gr_ = f.gloeckchen
+        gr.append((K.circle(gx, gy, max(gr_, 1.2), 20), True))
+    SP.gravur(part, gr, cfg.seed)
+    if text and feld:
+        cv = dk.Canvas(part, margin=0.9, hole_margin=0.9, seed=cfg.seed)
+        (tx, ty), bw_, bh_ = feld
+        if motiv == "kuerbis":
+            (tx, ty), bw_, bh_ = (0.0, -0.33 * S), 0.40 * S, 0.07 * S
         try:
             strokes, _ = fit_text(text, tx, ty, bw_, bh_, min_h=2.2, max_cap=bh_, style=schrift)
             for st in strokes:
                 cv.draw(st)
-            cv.block_strokes([(st, False) for st in strokes], 0.6)
         except ValueError:
-            pass
-    for pts, closed in eng:
-        cv.draw(pts, closed)
+            notes.append(f"{name}: Name passt nicht – kürzer oder Anhänger größer wählen.")
     return part
 
 
@@ -187,12 +159,12 @@ def build(cfg, name="halloween_anhaenger", motiv="alle", size=80.0, text="", sch
     bad = unsupported(text or "")
     if bad:
         raise ValueError(f"Zeichen {''.join(bad)!r} gibt es in der Gravurschrift nicht")
-    web = max(cfg.min_web * 1.5, 1.5)
-    rng = random.Random(cfg.seed)
+    notes = []
     motifs = [m for m, _ in MOTIFS] if motiv == "alle" else [motiv]
     asm = Assembly(name, params=dict(motiv=motiv, size=S, **({"text": text} if text else {})))
     for m in motifs:
-        asm.parts.append(build_one(cfg, f"{name}_{m}", m, S, text, schrift, rng, web))
+        asm.parts.append(build_one(cfg, f"{name}_{m}", m, S, text, schrift, notes))
+    asm.notes.extend(dict.fromkeys(notes))
     asm.notes.append("Anhänger an einem Faden durch die Öse aufhängen. Tipp: schwarz lasiert vor einem "
                      "hellen Fenster wirken sie wie Scherenschnitte.")
     return asm
