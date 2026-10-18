@@ -19,7 +19,7 @@ Laden in der App unter Einstellungen → Pakete → **Paket laden …**
 | [ebenen-1.2.0.swpaket](dateien/ebenen-1.2.0.swpaket) | Mehrlagig 1.2.0 |
 | [filigran-1.1.0.swpaket](dateien/filigran-1.1.0.swpaket) | Filigran 1.1.0 |
 | [weihnacht-1.1.0.swpaket](dateien/weihnacht-1.1.0.swpaket) | Weihnachtsdeko 1.1.0 |
-| [halloween-1.3.0.swpaket](dateien/halloween-1.3.0.swpaket) | Halloween 1.3.0 |
+| [halloween-1.4.0.swpaket](dateien/halloween-1.4.0.swpaket) | Halloween 1.4.0 (fein gezeichnet) |
 | [tuerschild-1.1.0.swpaket](dateien/tuerschild-1.1.0.swpaket) | Türschild 1.1.0 (Beispiel) |
 | [verzierungen-1.1.0.swpaket](dateien/verzierungen-1.1.0.swpaket) | Verzierungen 1.1.0 (zuerst laden, alle anderen außer Türschild brauchen es) |
 | [umrandungen-1.0.0.swpaket](dateien/umrandungen-1.0.0.swpaket) | Umrandungen 1.0.0 |

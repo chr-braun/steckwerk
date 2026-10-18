@@ -25,7 +25,7 @@ Alles ist zwischen dem 9. und 16. Oktober 2026 entstanden. Die Details stehen im
 | Paket | Versionen |
 |---|---|
 | Türschild | 1.0.0 (09.10.), 1.1.0 zweisprachig (10.10.) |
-| Halloween | 1.0.0 (09.10.), 1.1.0 zweisprachig (10.10.), 1.2.0 mit Spinnennetz, Skelett, Fledermausgirlande, Süßigkeitenschale (11.10.), 1.3.0 nutzt Verzierungen, zwei Prüffehler behoben (15.10.) |
+| Halloween | 1.0.0 (09.10.), 1.1.0 zweisprachig (10.10.), 1.2.0 mit Spinnennetz, Skelett, Fledermausgirlande, Süßigkeitenschale (11.10.), 1.3.0 nutzt Verzierungen, zwei Prüffehler behoben (15.10.), 1.4.0 alle Motive fein gezeichnet (18.10.) |
 | Mehrlagig | 1.0.0 (10.10.), 1.1.0 mit Weihnachtsmann, Pick-up, Nussknacker (11.10.), 1.2.0 nutzt Verzierungen (15.10.) |
 | Filigran | 1.0.0 (11.10.), 1.1.0 Muster-Rezepte und Zufallsmuster (15.10.) |
 | Weihnachtsdeko | 1.0.0 (11.10.), 1.1.0 nutzt Verzierungen (15.10.) |
