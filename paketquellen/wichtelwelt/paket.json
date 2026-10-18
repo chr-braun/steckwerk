@@ -1,0 +1,13 @@
+{
+  "standard": 1,
+  "id": "wichtelwelt",
+  "name": "Wichtelwelt",
+  "version": "1.0.0",
+  "autor": "Christian & Claude",
+  "beschreibung": "Detailreiche Wichtelwelt in mehreren Lagen: Wichtelfiguren mit gemusterten Mützen, Lebkuchenstand, Werkbank mit Werkzeugkiste, Straßenlaterne und Lattenzaun mit Tor.",
+  "name_en": "Elf world",
+  "beschreibung_en": "Detailed layered elf world: gnome figures with patterned hats, gingerbread stall, workbench with toolbox, street lantern and picket fence with gate.",
+  "steckwerk": "2.4.0",
+  "benoetigt": {"verzierungen": "1.1.0"},
+  "modelle": ["wichtelfigur", "lebkuchenstand", "werkbank", "strassenlaterne", "lattenzaun"]
+}

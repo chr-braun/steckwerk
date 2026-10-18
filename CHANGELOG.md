@@ -2,6 +2,22 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Paket-Updates – 2026-10-16
+
+- **Wichtelwelt** 1.0.0 – neue, detailreiche Stücke für die Wichtelecke, mehrlagig, graviert und gesteckt:
+  - **Wichtelfigur** aus fünf Lagen: Mütze mit ausgeschnittenem Muster (Streifen, Sterne, Punkte, Herzen,
+    Zickzack) und Strickkrempe, Bart mit gravierten Locken, Schnurrbart, Nase. Er hält eine Laterne, einen Stern
+    am Stab, ein Herz oder ein Geschenk und steht in einem Schneehügel mit Namen. Mit „Familie“ bis zu vier
+    Wichtel in drei Größen.
+  - **Lebkuchenstand**: Marktstand mit Theke, Rückwand mit Regalen, Dach mit verziertem Schild und Markise,
+    Pflasterboden, Lebkuchenmännern und -herzen.
+  - **Werkbank** mit Schraubstock und Lochwand, Werkzeugkiste mit Griff, Säge, Hammer, Zollstock,
+    Schraubenschlüssel und Holzscheit.
+  - **Straßenlaterne** aus zwei Silhouetten über Kreuz gesteckt, drei Kopfformen, Schleife und Sterne.
+  - **Lattenzaun** mit Tor, Pfostenkappen, Maserung und Nägeln, auf Wunsch mit Schnee.
+- **Wichtelmöbel** 1.1.0 – neue **Parkbank**: Seitenteile im Gusseisen-Look mit Armlehne, Ranken und Löwenfüßen,
+  Sitz- und Lehnenlatten zum Durchstecken, Text auf der obersten Latte.
+
 ## Paket-Updates – 2026-10-15
 
 - **Verzierungen** 1.1.0 – die Bibliothek bringt jetzt auch die Motiv-Figuren und die Halloween-Formen mit,

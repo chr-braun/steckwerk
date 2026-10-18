@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.join(HERE, "packaging"))
 import update_kanal  # noqa: E402
 QUELLEN = os.path.join(HERE, "paketquellen")
 NEUE = ["verzierungen", "umrandungen", "wichtelmoebel", "wichteltuer", "wichtelzubehoer"]
+WELT = ["wichtelwelt"]                                                  # braucht Verzierungen 1.1.0
 UMGESTELLT = ["ebenen", "filigran", "halloween", "weihnacht"]           # nutzen seit 2026-10-15 die Bibliothek
 
 
@@ -38,6 +39,9 @@ def test_manifeste():
         m = pakete.read_manifest(os.path.join(QUELLEN, pid))
         assert m["benoetigt"] == {"verzierungen": "1.1.0"}
         assert not [f for f in os.listdir(os.path.join(QUELLEN, pid)) if f in ("_kit.py", "_ebenen.py", "_figuren.py")]
+    for pid in WELT:
+        m = pakete.read_manifest(os.path.join(QUELLEN, pid))
+        assert m["name_en"] and m["beschreibung_en"] and m["benoetigt"] == {"verzierungen": "1.1.0"}
     assert pakete.read_manifest(os.path.join(QUELLEN, "verzierungen"))["bibliothek"] == "bibliothek"
 
 
@@ -86,7 +90,7 @@ def test_updater_installiert_abhaengigkeit_mit(inst):
         del os.environ["STECKWERK_UPDATE_KANAL"]
 
 
-@pytest.mark.parametrize("pid", NEUE + UMGESTELLT)
+@pytest.mark.parametrize("pid", NEUE + UMGESTELLT + WELT)
 def test_modelle_cut_ready(inst, pid):
     if pid != "verzierungen":
         pakete.install(os.path.join(QUELLEN, "verzierungen"))
@@ -128,3 +132,67 @@ def test_halloween_spitze_zwickel(inst, kerf):
     cfg = Config(thickness=5.0, kerf=kerf)
     assert_cut_ready(mods["kuerbis"].build(cfg, width=119.59090487445758, gesicht="froehlich", rippen=True, blatt=True,
                                            text="BOO!", schrift="normal", schreibweise="gross"), cfg)
+
+
+def _welt(inst, pid="wichtelwelt"):
+    pakete.install(os.path.join(QUELLEN, "verzierungen"))
+    return pakete.load_folder(os.path.join(QUELLEN, pid))[1]
+
+
+def test_wichtelfigur_familie_und_varianten(inst):
+    mod = _welt(inst)["wichtelfigur"]
+    cfg = Config()
+    fam = mod.build(cfg, familie=3, sockeltext="Fridolin|Frieda|Fritz")
+    assert isinstance(fam, list) and len(fam) == 3
+    assert fam[0].params["hoehe"] > fam[1].params["hoehe"] > fam[2].params["hoehe"]
+    assert len({a.params["muster"] for a in fam}) == 3
+    for a in fam:
+        assert {"grundform", "bart", "schnurrbart", "muetze", "nase", "sockel"} <= {p.name for p in a.parts}
+        assert_cut_ready(a, cfg)
+    for haelt in ("keins", "stern", "herz", "geschenk"):
+        for muster in ("sterne", "zacken", "glatt"):
+            a = mod.build(cfg, hoehe=90, haelt=haelt, muster=muster, bart="zottelig", spitze="links", sockeltext="")
+            assert_cut_ready(a, cfg)
+    with pytest.raises(ValueError, match="zu klein"):
+        mod.build(cfg, hoehe=40)
+
+
+def test_wichtelmuetze_muster_bleibt_innen(inst):
+    """Das Mützenmuster schneidet nie in den Rand der Mütze."""
+    mod = _welt(inst)["wichtelfigur"]
+    cfg = Config()
+    for muster in ("streifen", "zacken", "punkte"):
+        a = mod.build(cfg, muster=muster)
+        m = a.part("muetze")
+        assert m.holes
+        from steckwerk import dist_to_boundary
+        for h in m.holes:
+            assert min(dist_to_boundary(q, m.outline) for q in h) > cfg.min_web
+
+
+@pytest.mark.parametrize("T,kerf", [(3.0, 0.2), (2.0, 0.1), (4.0, 0.15)])
+def test_wichtelwelt_bauten(inst, T, kerf):
+    mods = _welt(inst)
+    cfg = Config(thickness=T, kerf=kerf)
+    assert_cut_ready(mods["lebkuchenstand"].build(cfg, markise="zacken", krone="ranke", schild="", theke="",
+                                                  maenner=4, herzen=0), cfg)
+    assert_cut_ready(mods["werkbank"].build(cfg, laenge=120, lochwand=True, wandtext="", kistenmotiv="tanne"), cfg)
+    for kopf in ("klassisch", "rund", "spitz"):
+        a = mods["strassenlaterne"].build(cfg, kopf=kopf, deko="beides")
+        assert [c.a for c in a.connections] == ["laterne_a:kreuz"]
+        assert_cut_ready(a, cfg)
+    assert_cut_ready(mods["lattenzaun"].build(cfg, spitze="gotisch", kappe="herz", tor=True, schnee=False), cfg)
+    assert_cut_ready(mods["lattenzaun"].build(cfg, laenge=120, spitze="rund", kappe="stern", tor=False), cfg)
+
+
+def test_parkbank(inst):
+    mod = _welt(inst, "wichtelmoebel")["parkbank"]
+    cfg = Config()
+    a = mod.build(cfg, text="Wichtelpause", sitzlatten=5, lehnenlatten=2, stil="herz")
+    names = [p.name for p in a.parts]
+    assert names.count("seite_links") == 1 and sum(n.startswith("sitzlatte") for n in names) == 5
+    assert a.part("lehnenlatte2").engrave
+    assert_cut_ready(a, cfg)
+    for T, kerf in ((2.0, 0.1), (4.0, 0.15), (6.0, 0.3)):
+        c = Config(thickness=T, kerf=kerf)
+        assert_cut_ready(mod.build(c, laenge=120, sitzhoehe=45, stil="schlicht"), c)

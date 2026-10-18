@@ -2,6 +2,20 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## Package updates – 2026-10-16
+
+- **Elf world** 1.0.0 – new, detailed pieces for the elf corner, layered, engraved and slotted together:
+  - **Gnome figure** made of five layers: hat with cut-out pattern (stripes, stars, dots, hearts, zigzag) and
+    knitted brim, beard with engraved curls, moustache, nose. Holds a lantern, a star on a stick, a heart or a
+    present and stands in a snow mound with his name. "Family" makes up to four gnomes in three sizes.
+  - **Gingerbread stall**: market stall with counter, back wall with shelves, roof with decorated sign and
+    awning, cobbled floor, gingerbread men and hearts.
+  - **Workbench** with vice and pegboard, toolbox with handle, saw, hammer, folding rule, spanner and a log.
+  - **Street lantern** made of two silhouettes slotted together crosswise, three head shapes, bow and stars.
+  - **Picket fence** with gate, post caps, grain and nails, snow if you like.
+- **Elf furniture** 1.1.0 – new **park bench**: cast-iron style side frames with armrest, scrolls and lion feet,
+  seat and backrest slats that plug through, text on the top slat.
+
 ## Package updates – 2026-10-15
 
 - **Verzierungen** 1.1.0 – the library now also carries the motif figures and the Halloween shapes that

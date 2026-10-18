@@ -26,9 +26,10 @@ schnittfertiges Paket wird übernommen.
 | **Türschild** (`tuerschild`) | 1.1.0 | Hängeschild mit Namen und Rahmen – das Beispiel für den Paket-Standard. |
 | **Verzierungen** (`verzierungen`) | 1.1.0 | Die gemeinsame **Ornament-Bibliothek** für alle Pakete: Rosetten (Blüte, Mandala, Stern, Sonne, Schneestern), Eckornamente, Bordüren, Kanten, Durchbrüche, Ausschnittmotive (Herz, Stern, Tanne, Blume, Mond, Pilz …), Rahmenformen. Dazu die Modelle **Zierstück** und **Zierleiste**. Seit 1.1.0 auch die Motiv-Figuren und Halloween-Formen. Wird von Mehrlagig, Filigran, Weihnachtsdeko, Halloween und den Paketen unten automatisch mitinstalliert. |
 | **Umrandungen** (`umrandungen`) | 1.0.0 | **Bilderrahmen** (9 × 13 bis 15 × 20 cm oder eigenes Maß, schlicht oder filigran, mit Sockel oder Schlüsselloch) und **Zierrahmen** mit Schild und graviertem Text. Braucht Verzierungen. |
-| **Wichtelmöbel** (`wichtelmoebel`) | 1.0.0 | **Wichtelbank** mit Lehne, **Wichteltisch** mit bis zu vier Hockern, **Wichtelbett** mit graviertem Kissen und Decke – alles gesteckt. Braucht Verzierungen. |
+| **Wichtelmöbel** (`wichtelmoebel`) | 1.1.0 | **Wichtelbank** mit Lehne, **Wichteltisch** mit bis zu vier Hockern, **Wichtelbett** mit graviertem Kissen und Decke – alles gesteckt. Seit 1.1.0 die **Parkbank** mit Gusseisen-Seitenteilen und Latten. Braucht Verzierungen. |
 | **Wichteltür** (`wichteltuer`) | 1.0.0 | **Wichteltür** mit Steinbogen oder Holzrahmen, Türfenster, Stufe und Namensschild, **Wichtelfenster** mit Sprossen, Gardinen, Fensterläden und Blumenkasten. Braucht Verzierungen. |
 | **Wichtelzubehör** (`wichtelzubehoer`) | 1.0.0 | **Wichtelleiter** zum Stecken, **Wegweiser** mit eigenen Ortsnamen, **Wäscheleine** mit Mini-Wäsche. Braucht Verzierungen. |
+| **Wichtelwelt** (`wichtelwelt`) | 1.0.0 | Die detailreiche Wichtelecke: **Wichtelfigur** aus fünf Lagen (Mütze mit Muster und Strickkrempe, Lockenbart, Nase; hält Laterne, Stern, Herz oder Geschenk; Schneehügel mit Namen; auf Wunsch als Familie), **Lebkuchenstand** (Theke, Regale, Schild, Markise, Lebkuchen), **Werkbank** mit Schraubstock, Lochwand, Werkzeugkiste und Werkzeug, **Straßenlaterne** über Kreuz gesteckt, **Lattenzaun** mit Tor. Braucht Verzierungen 1.1.0. |
 
 Alle Paketdateien zum Herunterladen findest du unter [Downloads](Downloads.md). Jedes `.swpaket`
 enthält den kompletten Quellcode – zum Ändern einfach entpacken.
@@ -60,6 +61,14 @@ enthält den kompletten Quellcode – zum Ändern einfach entpacken.
 ![Wichteltür 1.0](medien/wichteltuer-1.0-vorschau.png)
 
 ![Wichtelzubehör 1.0](medien/wichtelzubehoer-1.0-vorschau.png)
+
+![Wichtelwelt 1.0: Wichtelfamilie, Straßenlaterne, Parkbank](medien/wichtelwelt-1.0-figuren.png)
+
+![Wichtelwelt 1.0: Lebkuchenstand](medien/wichtelwelt-1.0-lebkuchenstand.png)
+
+![Wichtelwelt 1.0: Werkbank mit Werkzeugkiste](medien/wichtelwelt-1.0-werkbank.png)
+
+![Wichtelwelt 1.0: Lattenzaun mit Tor](medien/wichtelwelt-1.0-lattenzaun.png)
 
 ## Eigenes Paket bauen
 
