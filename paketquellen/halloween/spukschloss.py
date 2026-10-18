@@ -206,7 +206,7 @@ def el_cauldron(w, h, web):
     oben brodeln Blasen."""
     rx, ry = 0.46 * w, 0.28 * h
     cy = 0.52 * h
-    pot_y = cy - ry
+
     lw = max(0.07 * w, web * 2.2)
     fx = 0.36 * w                                      # Fußmitte
     E = lambda a: (rx * math.cos(math.radians(a)), cy + ry * math.sin(math.radians(a)))
@@ -576,8 +576,12 @@ def build(cfg, name="spukschloss", width=260.0, szene="spukhaus", himmel="beides
     moon_items = []
     inner_r = rm - max(web * 1.5, 0.05 * rm)
     if himmel in ("hexe", "beides"):
-        wu = _sil("hexe", lambda S: SP.hexe(S, cfg), 1.62 * rm, cfg)
-        moon_items.append(_setze(wu, mx - 0.02 * rm, my - 0.12 * rm, ang=0.12))
+        for fs in (1.62, 1.5, 1.38, 1.26):                # muss mit Steg ganz im Mond liegen
+            wu = _setze(_sil("hexe", lambda S: SP.hexe(S, cfg), fs * rm, cfg), mx - 0.02 * rm, my - 0.12 * rm,
+                        ang=0.12)
+            if all(math.hypot(p[0] - mx, p[1] - my) <= inner_r for p in wu):
+                moon_items.append(wu)
+                break
     nb = fledermaeuse if himmel in ("fledermaeuse", "beides") else 0
     if himmel == "beides":
         nb = min(nb, 3)
@@ -669,7 +673,9 @@ def build(cfg, name="spukschloss", width=260.0, szene="spukhaus", himmel="beides
 
 def _stumpf(poly, cfg):
     """Spitze Zwickel eines Lochs (z. B. zwischen Bogen und Spinnenfaden) kappen, damit der Kerf-Versatz
-    sauber bleibt: spitze Ecken werden zu einer kurzen Fase, notfalls mit ausgedünnten Nachbarpunkten."""
+    sauber bleibt: spitze Ecken werden zu einer kurzen Fase, notfalls mit ausgedünnten Nachbarpunkten.
+    Stellen, an denen sich die versetzte Kontur selbst schneidet, werden gezielt nachgefast."""
+    import re
     from validator import check_kerf, check_path
     d = cfg.kerf_offset
     if d <= 0:
@@ -677,12 +683,25 @@ def _stumpf(poly, cfg):
     poly = oriented(poly, False)
     xs, ys = [q[0] for q in poly], [q[1] for q in poly]
     rahmen = rect(min(xs) - 5, min(ys) - 5, max(xs) - min(xs) + 10, max(ys) - min(ys) + 10)
+
+    def heil(cand):
+        for _ in range(8):
+            comp = Part("probe", rahmen, [cand]).compensated(d)
+            errs = check_path(comp.holes[0], True, cfg)
+            orte = [(float(a), float(b)) for e in errs for a, b in re.findall(r"bei \(([-\d.]+), ([-\d.]+)\)", e)]
+            if not errs or not orte:
+                return cand
+            nah = lambda q: any(dist(q, o) < 3.0 for o in orte)
+            cand = _fasen_wo([q for i, q in enumerate(cand) if not nah(q) or i % 3 == 0], nah, 8 * d + 0.6)
+        return cand
+
     for winkel, abstand in ((0.0, 0.0), (35.0, 0.0), (50.0, 4 * d + 0.3), (65.0, 8 * d + 0.5), (80.0, 8 * d + 0.5)):
-        cand = _fasen(_duenn(poly, abstand), winkel, 8 * d + 0.6) if winkel else poly
-        probe = Part("probe", rahmen, [cand])
-        comp = probe.compensated(d)
-        if not check_path(comp.holes[0], True, cfg) and not check_kerf(probe, comp, cfg):
-            return cand
+        cand = _fasen(_duenn(poly, abstand), winkel, 8 * d + 0.6) if winkel else list(poly)
+        for versuch in (cand, heil(cand)):
+            probe = Part("probe", rahmen, [versuch])
+            comp = probe.compensated(d)
+            if not check_path(comp.holes[0], True, cfg) and not check_kerf(probe, comp, cfg):
+                return versuch
     return poly
 
 
@@ -708,6 +727,26 @@ def _fasen(poly, winkel, laenge):
             continue
         cosw = max(-1.0, min(1.0, (u[0] * v[0] + u[1] * v[1]) / (lu * lv)))
         if math.degrees(math.acos(cosw)) < winkel:
+            t = min(laenge, 0.45 * lu, 0.45 * lv)
+            out += [(b[0] + u[0] / lu * t, b[1] + u[1] / lu * t), (b[0] + v[0] / lv * t, b[1] + v[1] / lv * t)]
+        else:
+            out.append(b)
+    return out
+
+
+def _fasen_wo(poly, nah, laenge):
+    """Spitze Ecken (< 100°) nur dort fasen, wo nah(q) gilt."""
+    n = len(poly)
+    out = []
+    for i, b in enumerate(poly):
+        a, c = poly[i - 1], poly[(i + 1) % n]
+        u = (a[0] - b[0], a[1] - b[1])
+        v = (c[0] - b[0], c[1] - b[1])
+        lu, lv = math.hypot(*u), math.hypot(*v)
+        if lu < 1e-9 or lv < 1e-9:
+            continue
+        cosw = max(-1.0, min(1.0, (u[0] * v[0] + u[1] * v[1]) / (lu * lv)))
+        if nah(b) and math.degrees(math.acos(cosw)) < 100:
             t = min(laenge, 0.45 * lu, 0.45 * lv)
             out += [(b[0] + u[0] / lu * t, b[1] + u[1] / lu * t), (b[0] + v[0] / lv * t, b[1] + v[1] / lv * t)]
         else:
