@@ -123,6 +123,13 @@ public struct MessageResponse: Decodable, Sendable {
     }
 }
 
+/// Antwort von POST /api/update-desktop: neue App liegt am alten Ort und will neu gestartet werden.
+public struct DesktopUpdateResponse: Decodable, Sendable {
+    public let version: String
+    public let pfad: String
+    public let message: String?
+}
+
 /// Antwort von POST /api/update-check.
 public struct UpdateCheck: Decodable, Sendable {
     public let programm: ProgrammInfo
@@ -146,8 +153,13 @@ public struct ProgrammInfo: Decodable, Sendable {
     public let datum: String
     public let hinweise: [String]
     public let grund: String
+    /// Die Engine kann diese App selbst ersetzen (Kanal hat ein passendes Paket, Ort ist beschreibbar).
+    public let kannInstallieren: Bool
 
-    enum CodingKeys: String, CodingKey { case installiert, version, neu, datum, hinweise, grund }
+    enum CodingKeys: String, CodingKey {
+        case installiert, version, neu, datum, hinweise, grund
+        case kannInstallieren = "kann_installieren"
+    }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -157,6 +169,7 @@ public struct ProgrammInfo: Decodable, Sendable {
         datum = try c.decodeIfPresent(String.self, forKey: .datum) ?? ""
         hinweise = try c.decodeIfPresent([String].self, forKey: .hinweise) ?? []
         grund = (try? c.decodeIfPresent(String.self, forKey: .grund)) ?? ""
+        kannInstallieren = (try? c.decodeIfPresent(Bool.self, forKey: .kannInstallieren)) ?? false
     }
 }
 

@@ -49,8 +49,12 @@ App einen Hinweis mit dem Weg zur Installation.
 
 - **Pakete:** Installierte Pakete ansehen und entfernen, den Update-Kanal laden und Pakete daraus installieren
   oder eine `.swpaket`-Datei einbauen.
-- **Updates:** Zeigt neue Pakete und neue Programmversionen. Ein neues Programm lädst du als neues DMG; die App
-  ersetzt sich nicht selbst.
+- **Updates:** Zeigt neue Pakete und neue Programmversionen. Gibt es eine neue Version, lädt
+  **„Installieren und neu starten“** sie aus dem Update-Kanal, prüft Prüfsumme, Kennung und Version, ersetzt die App
+  an ihrem Ort und startet sie neu. Beim Start sucht die App von selbst nach Updates (abschaltbar), die Anzahl steht
+  dann als Zahl neben „Updates“ in der Seitenleiste.
+  Das klappt, wenn die App im Programme-Ordner liegt (nicht direkt aus dem DMG) und der Kanal für diese Version
+  ein Steckwerk-Desktop-Paket hat. Sonst sagt die App, warum nicht, und du lädst das neue DMG von Hand.
 - **Material:** Gilt für alle Modelle und bleibt gespeichert.
 
 ## KI und Schlüssel

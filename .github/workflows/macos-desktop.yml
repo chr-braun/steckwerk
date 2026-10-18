@@ -9,6 +9,7 @@ on:
     paths:
       - "packaging/swift/**"
       - "packaging/build_macos.py"
+      - "packaging/update_kanal.py"
       - ".github/workflows/macos-desktop.yml"
       - "*.py"
       - "models/**"
@@ -18,6 +19,7 @@ on:
     paths:
       - "packaging/swift/**"
       - "packaging/build_macos.py"
+      - "packaging/update_kanal.py"
       - ".github/workflows/macos-desktop.yml"
       - "*.py"
       - "models/**"
@@ -55,7 +57,7 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/python" -m pip install -q pytest
-          "$RUNNER_TEMP/venv/bin/python" -m pytest -v tests/test_desktop_bridge.py
+          "$RUNNER_TEMP/venv/bin/python" -m pytest -v tests/test_desktop_bridge.py tests/test_updater.py
 
       - name: Tests (mit Integrationstest gegen die echte Engine)
         working-directory: packaging/swift
@@ -81,7 +83,31 @@ jobs:
 
       - name: ZIP erstellen
         working-directory: packaging/dist
-        run: ditto -c -k --keepParent "Steckwerk Desktop.app" Steckwerk-Desktop-macOS.zip
+        run: ditto -c -k --norsrc --noextattr --noacl --keepParent "Steckwerk Desktop.app" Steckwerk-Desktop-macOS.zip
+
+      - name: Selbst-Update prüfen (ältere App durch das ZIP ersetzen, danach Signatur und Selbsttest)
+        run: |
+          T="$RUNNER_TEMP/selbstupdate"
+          mkdir -p "$T/Programme" "$T/daten"
+          ditto "packaging/dist/Steckwerk Desktop.app" "$T/Programme/Steckwerk Desktop.app"
+          plutil -replace CFBundleShortVersionString -string 0.0.1 "$T/Programme/Steckwerk Desktop.app/Contents/Info.plist"
+          STECKWERK_DATEN="$T/daten" STECKWERK_UPDATE_KANAL="file://$T/kanal/feed.json" python3 - "$T" <<'PY'
+          import os, sys
+          sys.path[:0] = [os.getcwd(), os.path.join(os.getcwd(), "packaging")]
+          import update_kanal, updater
+          from steckwerk import __version__
+          t = sys.argv[1]
+          feed = update_kanal.build(os.path.join(t, "kanal"), None, [], desktop="packaging/dist/Steckwerk-Desktop-macOS.zip")
+          assert feed["programm"]["desktop"], feed
+          app = os.path.join(t, "Programme", "Steckwerk Desktop.app")
+          updater.__version__ = "0.0.1"
+          check = updater.check(desktop=app)["programm"]
+          assert check["kann_installieren"], check
+          print(updater.install_desktop(app))
+          assert updater.app_version(app) == __version__
+          PY
+          codesign --verify --deep --strict --verbose=2 "$T/Programme/Steckwerk Desktop.app"
+          "$T/Programme/Steckwerk Desktop.app/Contents/MacOS/SteckwerkDesktop" --self-test
 
       - name: DMG erstellen
         working-directory: packaging/swift

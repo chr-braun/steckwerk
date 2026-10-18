@@ -30,14 +30,19 @@ Schlüsselbund. Ist das Repo öffentlich, geht es ohne Schlüssel.
 
 ## Für dich als Herausgeber
 
-Der Update-Kanal ist der Branch **`updates`** im Repo: `feed.json`, die neueste Mac-App und die Pakete.
+Der Update-Kanal ist der Branch **`updates`** im Repo: `feed.json`, die neueste Mac-App, Steckwerk Desktop und
+die Pakete.
 
 ```bash
 python3 packaging/build_macos.py --out dist
 git worktree add ../kanal updates
-python3 packaging/update_kanal.py ../kanal --mac dist/Steckwerk-<version>-macOS.zip --paket meinpaket-1.0.0.swpaket
+python3 packaging/update_kanal.py ../kanal --mac dist/Steckwerk-<version>-macOS.zip \
+    --desktop Steckwerk-Desktop-macOS.zip --paket meinpaket-1.0.0.swpaket
 cd ../kanal && git add -A && git commit -m "Kanal: <version>" && git push origin updates
 ```
+
+`Steckwerk-Desktop-macOS.zip` ist das Artefakt aus dem CI-Lauf „macOS Desktop“. Es kommt nur in den Kanal, wenn
+seine Version zur Programmversion passt; dann kann sich Steckwerk Desktop selbst aktualisieren.
 
 Die Update-Hinweise kommen aus `CHANGELOG.md` (deutsch) und `CHANGELOG.en.md` (englisch).
 **Wichtig:** Jede neue Version und jedes Paket-Update muss in den Kanal, sonst sieht die App es nicht.

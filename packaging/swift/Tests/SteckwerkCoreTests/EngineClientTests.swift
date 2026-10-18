@@ -115,6 +115,21 @@ final class EngineClientTests: XCTestCase {
         XCTAssertFalse(check.programm.version.isEmpty)
         XCTAssertFalse(check.pakete.isEmpty)
         XCTAssertTrue(check.pakete.allSatisfy { !$0.id.isEmpty })
+        XCTAssertFalse(check.programm.kannInstallieren)
+    }
+
+    func testDesktopUpdate() async throws {
+        let fake = FakeTransport()
+        fake.respond("/api/update-check", json: #"{"ok": true, "programm": {"version": "9.0.0", "neu": true, "kann_installieren": true}, "pakete": []}"#)
+        fake.respond("/api/update-desktop", json: #"{"ok": true, "version": "9.0.0", "pfad": "/Applications/Steckwerk Desktop.app", "message": "ok"}"#)
+        let client = EngineClient(baseURL: base, transport: fake)
+        let check = try await client.updateCheck(desktop: "/Applications/Steckwerk Desktop.app")
+        XCTAssertTrue(check.programm.kannInstallieren)
+        XCTAssertEqual(try fake.body(of: 0)["desktop"], .string("/Applications/Steckwerk Desktop.app"))
+        let done = try await client.desktopInstallieren(bundle: "/Applications/Steckwerk Desktop.app")
+        XCTAssertEqual(done.version, "9.0.0")
+        XCTAssertEqual(done.pfad, "/Applications/Steckwerk Desktop.app")
+        XCTAssertEqual(try fake.body(of: 1)["bundle"], .string("/Applications/Steckwerk Desktop.app"))
     }
 
     func testKanalPaketInstallable() throws {

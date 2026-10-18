@@ -94,6 +94,7 @@ macOS-Runner (`.github/workflows/macos-desktop.yml`), der auch das Artefakt erze
 
 ## Grenzen dieser Version
 
-- Unsigniert/nicht notarisiert; Updates des Programms lädst du als neue App, Paket-Updates gehen in der App.
+- Unsigniert/nicht notarisiert. Programm- und Paket-Updates installiert die App selbst aus dem Update-Kanal
+  („Updates → Installieren und neu starten“), sobald der Kanal ein Steckwerk-Desktop-ZIP der neuen Version hat.
 - Motive platzieren: Liste mit Zahlenfeldern (der grafische Platzierungs-Editor folgt später).
 - Oberfläche nur auf Deutsch.

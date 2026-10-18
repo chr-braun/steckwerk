@@ -7,6 +7,7 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 - Neues Themenpaket **Verkauf** 1.0.0 mit dem Flaschenschild: Preisschild zum Aufhängen am Flaschenhals oder an einer Kordel, mit deinem Logo (aus „Motive importieren“) oder einer Kopfzeile, Preis inkl. MwSt. und Grundpreis je Liter, den Steckwerk selbst ausrechnet. Über eine Preisliste entstehen alle Schilder auf einmal.
 - Die Schrift kennt jetzt auch €, % und den Mittelpunkt ·.
 - Textfelder in Paketen können mehrzeilig sein.
+- Steckwerk Desktop aktualisiert sich selbst: Unter „Updates“ lädt „Installieren und neu starten“ die neue Version aus dem Update-Kanal, prüft sie und ersetzt die App. Beim Start sucht sie von selbst nach Updates (abschaltbar).
 
 ## 2.7.0 – 2026-10-16
 

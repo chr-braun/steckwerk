@@ -178,10 +178,10 @@ def is_installed(bundle: str) -> bool:
     return any(b.startswith(h + os.sep) for h in homes)
 
 
-def install_bundle(bundle: str, target_dir: str) -> str:
+def install_bundle(bundle: str, target_dir: str, name: str = APP_NAME) -> str:
     """Kopiert die App nach target_dir (ersetzt eine ältere Version) und gibt den neuen Pfad zurück."""
     os.makedirs(target_dir, exist_ok=True)
-    target = os.path.join(target_dir, APP_NAME + ".app")
+    target = os.path.join(target_dir, name + ".app")
     fresh, old = target + ".neu", target + ".alt"
     for p in (fresh, old):
         shutil.rmtree(p, ignore_errors=True)
@@ -195,7 +195,7 @@ def install_bundle(bundle: str, target_dir: str) -> str:
     os.rename(fresh, target)
     shutil.rmtree(old, ignore_errors=True)
     legacy = os.path.join(target_dir, LEGACY_NAME + ".app")    # bis 1.7 hieß die App „Laserforge“
-    if os.path.isdir(legacy):
+    if name == APP_NAME and os.path.isdir(legacy):
         shutil.rmtree(legacy, ignore_errors=True)
     return target
 

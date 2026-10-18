@@ -110,7 +110,9 @@ private struct SidebarView: View {
                 Label("Pakete", systemImage: "shippingbox").tag(SidebarItem.pakete)
                 Label("KI", systemImage: "wand.and.stars").tag(SidebarItem.ki)
                 Label("Material", systemImage: "ruler").tag(SidebarItem.material)
-                Label("Updates", systemImage: "arrow.down.circle").tag(SidebarItem.updates)
+                Label("Updates", systemImage: "arrow.down.circle")
+                    .badge(model.updateCount)
+                    .tag(SidebarItem.updates)
             }
         }
         .listStyle(.sidebar)

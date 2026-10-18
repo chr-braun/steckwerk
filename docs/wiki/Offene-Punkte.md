@@ -11,6 +11,9 @@ Stand 17.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
   Kanal muss die Version erhöht, das Paket neu gepackt und in den Kanal gestellt werden.
 - **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind in Ordnung.
 - **Mac-Zip im Download-Ordner** ist noch 2.6.0. Die neue Desktop-App gibt es als Artefakt aus dem CI.
+- **Selbst-Update von Steckwerk Desktop** greift erst, wenn der Kanal (Branch `updates`) ein Desktop-ZIP enthält:
+  beim nächsten Release `update_kanal.py … --desktop Steckwerk-Desktop-macOS.zip` mitgeben. Die heute installierte
+  Desktop-App kann das Update noch nicht; sie muss einmal von Hand durch die neue ersetzt werden.
 
 ## Zum Ausprobieren bei dir
 

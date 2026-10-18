@@ -155,8 +155,15 @@ public struct EngineClient: Sendable {
         try await call("api/paket-entfernen", ["id": .string(id)], as: MessageResponse.self)
     }
 
-    public func updateCheck() async throws -> UpdateCheck {
-        try await call("api/update-check", [:], as: UpdateCheck.self, timeout: 60)
+    /// `desktop` = Pfad der laufenden „Steckwerk Desktop.app“, damit die Engine sagt, ob sie die App ersetzen kann.
+    public func updateCheck(desktop: String? = nil) async throws -> UpdateCheck {
+        let body: [String: JSONValue] = desktop.map { ["desktop": .string($0)] } ?? [:]
+        return try await call("api/update-check", body, as: UpdateCheck.self, timeout: 60)
+    }
+
+    /// Lädt die neue App aus dem Kanal, prüft sie und ersetzt `bundle`. Neu starten muss die App selbst.
+    public func desktopInstallieren(bundle: String) async throws -> DesktopUpdateResponse {
+        try await call("api/update-desktop", ["bundle": .string(bundle)], as: DesktopUpdateResponse.self, timeout: 600)
     }
 
     public func kanalPaketInstallieren(id: String) async throws -> MessageResponse {

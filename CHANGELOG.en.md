@@ -7,6 +7,7 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 - New theme package **Shop** 1.0.0 with the bottle tag: a price tag that hangs on the bottle neck or on a cord, with your logo (from "Import motifs") or a header line, price incl. VAT and the unit price per litre, which Steckwerk works out itself. A price list makes all tags at once.
 - The font now also knows €, % and the middle dot ·.
 - Text fields in packages can have several lines.
+- Steckwerk Desktop updates itself: under "Updates", "Install and restart" loads the new version from the update channel, checks it and replaces the app. At launch it looks for updates by itself (can be switched off).
 
 ## 2.7.0 – 2026-10-16
 

@@ -44,6 +44,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var isPreviewing = false
     @Published var statusMessage: String?
     @Published var alert: AppAlert?
+    /// Ergebnis der letzten Update-Prüfung (beim Start oder unter „Updates“).
+    @Published var updateCheck: UpdateCheck?
 
     private(set) var client: EngineClient?
     private var engine: EngineProcess?
@@ -51,6 +53,7 @@ final class AppModel: ObservableObject {
     private var previewTask: Task<Void, Never>?
     private var buildSerial = 0
     private static let materialDefaultsKey = "material"
+    static let autoUpdateKey = "updatesBeimStart"
 
     nonisolated static var appVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Entwicklung"
@@ -103,6 +106,9 @@ final class AppModel: ObservableObject {
             try await loadSchema()
             engineState = .running
             startPinging()
+            if UserDefaults.standard.object(forKey: Self.autoUpdateKey) as? Bool ?? true {
+                Task { await checkForUpdates(quiet: true) }
+            }
         } catch {
             fail(error)
             Task.detached { process.stop(grace: 0.2) }
@@ -166,6 +172,56 @@ final class AppModel: ObservableObject {
                 }
             }
         }
+    }
+
+    // MARK: Updates
+
+    /// Pfad der laufenden App, wenn sie als „Steckwerk Desktop.app“ läuft (sonst nil, z. B. bei `swift run`).
+    nonisolated static var bundlePath: String? {
+        let url = Bundle.main.bundleURL
+        return url.pathExtension == "app" ? url.path : nil
+    }
+
+    /// Anzahl der Updates für das Abzeichen in der Seitenleiste.
+    var updateCount: Int { updateCheck?.updates ?? 0 }
+
+    func checkForUpdates(quiet: Bool = false) async {
+        guard let client else { return }
+        do {
+            updateCheck = try await client.updateCheck(desktop: Self.bundlePath)
+        } catch {
+            if !quiet { show(error, title: "Update-Prüfung fehlgeschlagen") }
+        }
+    }
+
+    /// Neue Version laden, die App an ihrem Ort ersetzen und neu starten.
+    func installDesktopUpdate() async throws -> String {
+        guard let client else { throw EngineError.notRunning }
+        guard let bundle = Self.bundlePath else {
+            throw EngineError.server("Steckwerk Desktop läuft nicht als App – bitte von Hand aktualisieren.")
+        }
+        let done = try await client.desktopInstallieren(bundle: bundle)
+        relaunch(at: done.pfad)
+        return done.message ?? "Steckwerk Desktop \(done.version) ist installiert"
+    }
+
+    /// Startet die App am Pfad neu, sobald dieser Prozess beendet ist, und beendet sich dann.
+    private func relaunch(at path: String) {
+        let pid = String(ProcessInfo.processInfo.processIdentifier)
+        let helper = Process()
+        helper.executableURL = URL(fileURLWithPath: "/bin/sh")
+        helper.arguments = ["-c", "while kill -0 \"$1\" 2>/dev/null; do sleep 0.2; done; open \"$0\"", path, pid]
+        helper.standardInput = FileHandle.nullDevice
+        helper.standardOutput = FileHandle.nullDevice
+        helper.standardError = FileHandle.nullDevice
+        do {
+            try helper.run()
+        } catch {
+            alert = AppAlert(title: "Neustart nicht möglich",
+                             message: "Die neue Version ist installiert. Bitte Steckwerk Desktop von Hand neu starten.")
+            return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { NSApp.terminate(nil) }
     }
 
     // MARK: Schema und Werte

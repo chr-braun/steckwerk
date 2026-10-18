@@ -23,6 +23,7 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/update-check        → was es Neues gibt (Programm und Pakete aus dem Update-Kanal)
   POST /api/update-paket        {id} oder {alle: true} → Paket(e) aus dem Kanal installieren
   POST /api/update-programm     Mac-App durch die neue Version ersetzen und neu starten (nur App)
+  POST /api/update-desktop      {bundle} → Steckwerk Desktop an ihrem Ort ersetzen (Neustart macht die App)
   POST /api/update-einstellungen {kanal, token, auto} → Einstellungen ändern (Schlüssel wird nie zurückgegeben)
   POST /api/assistent    {model, beschreibung, params} → Werte-Vorschlag vom lokalen Sprachmodell (Ollama)
   POST /api/assistent-status         {url?} → Ollama erreichbar? installierte Modelle
@@ -376,7 +377,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"ok": False, "error": "Updates nur am Rechner selbst installieren"}, 403)
         try:
             if path == "/api/update-check":
-                d = updater.check(self.bundle)
+                d = updater.check(self.bundle, desktop=str(req["desktop"]) if req.get("desktop") else None)
                 d["einstellungen"] = updater.settings()
                 return self._json(d)
             if path == "/api/update-einstellungen":
@@ -403,6 +404,10 @@ class Handler(BaseHTTPRequestHandler):
                     threading.Timer(0.5, self.session.request_quit).start()
                 return self._json({"ok": True, "version": version,
                                    "message": f"Steckwerk {version} ist installiert und startet gleich neu"})
+            if path == "/api/update-desktop":
+                target, version = updater.install_desktop(str(req.get("bundle") or ""))
+                return self._json({"ok": True, "version": version, "pfad": target,
+                                   "message": f"Steckwerk Desktop {version} ist installiert und startet gleich neu"})
             self._json({"error": "nicht gefunden"}, 404)
         except (updater.UpdateFehler, pakete.PaketFehler) as e:
             err = {"ok": False, "error": str(e)}

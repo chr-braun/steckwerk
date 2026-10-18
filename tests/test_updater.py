@@ -260,3 +260,90 @@ def test_legacy_package_still_loads(tmp_path, monkeypatch):
     finally:
         monkeypatch.delenv("STECKWERK_PAKETE")
         service.reload_pakete()
+
+
+def _desktop_zip(tmp, version=__version__, ident=updater.DESKTOP_ID):
+    import plistlib
+    path = tmp / f"desktop-{version}.zip"
+    info = {"CFBundleIdentifier": ident, "CFBundleShortVersionString": version, "CFBundleExecutable": "SteckwerkDesktop"}
+    with zipfile.ZipFile(path, "w") as z:
+        z.writestr("Steckwerk Desktop.app/Contents/Info.plist", plistlib.dumps(info))
+        exe = zipfile.ZipInfo("Steckwerk Desktop.app/Contents/MacOS/SteckwerkDesktop")
+        exe.external_attr = (stat.S_IFREG | 0o755) << 16
+        z.writestr(exe, b"#!/bin/sh\n")
+        z.writestr("Steckwerk Desktop.app/Contents/Resources/engine/webui.py", "# neu\n")
+        z.writestr("__MACOSX/Steckwerk Desktop.app/._Contents", b"x")       # Zusatzdaten von ditto
+    return str(path)
+
+
+def _desktop_bundle(tmp, version="1.0.0"):
+    import plistlib
+    app = tmp / "Programme" / "Steckwerk Desktop.app"
+    (app / "Contents").mkdir(parents=True)
+    (app / "Contents" / "Info.plist").write_bytes(plistlib.dumps(
+        {"CFBundleIdentifier": updater.DESKTOP_ID, "CFBundleShortVersionString": version}))
+    (app / "Contents" / "alt.txt").write_text("alt")
+    return str(app)
+
+
+def test_kanal_desktop(env, tmp_path):
+    zipf = _desktop_zip(tmp_path)
+    feed = update_kanal.build(str(env / "kanal"), None, [], desktop=zipf)
+    assert feed["programm"]["desktop"]["datei"] == f"Steckwerk-Desktop-{__version__}-macOS.zip"
+    assert feed["programm"]["mac"]                                          # Browser-App bleibt im Kanal
+    # passt die Version nicht zum Programm, kommt Desktop nicht in den Feed
+    feed = update_kanal.build(str(env / "kanal"), None, [], desktop=_desktop_zip(tmp_path, "0.1.0"))
+    assert feed["programm"]["desktop"]["datei"].endswith(f"{__version__}-macOS.zip")
+    assert sorted(f for f in os.listdir(env / "kanal") if "Desktop" in f) == [f"Steckwerk-Desktop-{__version__}-macOS.zip"]
+    # Kanal nur mit Steckwerk Desktop
+    feed = update_kanal.build(str(tmp_path / "nur"), None, [], desktop=zipf)
+    assert feed["programm"]["version"] == __version__ and feed["programm"]["desktop"] and "mac" not in feed["programm"]
+
+
+def test_desktop_update(env, tmp_path, monkeypatch):
+    update_kanal.build(str(env / "kanal"), None, [], desktop=_desktop_zip(tmp_path))
+    bundle = _desktop_bundle(tmp_path)
+    monkeypatch.setattr(updater, "__version__", "1.0.0")
+    p = updater.check(desktop=bundle)["programm"]
+    assert p["neu"] and p["kann_installieren"] and not p["grund"]
+    assert not updater.check(desktop="/Volumes/Steckwerk/Steckwerk Desktop.app")["programm"]["kann_installieren"]
+    assert not updater.desktop_installable(str(tmp_path / "Steckwerk.app"))[0]
+    target, version = updater.install_desktop(bundle)
+    assert target == bundle and version == __version__
+    assert updater.app_version(bundle) == __version__ and not os.path.exists(os.path.join(bundle, "Contents", "alt.txt"))
+    assert os.stat(os.path.join(bundle, "Contents", "MacOS", "SteckwerkDesktop")).st_mode & stat.S_IXUSR
+    assert not os.path.exists(os.path.join(os.path.dirname(bundle), "__MACOSX"))
+    assert not [p for p in os.listdir(updater.data_dir()) if p.startswith("swupdate_")]
+    with pytest.raises(updater.UpdateFehler, match="schon aktuell"):
+        updater.install_desktop(bundle)
+
+
+def test_desktop_update_refuses(env, tmp_path, monkeypatch):
+    bundle = _desktop_bundle(tmp_path)
+    monkeypatch.setattr(updater, "__version__", "1.0.0")
+    p = updater.check(desktop=bundle)["programm"]                          # Kanal ohne Desktop-Eintrag
+    assert p["neu"] and not p["kann_installieren"] and "Desktop" in p["grund"]
+    with pytest.raises(updater.UpdateFehler, match="datei/sha256 fehlt"):
+        updater.install_desktop(bundle)
+    update_kanal.build(str(env / "kanal"), None, [], desktop=_desktop_zip(tmp_path, ident="de.boese.app"))
+    with pytest.raises(updater.UpdateFehler, match="keine Steckwerk-Desktop-App"):
+        updater.install_desktop(bundle)
+    assert os.path.exists(os.path.join(bundle, "Contents", "alt.txt"))              # nichts angefasst
+
+
+def test_webui_desktop(env, tmp_path, monkeypatch):
+    import webui
+    update_kanal.build(str(env / "kanal"), None, [], desktop=_desktop_zip(tmp_path))
+    bundle = _desktop_bundle(tmp_path)
+    monkeypatch.setattr(updater, "__version__", "1.0.0")
+    srv = webui.make_server("127.0.0.1", 0, str(tmp_path / "out"), quiet=True)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        base = f"http://127.0.0.1:{srv.server_address[1]}"
+        assert _post(base, "/api/update-check", {"desktop": bundle})["programm"]["kann_installieren"]
+        assert not _post(base, "/api/update-desktop", {"bundle": "/etc"})["ok"]
+        d = _post(base, "/api/update-desktop", {"bundle": bundle})
+        assert d["ok"] and d["pfad"] == bundle and d["version"] == __version__
+    finally:
+        srv.shutdown()
+        srv.server_close()
