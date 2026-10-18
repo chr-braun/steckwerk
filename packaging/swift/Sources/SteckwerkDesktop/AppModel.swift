@@ -30,7 +30,9 @@ final class AppModel: ObservableObject {
     @Published private(set) var engineDetails = ""
     @Published private(set) var engineVersion: String?
     @Published private(set) var schema: Schema?
-    @Published var selection: SidebarItem?
+    @Published var selection: SidebarItem? {
+        didSet { if selectedModelID != nil { schedulePreview() } }
+    }
     @Published private(set) var values: [String: [String: JSONValue]] = [:]
     @Published private(set) var material: [String: JSONValue] = [:]
     @Published private(set) var result: GenerateResponse?
@@ -39,12 +41,15 @@ final class AppModel: ObservableObject {
     @Published private(set) var geometry: [SheetGeometry] = []
     @Published var selectedSheet = 0
     @Published private(set) var isBuilding = false
+    @Published private(set) var isPreviewing = false
     @Published var statusMessage: String?
     @Published var alert: AppAlert?
 
     private(set) var client: EngineClient?
     private var engine: EngineProcess?
     private var pingTask: Task<Void, Never>?
+    private var previewTask: Task<Void, Never>?
+    private var buildSerial = 0
     private static let materialDefaultsKey = "material"
 
     nonisolated static var appVersion: String {
@@ -203,6 +208,7 @@ final class AppModel: ObservableObject {
             set: { newValue in
                 self.values[modelID, default: [:]][param.key] = ParameterLogic.coerce(newValue, for: param)
                 if self.resultModelID == modelID { self.resultIsStale = true }
+                self.schedulePreview()
             }
         )
     }
@@ -213,6 +219,7 @@ final class AppModel: ObservableObject {
             set: { newValue in
                 self.material[param.key] = ParameterLogic.coerce(newValue, for: param)
                 self.resultIsStale = true
+                self.schedulePreview()
                 if let data = try? JSONEncoder().encode(self.material) {
                     UserDefaults.standard.set(data, forKey: Self.materialDefaultsKey)
                 }
@@ -223,6 +230,7 @@ final class AppModel: ObservableObject {
     func resetValues(for modelID: String) {
         values[modelID] = nil
         if resultModelID == modelID { resultIsStale = true }
+        schedulePreview()
     }
 
     func resetMaterial() {
@@ -230,6 +238,7 @@ final class AppModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Self.materialDefaultsKey)
         if let schema { apply(schema: schema) }
         resultIsStale = true
+        schedulePreview()
     }
 
     /// Übernimmt Werte des Assistenten; liefert die geänderten Parameter.
@@ -239,6 +248,7 @@ final class AppModel: ObservableObject {
         let changed = ParameterLogic.apply(werte, to: &current, params: info.params)
         values[modelID] = current
         if !changed.isEmpty && resultModelID == modelID { resultIsStale = true }
+        if !changed.isEmpty { schedulePreview() }
         return changed
     }
 
@@ -250,24 +260,53 @@ final class AppModel: ObservableObject {
 
     // MARK: Bauen und Exportieren
 
-    func build() async {
-        guard let client, let id = selectedModelID, let body = requestBody(for: id), !isBuilding else { return }
-        isBuilding = true
-        statusMessage = nil
-        defer { isBuilding = false }
+    /// Vorschau nach kurzer Pause neu bauen, damit jede Änderung sofort im Blatt sichtbar wird.
+    func schedulePreview() {
+        previewTask?.cancel()
+        guard engineState == .running, selectedModelID != nil else { return }
+        previewTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 450_000_000)
+            guard !Task.isCancelled else { return }
+            await self?.build(quiet: true)
+        }
+    }
+
+    /// Baut das Modell. `quiet` ist die automatische Vorschau: ohne Meldungen, ohne Sperre für den Knopf.
+    func build(quiet: Bool = false) async {
+        guard let client, let id = selectedModelID, let body = requestBody(for: id) else { return }
+        if !quiet {
+            previewTask?.cancel()
+            guard !isBuilding else { return }
+            isBuilding = true
+            statusMessage = nil
+        }
+        buildSerial += 1
+        let serial = buildSerial
+        if quiet { isPreviewing = true }
+        defer {
+            if quiet {
+                if serial == buildSerial { isPreviewing = false }
+            } else {
+                isBuilding = false
+            }
+        }
         do {
             let response = try await client.generate(model: id, params: body.params, config: body.config)
+            guard serial == buildSerial else { return }
             let engraveColor = body.config["engrave_color"]?.stringValue ?? "#0000FF"
             let sheets = response.assemblies.flatMap(\.sheets)
-            geometry = await Task.detached {
+            let shapes = await Task.detached {
                 sheets.map { SheetGeometry.parse(svg: $0.svg, engraveColor: engraveColor) }
             }.value
+            guard serial == buildSerial else { return }
+            geometry = shapes
             result = response
             resultModelID = id
             resultIsStale = false
-            selectedSheet = 0
+            if !quiet { selectedSheet = 0 }
         } catch {
-            show(error, title: "Bauen fehlgeschlagen")
+            if Task.isCancelled || serial != buildSerial { return }
+            if !quiet { show(error, title: "Bauen fehlgeschlagen") }
         }
     }
 

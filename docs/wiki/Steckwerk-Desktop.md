@@ -32,9 +32,11 @@ App einen Hinweis mit dem Weg zur Installation.
 - **Seitenleiste:** Modelle nach Gruppen, darunter Pakete, KI, Material und Updates.
 - **Formular:** Abschnitte wie in der Weboberfläche, Zahlen mit Stepper und Einheit, Auswahllisten, Schalter,
   Textfelder (mehrzeilig, wo sinnvoll) und das Motiv-Raster mit Vorschaubildern.
+- **Motive vorab sehen:** Im Motiv-Raster und in der Motivliste stehen die Motive groß, bevor du sie platzierst.
 - **Bauen & prüfen (⌘B):** Die Engine baut das Modell und prüft es. Oben steht zum Beispiel
   „0 FEHLER · 8 Teile · 1 Blatt · CUT-READY“.
-- **Vorschau:** Schnitt schwarz, Gravur blau, Blattrahmen. Zoomen mit der Pinch-Geste oder den Lupen,
+- **Live-Vorschau:** Jede Änderung baut das Blatt nach einer kurzen Pause neu. Du siehst Schnitt und Gravur,
+  bevor du etwas auslöst. Schnitt schwarz, Gravur blau, Blattrahmen. Zoomen mit der Pinch-Geste oder den Lupen,
   verschieben durch Ziehen, Doppelklick setzt zurück.
 - **Prüfbericht:** Fehler stehen rot darüber. Montagehinweise und alle Prüfzeilen lassen sich aufklappen.
 - **Exportieren (⌘E):** Schreibt je Baugruppe die Blatt-SVGs und `pruefbericht.txt` in einen Ordner deiner

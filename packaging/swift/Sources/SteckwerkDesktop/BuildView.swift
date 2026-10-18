@@ -44,6 +44,11 @@ struct BuildView: View {
 
             if model.isBuilding {
                 ProgressView().controlSize(.small)
+            } else if model.isPreviewing {
+                ProgressView().controlSize(.small)
+                Text("Vorschau wird aktualisiert …")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             if let result {

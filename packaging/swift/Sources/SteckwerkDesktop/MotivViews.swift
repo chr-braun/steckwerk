@@ -40,7 +40,7 @@ struct MotivGridPicker: View {
     @Binding var selection: String
     let motive: [Motiv]
 
-    private let columns = [GridItem(.adaptive(minimum: 64, maximum: 84), spacing: 8)]
+    private let columns = [GridItem(.adaptive(minimum: 92, maximum: 120), spacing: 10)]
 
     var body: some View {
         if motive.isEmpty {
@@ -55,7 +55,7 @@ struct MotivGridPicker: View {
                         } label: {
                             VStack(spacing: 2) {
                                 MotivThumbnail(motiv: motiv)
-                                    .frame(width: 48, height: 48)
+                                    .frame(width: 84, height: 84)
                                 Text(motiv.name)
                                     .font(.caption2)
                                     .lineLimit(1)
@@ -77,7 +77,7 @@ struct MotivGridPicker: View {
                 }
                 .padding(2)
             }
-            .frame(maxHeight: 220)
+            .frame(maxHeight: 340)
         }
     }
 }
@@ -145,7 +145,7 @@ struct MotivPlacementEditor: View {
                 } label: {
                     HStack {
                         if let motiv = motive.first(where: { $0.id == placement.motivID }) {
-                            MotivThumbnail(motiv: motiv).frame(width: 28, height: 28)
+                            MotivThumbnail(motiv: motiv).frame(width: 56, height: 56)
                             Text(motiv.name)
                         } else {
                             Text(placement.motivID.isEmpty ? "Motiv wählen" : placement.motivID)
