@@ -11,7 +11,7 @@ import os
 import random
 import sys
 
-from steckwerk import Assembly, Part, bezier_q, circle, min_distance, oriented
+from steckwerk import Assembly, Part, oriented
 from models import _deko as dk
 from models._font import STYLES, fit_text, unsupported
 from models._stand import stand_base, tab_feature_at
@@ -47,6 +47,47 @@ INFO = dict(
 )
 
 
+_here = os.path.dirname(os.path.abspath(__file__))
+
+
+def _sub(name):
+    path = os.path.join(_here, name + ".py")
+    key = "swpaket_halloween_" + name
+    mod = sys.modules.get(key)
+    if mod is None or getattr(mod, "__file__", None) != path:
+        spec = importlib.util.spec_from_file_location(key, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[key] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
+SP = _sub("_spuk")
+K = SP.K
+
+
+def _stein(form, W, H, sockel):
+    """Steinkontur über einem breiteren Sockelblock (Höhe sockel)."""
+    if form == "kreuz":
+        b = W * 0.30
+        arm = H * 0.60
+        f = SP.Figur()
+        f.add(K.rect(-b / 2, 0.0, b, H - b * 0.4))
+        f.add(K.rect(-W / 2 + b * 0.4, arm, W - b * 0.8, b))
+        for x, y in ((0.0, H - b * 0.45), (-W / 2 + b * 0.45, arm + b / 2), (W / 2 - b * 0.45, arm + b / 2)):
+            for k in range(3):                                        # Kleeblattenden
+                a = math.atan2(y - (arm + b / 2), x) if (x or y != H - b * 0.45) else math.pi / 2
+                a = math.pi / 2 if x == 0 else (0.0 if x > 0 else math.pi)
+                aa = a + (k - 1) * math.radians(75)
+                f.add(K.circle(x + math.cos(aa) * b * 0.32, y + math.sin(aa) * b * 0.32, b * 0.36, 32))
+        f.add(K.rect(-b * 0.85, 0.0, b * 1.7, sockel * 1.6))
+        return f
+    f = SP.Figur()
+    f.add([(x, y + sockel * 0.6) for x, y in g.tombstone(form, W, H - sockel * 0.6)])
+    f.add(K.rect(-W * 0.56, 0.0, W * 1.12, sockel))
+    return f
+
+
 def build(cfg, name="grabstein", height=140.0, form="gotisch", ornament="totenkopf", geist=True, efeu=True,
           text="R.I.P.|Hier ruht|Graf Dracula|1431-1476", schrift="normal", sockel_text=""):
     T = cfg.T
@@ -60,132 +101,160 @@ def build(cfg, name="grabstein", height=140.0, form="gotisch", ornament="totenko
         if bad:
             raise ValueError(f"Zeichen {''.join(bad)!r} gibt es in der Gravurschrift nicht")
     rng = random.Random(cfg.seed)
-    web = max(cfg.min_web * 1.6, 1.6)
+    w, sw = SP.wmin(cfg), SP.smin(cfg)
+    notes = []
     W = 0.66 * H if form != "kreuz" else 0.62 * H
-    stone = g.tombstone(form, W, H)
-    tw = max(0.4 * W, 4 * T)
-    # Unterkante mit Zapfen
-    P = oriented(stone, True)
-    i0 = min(range(len(P)), key=lambda i: (P[i][1], P[i][0]))
-    P = P[i0:] + P[:i0]                       # beginnt links unten, läuft nach rechts unten …
-    bx0 = -W / 2 if form != "kreuz" else -0.16 * W
-    bx1 = -bx0
-    tw = min(tw, (bx1 - bx0) * 0.7)
-    rest = P[1:]                               # ab rechts unten über oben zurück
-    outline = [(bx0, 0.0), (-tw / 2, 0.0), (-tw / 2, -T), (tw / 2, -T), (tw / 2, 0.0)] + rest
-    outline = oriented(g.dedupe(outline, 0.1), True)
-    # Gespenst hinter dem Stein
-    ghost_box = None
+    sockel = 0.075 * H
+    gr = []                                                     # Gravur (punkte, geschlossen)
+    f = SP.Figur()
+    # Gespenst hinter dem Stein (zuerst, der Stein deckt seinen Unterleib zu)
     if geist:
-        gh = 0.50 * H
-        for dx, ang in ((0.34, -0.22), (0.30, -0.15), (0.38, -0.30), (0.26, -0.1)):
-            gx, gy = dx * W + 0.06 * H, H * 0.90
-            gp = g.place(g.ghost_unit(), gx, gy, gh, ang)
-            try:
-                outline = g.op2(outline, gp, "union")
-                ghost_box = (gx, gy, gh, ang)
-                break
-            except ValueError:
-                continue
-    part = Part(f"{name}_stein", outline, features=[tab_feature_at("fuss", -tw / 2, 0.0, tw, T)])
-    if ghost_box:
-        gx, gy, gh, ang = ghost_box
-        for s_ in (-1, 1):
-            e = g._ellipse_pts(0, 0, 0.045, 0.07, 0, 2 * math.pi, 20)[:-1]
-            e = [(x + s_ * 0.085, y + 0.30) for x, y in e]
-            h = g.place(e, gx, gy, gh, ang)
-            if min_distance(h, outline, limit=web) >= web:
-                part.add_hole(h)
-        mouth = g.place([(x, y + 0.14) for x, y in g._ellipse_pts(0, 0, 0.045, 0.06, 0, 2 * math.pi, 20)[:-1]],
-                        gx, gy, gh, ang)
-        if min_distance(mouth, outline, limit=web) >= web:
-            part.add_hole(mouth)
-
-    cv = dk.Canvas(part, margin=1.2, hole_margin=1.2, seed=cfg.seed)
-    # Zierrahmen
+        gh = 0.42 * H
+        gf, _ = SP.gespenst(gh, cfg, cfg.seed)
+        ang = math.radians(-16)
+        gx = 0.40 * W if form != "kreuz" else 0.36 * W
+        gy = 0.93 * H if form not in ("schief", "kreuz") else 0.84 * H
+        if form == "kreuz":                                       # Kreuz: links hinter dem Querbalken
+            gx, ang = -gx, -ang
+            gf = gf.place(0.0, 0.0, 1.0, flip=True)
+            gf.gravur = []
+        gfp = gf.place(gx, gy, 1.0, ang)
+        f.merge(gfp)
+        gr += [([SP.rot(q, ang) for q in pts], c) for pts, c in getattr(gf, "gravur", [])]
+        gr = [([(x + gx, y + gy) for x, y in pts], c) for pts, c in gr]
+    stein = _stein(form, W, H, sockel)
+    f.merge(stein)
+    # abgeplatzte Kanten: kleine Kerben im Umriss
     if form != "kreuz":
-        inner = g.tombstone(form, W * 0.86, H * 0.90)
-        inner = [(x, y + 0.04 * H) for x, y in inner]
-        cv.draw(inner, True)
-        inner2 = g.tombstone(form, W * 0.80, H * 0.85)
-        inner2 = [(x, y + 0.06 * H) for x, y in inner2]
-        cv.draw(inner2, True)
+        for k in range(5):
+            y = rng.uniform(0.20, 0.60) * H
+            x = (W / 2) * (1 if k % 2 else -1)
+            d = rng.uniform(0.012, 0.022) * H
+            f.cut([(x + math.copysign(d * 0.4, x), y + d), (x - math.copysign(d, x), y + d * 0.2),
+                   (x + math.copysign(d * 0.4, x), y - d * 0.8)])
     # Ornament oben
-    top_text = 0.70 * H if form != "schief" else 0.62 * H
-    if form == "kreuz":
-        orn_y = None
-    else:
-        orn_y = 0.78 * H if form != "schief" else 0.68 * H
+    top_text = 0.70 * H if form != "schief" else 0.60 * H
+    orn_y = None if form == "kreuz" else (0.79 * H if form != "schief" else 0.66 * H)
     if orn_y and ornament != "keins":
-        s = 0.14 * H
+        so = 0.17 * H
         if ornament == "totenkopf":
-            sk = g.place(g.skull_unit(), 0.0, orn_y, s)
-            cv.draw(sk, True)
-            for hh in g.skull_holes(0.0, orn_y, s):
-                cv.draw(hh, True)
-            cv.block(sk, 0.8)
-            for sgn in (-1, 1):                                       # gekreuzte Knochen
-                a = math.radians(35) * sgn
-                L = s * 0.75
-                p0 = (-L * math.cos(a), orn_y - 0.42 * s - L * math.sin(a) * 0.4)
-                p1 = (L * math.cos(a), orn_y - 0.42 * s + L * math.sin(a) * 0.4)
-                cv.draw([p0, p1])
+            sk = SP.totenkopf(so, cfg, risse=False).place(0.0, orn_y, 1.0)
+            for sgn, poly in sk.ops:
+                if sgn == "+":
+                    gr.append((poly, True))
+                else:
+                    f.cut(poly)
+            gr += [([(x, y + orn_y) for x, y in pts], c) for pts, c in SP.totenkopf(so, cfg).gravur]
+            for sgn in (-1, 1):                                         # gekreuzte Knochen (graviert)
+                a = math.radians(28) * sgn
+                L = so * 0.62
+                c0 = (0.0, orn_y - 0.40 * so)
+                p0 = (c0[0] - L * math.cos(a), c0[1] - L * math.sin(a))
+                p1 = (c0[0] + L * math.cos(a), c0[1] + L * math.sin(a))
+                gr.append((K.stroke([p0, p1], so * 0.07, so * 0.07, "rund"), True))
+                for e in (p0, p1):
+                    for d in (-1, 1):
+                        n_ = (-math.sin(a) * d * so * 0.05, math.cos(a) * d * so * 0.05)
+                        gr.append((K.circle(e[0] + n_[0], e[1] + n_[1], so * 0.05, 16), True))
+            top_text = orn_y - 0.62 * so
         elif ornament == "fledermaus":
-            cv.put(g.place(g.bat_unit(0.5), 0.0, orn_y, s * 1.9), True, reserve=0.8)
+            bat, _ = SP.fledermaus(so * 1.8, "segeln", cfg, augen=False)
+            for sgn, poly in bat.place(0.0, orn_y, 1.0).ops:
+                if sgn == "+":
+                    f.cut(poly)
+            top_text = orn_y - 0.40 * so
         elif ornament == "kreuz":
-            c = 0.06 * H
-            cv.put([(-c / 4, orn_y - c), (c / 4, orn_y - c), (c / 4, orn_y + c * 0.2), (c * 0.8, orn_y + c * 0.2),
-                    (c * 0.8, orn_y + c * 0.6), (c / 4, orn_y + c * 0.6), (c / 4, orn_y + c * 1.2),
-                    (-c / 4, orn_y + c * 1.2), (-c / 4, orn_y + c * 0.6), (-c * 0.8, orn_y + c * 0.6),
-                    (-c * 0.8, orn_y + c * 0.2), (-c / 4, orn_y + c * 0.2)], True, reserve=0.8)
-        top_text = orn_y - 0.12 * H
-    # Grabspruch
+            c = 0.055 * H
+            f.cut(K.stroke([(0.0, orn_y - 1.1 * c), (0.0, orn_y + 1.0 * c)], c * 0.42, c * 0.42, "flach"))
+            f.cut(K.stroke([(-0.65 * c, orn_y + 0.3 * c), (0.65 * c, orn_y + 0.3 * c)], c * 0.42, c * 0.42, "flach"))
+            for x, y in ((0.0, orn_y + 1.0 * c), (-0.65 * c, orn_y + 0.3 * c), (0.65 * c, orn_y + 0.3 * c)):
+                f.cut(K.circle(x, y, c * 0.30, 24))
+            top_text = orn_y - 1.4 * c
+    # Risse: feine durchgehende Schlitze, die im Stein enden
+    if form != "kreuz" and 0.25 * H > 6 * w:
+        for k in range(2):
+            sgn_ = 1 if k else -1
+            px = rng.uniform(0.36, 0.40) * W * sgn_
+            py = rng.uniform(0.40, 0.55) * H
+            pts = [(px, py)]
+            for _ in range(5):
+                px += rng.uniform(-0.015, 0.025) * W * -sgn_
+                py -= rng.uniform(0.025, 0.04) * H
+                pts.append((px, py))
+            f.cut(K.stroke(pts, sw, sw * 0.5, "spitz"))
+            gr.append(([pts[0], (pts[0][0] + rng.uniform(-0.04, 0.04) * W, pts[0][1] + 0.05 * H)], False))
+    # Efeu wächst links am Stein hoch und über die Kante
+    if efeu:
+        xl = -W / 2 + 0.03 * W if form != "kreuz" else -W * 0.15 + 0.02 * W
+        hoch = 0.74 * H if form != "kreuz" else 0.52 * H
+        pfad = K.spline([(xl, sockel * 0.5), (xl + 0.02 * W, 0.22 * H), (xl - 0.01 * W, 0.42 * H),
+                         (xl + 0.03 * W, 0.60 * H), (xl + 0.08 * W, hoch)], n=10)
+        if form == "kreuz":                                       # beim Kreuz rechts, das Gespenst ist links
+            pfad = [(-x, y) for x, y in pfad]
+        gr += SP.efeuranke(f, pfad, 0.11 * H, cfg, cfg.seed, seite=1 if form == "kreuz" else -1)
+    # Grasbüschel an den Sockelecken
+    for side in (-1, 1):
+        x0 = side * W * 0.56
+        for k in range(5):
+            bx = x0 - side * k * 0.022 * W
+            hgt = (0.05 + 0.03 * rng.random()) * H
+            tip = (bx + side * rng.uniform(0.0, 0.03) * W, hgt)
+            f.add(K.stroke([(bx, 0.0), ((bx + tip[0]) / 2 + side * 0.01 * W, hgt * 0.5), tip],
+                           max(w * 1.1, 0.02 * H), w * 0.9, "spitz"))
+    f.cut(K.rect(-H, -H, 2 * H, H))                             # flache Unterkante
+    part = SP.teil(f"{name}_stein", f, cfg, notes, unten_flach=True)
+    tw = max(0.4 * W, 4 * T) if form != "kreuz" else max(0.25 * W, 4 * T)
+    outline = g.op2(part.outline, [(-tw / 2, -T), (tw / 2, -T), (tw / 2, 0.6), (-tw / 2, 0.6)], "union")
+    holes = part.holes
+    part = Part(f"{name}_stein", oriented(g.dedupe(outline, 0.05), True),
+                features=[tab_feature_at("fuss", -tw / 2, 0.0, tw, T)])
+    for h in holes:
+        part.add_hole(h)
+    cv = dk.Canvas(part, margin=1.0, hole_margin=1.0, seed=cfg.seed)
+    # Grabspruch zuerst (bekommt Vorrang vor Rahmen und Rissen)
     if text.strip():
         if form == "kreuz":
-            box = (0.0, 0.62 * H + 0.16 * W, 0.92 * W, 0.12 * W)
             lines = text.replace("|", " ").split()
             text_ = " ".join(lines[:1]) if lines else ""
-            strokes, _ = fit_text(text_, box[0], box[1], box[2], box[3], min_h=2.0, max_cap=0.1 * W, style=schrift)
+            b = W * 0.30
+            try:
+                strokes, _ = fit_text(text_, 0.0, 0.60 * H + b * 0.55, W - b * 1.2, b * 0.42, min_h=2.0, max_cap=0.1 * W,
+                                      style=schrift)
+            except ValueError:
+                strokes = []
         else:
-            y_lo = 0.14 * H
-            strokes, _ = fit_text(text, 0.0, (y_lo + top_text) / 2, W * 0.66, top_text - y_lo, min_h=2.2,
-                                  max_cap=0.075 * H, style=schrift)
+            y_lo = sockel + 0.08 * H
+            try:
+                strokes, _ = fit_text(text, 0.0, (y_lo + top_text) / 2, W * 0.66, top_text - y_lo, min_h=2.2,
+                                      max_cap=0.075 * H, style=schrift)
+            except ValueError:
+                strokes = []
+                notes.append("Grabspruch passt nicht – kürzer oder Stein größer wählen.")
         for st in strokes:
             cv.draw(st)
         cv.block_strokes([(st, False) for st in strokes], 0.8)
-    # Risse
-    for k in range(2):
-        px, py = rng.uniform(-0.3, 0.3) * W, rng.uniform(0.55, 0.85) * H
-        pts = [(px, py)]
-        for _ in range(6):
-            px += rng.uniform(-0.06, 0.06) * W
-            py -= rng.uniform(0.03, 0.06) * H
-            pts.append((px, py))
-        cv.draw(pts)
-        b = pts[3]
-        cv.draw([b, (b[0] + rng.choice((-1, 1)) * 0.06 * W, b[1] - 0.04 * H)])
-    # Efeu: Ranke von unten links hoch mit Blättern
-    if efeu:
-        x0 = bx0 + 0.05 * W
-        path = [(x0 + 0.04 * W * math.sin(i * 0.7), 0.02 * H + i * 0.035 * H) for i in range(14)]
-        cv.draw(path)
-        for i in range(2, 14, 2):
-            p = path[i]
-            sgn = 1 if i % 4 == 0 else -1
-            lf = [(0, 0), (0.5, 0.35), (1.0, 0.0), (0.5, -0.35)]
-            lf = g.place(lf, p[0], p[1], 0.06 * H, math.radians(40 if sgn > 0 else 140))
-            cv.put(lf, True)
-    # Gras am Fuß
-    x = bx0 + 1.0
-    while x < bx1 - 1.0:
-        hgt = rng.uniform(0.03, 0.07) * H
-        cv.draw([(x, 0.012 * H), (x + rng.uniform(-0.02, 0.02) * W, 0.012 * H + hgt)])
-        x += rng.uniform(0.02, 0.04) * W
+    # Zierrahmen (doppelt), Sockelfuge, Steinstruktur
+    if form != "kreuz":
+        for k, (fw, fh, dy) in enumerate(((0.86, 0.88, 0.035), (0.80, 0.83, 0.055))):
+            inner = g.tombstone(form, W * fw, (H - sockel * 0.6) * fh)
+            cv.draw([(x, y + sockel * 0.6 + dy * H) for x, y in inner], True)
+        cv.draw([(-W * 0.54, sockel * 0.62), (W * 0.54, sockel * 0.62)])
+        for k in range(7):                                           # Fugen im Sockel
+            x = -W * 0.5 + W * (k + 0.5) / 7
+            cv.draw([(x, sockel * 0.1), (x, sockel * 0.55)])
+    for k in range(14):                                              # Moos in den unteren Ecken (Tüpfel)
+        side = 1 if k % 2 else -1
+        x = side * rng.uniform(0.26, 0.42) * (W if form != "kreuz" else 0.3 * W)
+        y = sockel + rng.uniform(0.02, 0.12) * H
+        cv.put(K.circle(x, y, rng.uniform(0.35, 0.7), 10), True)
+    for pts, c in gr:
+        cv.draw(pts, c)
 
     asm = Assembly(name, params=dict(height=H, form=form, ornament=ornament, geist=geist))
     asm.parts.append(part)
-    stand_base(asm, part, "fuss", tw, cfg, max(0.55 * W, tw / 2 + 12), 0.22 * W, f"{name}_huegel",
+    stand_base(asm, part, "fuss", tw, cfg, max(0.62 * W, tw / 2 + 12), 0.22 * W, f"{name}_huegel",
                sockel_text or "", schrift, "gross")
+    asm.notes.extend(dict.fromkeys(notes))
     asm.notes.append(f"{name}: Stein in den Erdhügel stecken. Tipp: Stein mit grauer Lasur, Gravur dunkel "
                      "auslegen – dann wirkt er wie verwittert.")
     return asm

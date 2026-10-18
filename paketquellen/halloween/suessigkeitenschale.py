@@ -58,7 +58,8 @@ INFO = dict(
         num("tiefe", "Tiefe", 110, 70, 200),
         num("hoehe", "Höhe", 90, 50, 160, help="Höhe der Seitenwände"),
         sel("motiv_vorne", "Motiv vorne und hinten", MOTIV_VORNE, "gesicht"),
-        sel("gesicht", "Gesicht", [("klassisch", "klassisch"), ("gruselig", "gruselig")], "gruselig",
+        sel("gesicht", "Gesicht", [("klassisch", "klassisch"), ("gruselig", "gruselig"), ("froehlich", "fröhlich"),
+                                   ("katze", "Katzengesicht")], "gruselig",
             when={"motiv_vorne": ["gesicht"]}),
         sel("motiv_seiten", "Motiv an den Seiten", MOTIV_SEITE, "fledermaeuse"),
     ],
@@ -135,6 +136,10 @@ def _kessel(W: float, H: float, w: float, seed: int) -> Tuple[Figur, list, float
             f.add(K.stroke([(x0 + k * 0.06 * hb, zb - fh * 0.7), (x0 + k * 0.09 * hb, zb - fh * 1.05)],
                            max(w * 1.2, 0.025 * hb), w, "spitz"))
     zmin = zb - max(9.0, 0.10 * H) * 1.1
+    # Rührlöffel ragt schräg aus dem Kessel
+    f.add(K.stroke([(-0.35 * W, H + rim_h * 0.2), (-0.62 * W, H + 0.30 * H)], max(w * 1.5, 0.035 * H),
+                   max(w * 1.3, 0.03 * H), "rund"))
+    f.add(K.ellipse(-0.64 * W, H + 0.33 * H, max(w * 2.4, 0.06 * H), max(w * 1.8, 0.04 * H), math.radians(-55), 32))
     # Blasen über dem Rand (verbunden)
     r = K.rng(seed, "blasen")
     bx = [(-0.30, 0.55), (-0.08, 0.85), (0.16, 0.65), (0.36, 0.45)]
@@ -152,6 +157,7 @@ def _kessel(W: float, H: float, w: float, seed: int) -> Tuple[Figur, list, float
     for i in range(-6, 7):
         gr.append((K.circle(i * 0.14 * hb, band - 2.25, 0.9, 10), True))
     gr.append((K.arc(-0.35 * hb, 0.36 * H, 0.45 * hb, math.radians(150), math.radians(215), 16), False))
+    gr.append((K.arc(-0.35 * hb, 0.36 * H, 0.42 * hb, math.radians(160), math.radians(205), 12), False))
     for fx in (-0.42, 0.05, 0.30):
         x = fx * W
         L = (0.10 + 0.08 * r.random()) * H
@@ -218,12 +224,14 @@ def _motiv(art: str, box, cfg, seed: int, gesicht: str = "gruselig", form: str =
     w = SP.wmin(cfg)
     f = Figur()
     if art == "gesicht":
-        g, _ = SP.kuerbis(1.0, cfg, gesicht)
-        holes = [p for s_, p in g.ops if s_ == "-" and len(p) <= 12]       # Augen, Nase, Mund
-        face = Figur().add(*holes)
-        fx0, fy0, fx1, fy1 = face.bbox()
-        k = min(bw / (fx1 - fx0), bh / (fy1 - fy0)) * 0.92
-        f.merge(face.map(lambda p: (cx + (p[0] - (fx0 + fx1) / 2) * k, cz + (p[1] - (fy0 + fy1) / 2) * k)))
+        S0 = min(bw / 0.52, bh / 0.46) * 0.95
+        g = Figur()
+        SP.kuerbis_gesicht(g, gesicht, S0, cfg)
+        cut = [p for s_, p in g.ops if s_ == "-"]
+        fx0, fy0, fx1, fy1 = Figur().add(*cut).bbox()
+        mx, my = (fx0 + fx1) / 2, (fy0 + fy1) / 2
+        T = lambda p: (cx + p[0] - mx, cz + p[1] - my)
+        f.ops += [("+" if s_ == "-" else "-", [T(q) for q in p]) for s_, p in g.ops]
     elif art == "fledermaeuse":
         rm = min(bw, bh) * 0.30
         mx, mz = x0 + bw * 0.70, z0 + bh * 0.62
@@ -277,7 +285,7 @@ def build(cfg, name: str = "suessigkeitenschale", form: str = "kessel", breite: 
     dk.check_choice("Form", form, FORMEN)
     dk.check_choice("Motiv vorne und hinten", motiv_vorne, MOTIV_VORNE)
     dk.check_choice("Motiv an den Seiten", motiv_seiten, MOTIV_SEITE)
-    dk.check_choice("Gesicht", gesicht, [("klassisch", ""), ("gruselig", "")])
+    dk.check_choice("Gesicht", gesicht, [(k, "") for k in ("klassisch", "gruselig", "froehlich", "katze")])
     W, D, H = cfg.s(breite), cfg.s(tiefe), cfg.s(hoehe)
     if not 90 <= W <= 240:
         raise ValueError("Schale: Breite muss zwischen 90 und 240 mm liegen")

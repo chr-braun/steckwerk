@@ -2,6 +2,23 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## Package updates – 2026-10-18
+
+- **Halloween** 1.4.0 – every motif finely drawn, with smooth outlines, more cut-outs and engravings:
+  - **Pendants** with their own finely drawn figures instead of the motif library: skull with cheekbones, two rows of teeth and sutures, sitting cat with almond eyes,
+    whiskers and a bell, witch's hat with a kink, buckle, stars, moon and a patch.
+  - **Pumpkin lantern** made of seven ribbed lobes with a notched stem, a veined leaf and a curled tendril. All
+    seven faces are new (creepy with brows and fangs, happy with rosy cheeks, cat with slit pupils, witch in
+    front of the full moon, spider web with a dangling spider …), and an engraved rind runs around the carved
+    edges.
+  - **Gravestone** on a jointed plinth: skull cut out with engraved bones, fine cracks, chipped edges, moss and
+    tufts of grass, ivy with three-lobed leaves over the edge. The cross has trefoil ends.
+  - **Haunted castle**: a new witch with flowing hair and cape flies across the moon, her cat on the back of the
+    broom. Bats and the dangling spider are finer; a rare check failure at 600 mm width is fixed.
+  - **Candy bowl** with four faces (new: happy and cat), the cauldron with a stirring spoon.
+  - The **spider** in web, garland and bowl has jointed, bent legs and a clear waist.
+
+
 ## 2.8.0 – 2026-10-17
 
 - New theme package **Shop** 1.0.0 with the bottle tag: a price tag that hangs on the bottle neck or on a cord, with your logo (from "Import motifs") or a header line, price incl. VAT and the unit price per litre, which Steckwerk works out itself. A price list makes all tags at once.

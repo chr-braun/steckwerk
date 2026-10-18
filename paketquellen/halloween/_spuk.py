@@ -129,7 +129,13 @@ def eingepasst(fig: Figur, groesse: float, cx: float = 0.0, cy: float = 0.0) -> 
     x0, y0, x1, y1 = fig.bbox()
     k = groesse / max(x1 - x0, y1 - y0)
     mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-    return fig.map(lambda p: (cx + (p[0] - mx) * k, cy + (p[1] - my) * k))
+    T = lambda p: (cx + (p[0] - mx) * k, cy + (p[1] - my) * k)
+    out = fig.map(T)
+    out.gravur = [([T(q) for q in pts], c) for pts, c in getattr(fig, "gravur", [])]
+    if getattr(fig, "gloeckchen", None):
+        gx, gy, gr = fig.gloeckchen
+        out.gloeckchen = T((gx, gy)) + (gr * k,)
+    return out
 
 
 # --------------------------------------------------------------------------------------------------
@@ -311,8 +317,15 @@ def kuerbis(S: float, cfg, gesicht: str = "klassisch", seed: int = 1) -> Tuple[F
         f.cut([(-0.22 * s, -0.06 * s), (-0.12 * s, -0.11 * s), (-0.10 * s, -0.19 * s), (-0.07 * s, -0.115 * s),
                (0.07 * s, -0.115 * s), (0.10 * s, -0.19 * s), (0.12 * s, -0.11 * s), (0.22 * s, -0.06 * s),
                (0.15 * s, -0.20 * s), (0.0, -0.25 * s), (-0.15 * s, -0.20 * s)])
-    f.gravur = [(K.bez((side * 0.12 * s, 0.30 * s), (side * 0.17 * s, 0.05 * s), (side * 0.13 * s, -0.30 * s), 14),
-                 False) for side in (1, -1)]
+    gr = [(K.bez((side * 0.12 * s, 0.30 * s), (side * 0.17 * s, 0.05 * s), (side * 0.13 * s, -0.30 * s), 14),
+           False) for side in (1, -1)]
+    gr += [(K.bez((side * 0.36 * s, 0.18 * s), (side * 0.43 * s, -0.02 * s), (side * 0.37 * s, -0.22 * s), 14), False)
+           for side in (1, -1)]
+    gr.append((K.arc(-0.06 * s, 0.0, 0.40 * s, math.radians(128), math.radians(150), 10), False))   # Glanzlicht
+    gr.append((K.arc(-0.06 * s, 0.0, 0.37 * s, math.radians(131), math.radians(146), 8), False))
+    gr.append(([(0.005 * s, 0.34 * s), (0.02 * s, 0.47 * s)], False))                                # Stielfasern
+    gr.append(([(0.03 * s, 0.33 * s), (0.045 * s, 0.45 * s)], False))
+    f.gravur = gr
     holes = [(-0.30 * s, 0.17 * s), (0.30 * s, 0.17 * s)]
     return f, holes
 
@@ -355,52 +368,60 @@ def gespenst(S: float, cfg, seed: int = 1) -> Tuple[Figur, List[Point]]:
 # --------------------------------------------------------------------------------------------------
 
 def spinne(S: float, cfg, cx: float = 0.0, cy: float = 0.0, ang: float = 0.0, zeichnung: bool = True) -> Figur:
-    """Kreuzspinne von oben, Beinspanne ~S, Kopf zeigt nach oben (ang dreht), Mitte = Kopfbruststück."""
+    """Kreuzspinne von oben, Beinspanne ~S, Kopf zeigt nach oben (ang dreht), Mitte = Kopfbruststück.
+    Gegliederte, geknickte Beine mit Gelenkverdickungen, Taster, Kieferklauen, schlanke Taille,
+    großer Hinterleib mit Kreuz und Seitenbändern."""
     s = S
     w, sw = wmin(cfg), smin(cfg)
     f = Figur()
-    lw0, lw1 = max(0.045 * s, w), max(0.028 * s, w)
-    # Beine: Ansatz am Kopfbruststück, Knie, Fersengelenk, Fuß (rechts; links gespiegelt)
-    legs = [((0.04, 0.05), (0.17, 0.25), (0.25, 0.36), (0.29, 0.46)),
-            ((0.05, 0.02), (0.24, 0.13), (0.38, 0.12), (0.47, 0.06)),
-            ((0.05, -0.02), (0.22, -0.02), (0.34, -0.12), (0.42, -0.22)),
-            ((0.04, -0.05), (0.15, -0.15), (0.22, -0.30), (0.24, -0.45))]
+    lw0 = max(0.042 * s, w)
+    # Beine: Ansatz, Knie (nach außen hochgezogen), Fersengelenk, Fußspitze (rechts; links gespiegelt)
+    legs = [((0.035, 0.055), (0.15, 0.22), (0.20, 0.34), (0.23, 0.47)),
+            ((0.05, 0.025), (0.22, 0.14), (0.35, 0.15), (0.47, 0.10)),
+            ((0.05, -0.01), (0.21, -0.03), (0.33, -0.13), (0.43, -0.21)),
+            ((0.035, -0.04), (0.14, -0.13), (0.19, -0.29), (0.21, -0.45))]
     for side in (1, -1):
         for base, knee, heel, foot in legs:
             P = [(side * x * s, y * s) for x, y in (base, knee, heel, foot)]
-            f.add(K.stroke(P[:2], lw0, lw0 * 0.9, "rund"))
-            f.add(K.stroke(P[1:3], lw0 * 0.9, lw1, "rund"))
-            f.add(K.stroke(P[2:], lw1, max(w, lw1 * 0.7), "spitz"))
-            for q, r in ((P[1], lw0 * 0.62), (P[2], lw1 * 0.62)):
+            path = K.spline(P, n=10, tension=0.35)
+            m = len(path)
+            ws = [max(w * 1.2, lw0 * (1.0 - 0.5 * i / (m - 1))) for i in range(m)]
+            f.add(K.stroke(path, 0, widths=ws, cap="spitz"))
+            for q, r in ((P[1], lw0 * 0.62), (P[2], lw0 * 0.5)):
                 f.add(K.circle(q[0], q[1], max(r, w * 0.55), 16))
-        # Taster
-        f.add(K.stroke([(side * 0.025 * s, 0.10 * s), (side * 0.06 * s, 0.155 * s), (side * 0.045 * s, 0.19 * s)],
-                       max(0.03 * s, w), max(0.022 * s, w * 0.8)))
-    f.add(K.ellipse(0.0, 0.02 * s, 0.075 * s, 0.095 * s, 0.0, 40))                # Kopfbruststück
-    f.add(K.ellipse(0.0, -0.085 * s, max(0.05 * s, 1.5 * w), max(0.05 * s, w), 0.0, 24))     # Stiel
-    ab = K.spline([(0.0, -0.08 * s), (0.10 * s, -0.10 * s), (0.135 * s, -0.20 * s), (0.11 * s, -0.31 * s),
-                   (0.0, -0.37 * s), (-0.11 * s, -0.31 * s), (-0.135 * s, -0.20 * s), (-0.10 * s, -0.10 * s)],
-                  closed=True, n=8)
+        # Taster und Kieferklauen
+        f.add(K.stroke(K.spline([(side * 0.02 * s, 0.09 * s), (side * 0.055 * s, 0.14 * s), (side * 0.04 * s, 0.18 * s)],
+                                n=6), max(0.03 * s, w), max(0.02 * s, w * 0.8)))
+    f.add(K.ellipse(0.0, 0.02 * s, 0.07 * s, 0.09 * s, 0.0, 48))                       # Kopfbruststück
+    f.add(K.ellipse(0.0, -0.08 * s, max(0.055 * s, 0.6 * w), max(0.035 * s, w * 0.6), 0.0, 24))   # Taille
+    ab = K.spline([(0.0, -0.085 * s), (0.10 * s, -0.11 * s), (0.145 * s, -0.20 * s), (0.125 * s, -0.31 * s),
+                   (0.06 * s, -0.375 * s), (0.0, -0.385 * s), (-0.06 * s, -0.375 * s), (-0.125 * s, -0.31 * s),
+                   (-0.145 * s, -0.20 * s), (-0.10 * s, -0.11 * s)], closed=True, n=8)
     f.add(ab)
-    if zeichnung and 0.031 * s >= w + 0.3 and 0.012 * s >= sw * 0.6:
-        # Kreuz aus Punkten und Seitenflecken (nur wenn die Stege dazwischen halten)
-        r = 0.012 * s
-        for x, y in ((0, -0.15), (0, -0.205), (0, -0.26), (0.055, -0.205), (-0.055, -0.205)):
-            f.cut(K.circle(x * s, y * s, r, 16))
-        for side in (1, -1):
-            f.cut(K.stroke([(side * 0.098 * s, -0.13 * s), (side * 0.112 * s, -0.21 * s), (side * 0.09 * s, -0.29 * s)],
-                           max(0.014 * s, sw), max(0.011 * s, sw)))
-            f.cut(K.circle(side * 0.025 * s, 0.075 * s, max(0.010 * s, sw * 0.55), 12))      # Augen
-    out = f.place(cx, cy, 1.0, ang)
-    return out
+    if zeichnung:
+        r = max(0.013 * s, sw * 0.55)
+        if 0.05 * s >= 2 * r + w:                    # Kreuz aus fünf Punkten
+            for x, y in ((0, -0.155), (0, -0.215), (0, -0.275), (0.055, -0.215), (-0.055, -0.215)):
+                f.cut(K.circle(x * s, y * s, r, 16))
+        elif 0.11 * s >= sw + 2 * w:                 # klein: Längsschlitz
+            f.cut(K.stroke([(0.0, -0.15 * s), (0.0, -0.30 * s)], sw, sw, "rund"))
+        if 0.04 * s >= sw + 2 * w:
+            for side in (1, -1):
+                f.cut(K.stroke(K.spline([(side * 0.095 * s, -0.13 * s), (side * 0.115 * s, -0.21 * s),
+                                         (side * 0.085 * s, -0.31 * s)], n=6),
+                               max(0.012 * s, sw), max(0.009 * s, sw * 0.8), "rund"))
+        if 0.07 * s >= 2 * sw + 3 * w:
+            for side in (1, -1):
+                f.cut(K.circle(side * 0.024 * s, 0.07 * s, max(0.009 * s, sw * 0.55), 12))      # Augen
+    return f.place(cx, cy, 1.0, ang)
 
 
 def spinne_frei(S: float, cfg, cx: float = 0.0, cy: float = 0.0, ang: float = 0.0) -> Figur:
     """Schnittflächen, die das Netz unter dem Spinnenkörper freistellen (vor spinne() anwenden)."""
     g = smin(cfg) + 0.6
     f = Figur()
-    f.cut(K.ellipse(0.0, 0.02 * S, 0.075 * S + g, 0.095 * S + g, 0.0, 40))
-    f.cut(K.ellipse(0.0, -0.225 * S, 0.135 * S + g, 0.15 * S + g, 0.0, 40))
+    f.cut(K.ellipse(0.0, 0.02 * S, 0.07 * S + g, 0.09 * S + g, 0.0, 40))
+    f.cut(K.ellipse(0.0, -0.235 * S, 0.145 * S + g, 0.155 * S + g, 0.0, 40))
     return f.place(cx, cy, 1.0, ang)
 
 
@@ -485,3 +506,506 @@ def netz(cx: float, cy: float, R: float, a0: float, a1: float, ringe: int, speic
     if not voll:
         f.gravur = [(K.arc(cx, cy, rh * q, a0 + 0.1, a1 - 0.1, 20), False) for q in (0.35, 0.55, 0.75)]
     return f, ends, outer_pts, angs, radii
+
+
+# --------------------------------------------------------------------------------------------------
+# Aufhängeöse (für Anhänger aus Figuren)
+# --------------------------------------------------------------------------------------------------
+
+def oese(f: Figur, x: float, y_top: float, d: float, cfg, einsatz: float = 0.45) -> Tuple[float, float, float]:
+    """Öse über der Figur: Steg vom Rand nach oben, Loch Ø d. Liefert das Loch (x, y, d) für teil()."""
+    ring = max(1.6 * wmin(cfg), 2.2)
+    r = d / 2 + ring
+    cy = y_top + r * (1.0 - einsatz) + ring * 0.2
+    y_fuss = min(y_top - r * 0.6, oberkante(f, x, max(0.6, r * 0.2)) - 1.0)   # bis ins Material darunter
+    f.add(K.circle(x, cy, r, 40))
+    f.line([(x, y_fuss), (x, cy)], r * 1.1, r * 0.9)
+    return (x, cy, d)
+
+
+def oberkante(fig: Figur, x: float, breite: float) -> float:
+    """Höchster Punkt der Figur im Streifen x ± breite."""
+    ys = [q[1] for s, p in fig.ops if s == "+" for q in p if abs(q[0] - x) <= breite]
+    return max(ys) if ys else fig.bbox()[3]
+
+
+# --------------------------------------------------------------------------------------------------
+# Totenkopf
+# --------------------------------------------------------------------------------------------------
+
+def totenkopf(S: float, cfg, risse: bool = True) -> Figur:
+    """Schädel von vorn, Höhe ~S, Mitte 0/0: Schädeldach, Jochbeine, Unterkiefer, tiefe Augenhöhlen mit
+    Brauenbogen, herzförmige Nasenhöhle, zwei Zahnreihen, Risse und Nähte."""
+    s = S
+    w, sw = wmin(cfg), smin(cfg)
+    f = Figur()
+    R = lambda pts: [(x * s, y * s) for x, y in pts]
+    half = [(0.0, 0.50), (0.17, 0.485), (0.31, 0.42), (0.40, 0.31), (0.44, 0.17), (0.435, 0.04), (0.40, -0.05),
+            (0.415, -0.10), (0.37, -0.15), (0.29, -0.16), (0.255, -0.21), (0.20, -0.235)]
+    ring_ = list(reversed(half)) + [(-x, y) for x, y in half[1:]]
+    f.add(K.spline(R(ring_), closed=False, n=8))
+    # Ober- und Unterkiefer; die Zahnreihen hängen seitlich am Jochbein
+    f.add(R([(-0.205, -0.19), (0.205, -0.19), (0.20, -0.30), (-0.20, -0.30)]))
+    jaw = [(0.19, -0.28), (0.235, -0.20), (0.275, -0.25), (0.28, -0.32), (0.25, -0.41), (0.17, -0.47), (0.0, -0.50)]
+    f.add(K.spline(R(jaw + [(-x, y) for x, y in reversed(jaw[:-1])]), closed=True, n=8))
+    gap = max(sw, 0.012 * s)
+    f.cut(K.stroke(R([(-0.165, -0.292), (0.165, -0.292)]), gap, gap, "rund"))
+    span = 0.33 * s
+    n = max(3, min(8, int(span / (w + sw + 0.4))))
+    for i in range(1, n):
+        x = -span / 2 + span * i / n
+        for y0, y1 in ((-0.215, -0.282), (-0.302, -0.37 + 0.03 * (2 * i / n - 1) ** 2)):
+            f.cut(K.stroke([(x, y0 * s), (x * 1.02, y1 * s)], sw, sw * 0.8, "rund"))
+    # Augenhöhlen
+    for side in (1, -1):
+        eye = [(0.05, 0.02), (0.08, 0.10), (0.15, 0.135), (0.25, 0.12), (0.31, 0.06), (0.30, -0.03), (0.24, -0.08),
+               (0.15, -0.085), (0.08, -0.05)]
+        f.cut(K.spline([(side * x * s, y * s) for x, y in eye], closed=True, n=6))
+    # Nasenhöhle: umgedrehtes Herz
+    nose_r = [(0.0, -0.075), (0.025, -0.045), (0.05, -0.11), (0.035, -0.165), (0.0, -0.17)]
+    f.cut(K.spline(R(nose_r + [(-x, y) for x, y in reversed(nose_r[1:-1])]), closed=True, n=6))
+    # Riss im Schädeldach als Schlitz
+    if risse and 0.02 * s >= sw + w:
+        f.cut(K.stroke(R([(0.10, 0.43), (0.13, 0.36), (0.11, 0.31), (0.16, 0.25), (0.15, 0.20)]),
+                       sw, sw * 0.6, "spitz"))
+    # Gravur: Schädelnähte, Schläfen, Jochbeinbogen, Brauenbogen, Wangen
+    gr = []
+    gr.append((K.spline(R([(-0.36, 0.30), (-0.20, 0.36), (-0.06, 0.38), (0.0, 0.395)]), n=6), False))
+    gr.append((K.spline(R([(0.0, 0.395), (0.02, 0.44), (-0.01, 0.47), (0.0, 0.49)]), n=4), False))
+    for side in (1, -1):
+        X = lambda pts: [(side * x * s, y * s) for x, y in pts]
+        gr.append((K.spline(X([(0.37, 0.18), (0.34, 0.09), (0.35, -0.02)]), n=6), False))          # Schläfe
+        gr.append((K.spline(X([(0.06, 0.155), (0.16, 0.18), (0.27, 0.165), (0.33, 0.10)]), n=6), False))  # Braue
+        gr.append((K.spline(X([(0.10, -0.12), (0.20, -0.115), (0.30, -0.10), (0.37, -0.12)]), n=6), False))  # Jochbein
+        gr.append((K.spline(X([(0.21, -0.37), (0.17, -0.42), (0.09, -0.45)]), n=6), False))       # Kinn
+    gr.append((K.spline(R([(-0.22, 0.42), (-0.27, 0.36), (-0.25, 0.31), (-0.30, 0.25)]), n=4), False))  # Haarriss
+    f.gravur = gr
+    return f
+
+
+# --------------------------------------------------------------------------------------------------
+# Katze
+# --------------------------------------------------------------------------------------------------
+
+def katze(S: float, cfg) -> Figur:
+    """Sitzende schwarze Katze von vorn, Höhe ~S, Mitte 0/0: spitze Ohren mit Innenohr, Mandelaugen,
+    Nase und Mund, Schnurrhaare, Brustfell, Vorderpfoten mit Zehen, geschwungener Schwanz."""
+    s = S
+    w, sw = wmin(cfg), smin(cfg)
+    f = Figur()
+    R = lambda pts: [(x * s, y * s) for x, y in pts]
+    # Körper (sitzend, breite Hüften)
+    body = [(0.0, 0.10), (0.11, 0.09), (0.17, 0.02), (0.20, -0.10), (0.25, -0.25), (0.27, -0.38), (0.24, -0.47),
+            (0.12, -0.50), (0.0, -0.50)]
+    f.add(K.spline(R(body + [(-x, y) for x, y in reversed(body[1:-1])]), closed=True, n=8))
+    # Kopf mit Wangen
+    head = [(0.0, 0.40), (0.10, 0.385), (0.17, 0.34), (0.205, 0.26), (0.22, 0.19), (0.17, 0.13), (0.09, 0.095),
+            (0.0, 0.09)]
+    f.add(K.spline(R(head + [(-x, y) for x, y in reversed(head[1:-1])]), closed=True, n=8))
+    for side in (1, -1):
+        X = lambda pts: [(side * x * s, y * s) for x, y in pts]
+        f.add(K.spline(X([(0.05, 0.37), (0.10, 0.44), (0.16, 0.50), (0.185, 0.40), (0.20, 0.30), (0.12, 0.33)]),
+                       closed=True, n=6))                                                  # Ohr
+        # Vorderpfote
+        f.add(K.ellipse(side * 0.075 * s, -0.465 * s, 0.065 * s, 0.04 * s, 0.0, 32))
+        f.line(X([(0.07, -0.20), (0.075, -0.33), (0.075, -0.44)]), 0.075 * s, 0.10 * s)
+    # Schwanz: von rechts unten geschwungen nach oben, Spitze eingerollt
+    tail = K.spline(R([(0.18, -0.46), (0.33, -0.44), (0.43, -0.33), (0.44, -0.17), (0.38, -0.05), (0.35, 0.06),
+                       (0.40, 0.14), (0.46, 0.13)]), n=10)
+    tw = [max(0.07 * s * (1 - 0.55 * i / (len(tail) - 1)), w * 1.2) for i in range(len(tail))]
+    f.add(K.stroke(tail, 0, widths=tw, cap="rund"))
+    # Durchbrüche: Augen, Innenohr, Nase/Mund, Beinlinie, Zehen, Schnurrhaare
+    for side in (1, -1):
+        X = lambda pts: [(side * x * s, y * s) for x, y in pts]
+        f.cut(K.spline(X([(0.035, 0.255), (0.08, 0.29), (0.135, 0.275), (0.15, 0.245), (0.10, 0.225), (0.05, 0.235)]),
+                       closed=True, n=6))
+        if 0.04 * s >= sw + 2 * w:
+            f.cut(K.stroke(X([(0.115, 0.36), (0.15, 0.43), (0.16, 0.36)]), sw, sw * 0.7, "spitz"))
+        if 0.016 * s >= sw and s >= 110:
+            for dy, ang in ((0.0, -0.06), (0.025, 0.08)):
+                f.cut(K.stroke(X([(0.115, 0.175 + dy), (0.17, 0.18 + dy + ang * 0.3), (0.21, 0.17 + dy + ang)]),
+                               sw, sw * 0.5, "spitz"))
+        f.cut(K.stroke(X([(0.012, -0.22), (0.02, -0.32), (0.012, -0.42)]), sw, sw, "rund"))   # zwischen den Beinen
+        for dx in (0.055, 0.095):
+            f.cut(K.stroke(X([(dx, -0.47), (dx, -0.49)]), sw, sw, "rund"))
+        f.cut(K.stroke(X([(0.13, -0.30), (0.18, -0.36), (0.19, -0.44)]), sw, sw * 0.8, "rund"))  # Hüfte
+    f.cut(K.spline(R([(-0.025, 0.205), (0.025, 0.205), (0.0, 0.18)]), closed=True, n=3))       # Nase
+    f.cut(K.stroke(R([(-0.05, 0.16), (-0.025, 0.145), (0.0, 0.165), (0.025, 0.145), (0.05, 0.16)]), sw, sw, "rund"))
+    gr = []
+    for side in (1, -1):
+        X = lambda pts: [(side * x * s, y * s) for x, y in pts]
+        gr.append((K.spline(X([(0.07, 0.32), (0.10, 0.315), (0.13, 0.30)]), n=4), False))      # Braue
+        gr.append((K.spline(X([(0.04, 0.06), (0.06, 0.0), (0.05, -0.06)]), n=4), False))       # Brustfell
+        gr.append((K.spline(X([(0.20, 0.05), (0.22, -0.05), (0.24, -0.15)]), n=4), False))     # Flanke
+        if s < 110:                                                                         # Schnurrhaare graviert
+            for dy, ang in ((0.0, -0.05), (0.022, 0.06)):
+                gr.append(([(side * 0.12 * s, (0.175 + dy) * s), (side * 0.23 * s, (0.175 + dy + ang) * s)], False))
+    gr.append((K.spline(R([(-0.03, 0.03), (0.0, -0.03), (0.03, 0.03)]), n=4), False))
+    gr.append((K.spline(R([(-0.025, -0.07), (0.0, -0.12), (0.025, -0.07)]), n=4), False))
+    gr.append((K.spline(R([(-0.11, 0.10), (0.0, 0.065), (0.11, 0.10)]), n=6), False))          # Halsband
+    gr.append((K.spline(R([(-0.11, 0.075), (0.0, 0.04), (0.11, 0.075)]), n=6), False))
+    f.gravur = gr
+    f.gloeckchen = (0.0, 0.025 * s, 0.022 * s)
+    return f
+
+
+# --------------------------------------------------------------------------------------------------
+# Hexenhut
+# --------------------------------------------------------------------------------------------------
+
+def hexenhut(S: float, cfg) -> Figur:
+    """Hexenhut, Breite ~S: geknickte Spitze, breite gewellte Krempe, Hutband mit Schnalle, Flicken mit
+    Stichen, ausgeschnittene Sterne und Mondsichel, Knitterfalten."""
+    s = S
+    w, sw = wmin(cfg), smin(cfg)
+    f = Figur()
+    R = lambda pts: [(x * s, y * s) for x, y in pts]
+    # Krempe
+    brim = K.spline(R([(-0.50, -0.20), (-0.36, -0.15), (-0.20, -0.12), (0.0, -0.115), (0.20, -0.12), (0.36, -0.15),
+                       (0.50, -0.20), (0.44, -0.25), (0.25, -0.30), (0.0, -0.31), (-0.25, -0.30), (-0.44, -0.25)]),
+                    closed=True, n=8)
+    f.add(brim)
+    # Kegel mit Knick
+    cone = K.spline(R([(-0.22, -0.16), (-0.17, -0.02), (-0.10, 0.14), (-0.06, 0.25), (0.0, 0.33), (0.08, 0.40),
+                       (0.17, 0.43), (0.25, 0.40), (0.21, 0.375), (0.14, 0.36), (0.09, 0.31), (0.08, 0.20),
+                       (0.11, 0.06), (0.17, -0.06), (0.22, -0.16)]), closed=True, n=8)
+    f.add(cone)
+    f.add(K.circle(0.26 * s, 0.395 * s, 0.03 * s, 24))                                     # Bommel an der Spitze
+    # Hutband (Schlitze oben und unten), Schnalle (vier Schlitze)
+    for xa, xb in ((-0.155, -0.06), (0.075, 0.16)):
+        f.cut(K.stroke(R([(xa, -0.07 + 0.01 * (xa > 0)), ((xa + xb) / 2, -0.063), (xb, -0.07 + 0.01 * (xb < 0))]),
+                       sw, sw, "rund"))
+    bx, by, bw, bh = -0.04, -0.085, 0.10, 0.055
+    if bw * s >= 2 * sw + 3 * w:
+        for a, b in (((bx, by), (bx + bw * 0.8, by)), ((bx, by + bh), (bx + bw * 0.8, by + bh)),
+                     ((bx, by), (bx, by + bh)), ((bx + bw * 0.45, by + bh * 0.5), (bx + bw, by + bh * 0.5))):
+            f.cut(K.stroke(R([a, b]), sw, sw, "flach"))
+    # Sterne und Mond
+    for x, y, r in ((-0.07, 0.10, 0.035), (0.10, 0.00, 0.026), (-0.12, -0.01, 0.02), (0.02, 0.22, 0.022)):
+        if r * s >= 2.2 * sw:
+            f.cut(K.star(x * s, y * s, r * s, r * s * 0.45, 5))
+    mr = 0.045 * s
+    if mr >= 3 * sw:
+        moon = K.chain(K.arc(0.045 * s, 0.13 * s, mr, math.radians(60), math.radians(300), 24),
+                       list(reversed(K.arc(0.065 * s, 0.13 * s, mr * 0.8, math.radians(70), math.radians(290), 24))))
+        f.cut(moon)
+    if 0.03 * s >= sw + 2 * w:                                              # Knick in der Spitze
+        f.cut(K.stroke(R([(0.035, 0.30), (0.08, 0.34), (0.13, 0.37)]), sw, sw * 0.5, "spitz"))
+        f.cut(K.stroke(R([(-0.14, -0.04), (-0.10, 0.05)]), sw, sw * 0.5, "spitz"))
+    # Knitterfalten (Schlitze) an der Krempe
+    for x in (-0.36, 0.33):
+        f.cut(K.stroke(R([(x, -0.19), (x + 0.03, -0.23)]), sw, sw * 0.6, "spitz"))
+    gr = []
+    # Flicken mit Stichen
+    patch = R([(0.03, -0.035), (0.13, -0.025), (0.12, 0.045), (0.035, 0.035)])
+    gr.append((patch, True))
+    for i in range(5):
+        t = (i + 0.5) / 5
+        a = lerp(patch[0], patch[1], t)
+        gr.append(([(a[0], a[1] - 0.012 * s), (a[0] + 0.004 * s, a[1] + 0.012 * s)], False))
+    gr.append((K.spline(R([(-0.15, 0.0), (-0.10, 0.03), (-0.13, 0.07)]), n=4), False))
+    gr.append((K.spline(R([(0.09, 0.25), (0.11, 0.21), (0.10, 0.17)]), n=4), False))
+    gr.append((K.spline(R([(-0.42, -0.215), (-0.20, -0.255), (0.0, -0.26), (0.20, -0.255), (0.42, -0.215)]),
+                         n=8), False))
+    f.gravur = gr
+    return f
+
+
+# --------------------------------------------------------------------------------------------------
+# Großer Kürbis (Kürbis-Leuchte) mit geschnitzten Gesichtern
+# --------------------------------------------------------------------------------------------------
+
+GESICHTER = ("klassisch", "gruselig", "froehlich", "katze", "fledermaus", "hexe", "spinnennetz")
+
+
+def _sym(pts: Sequence[Point], s: float) -> Poly:
+    """Rechte Hälfte (von oben nach unten) gespiegelt zu einer geschlossenen Form."""
+    right = [(x * s, y * s) for x, y in pts]
+    return right + [(-x, y) for x, y in reversed(right[1:-1])]
+
+
+def kuerbis_gesicht(f: Figur, kind: str, s: float, cfg, cy: float = 0.0, seed: int = 1) -> None:
+    """Geschnitztes Gesicht (bzw. Silhouette) in den Kürbis schneiden. Gesichtsfeld ±0.25·s um (0, cy)."""
+    w, sw = wmin(cfg), smin(cfg)
+    P = lambda pts: [(x * s, y * s + cy) for x, y in pts]
+    mir = lambda pts: [(-x, y) for x, y in pts]
+    if kind == "klassisch":
+        eye = [(0.045, 0.06), (0.125, 0.205), (0.20, 0.065), (0.125, 0.085)]
+        for e in (eye, mir(eye)):
+            f.cut(K.spline(P(e), closed=True, n=4, tension=0.15))
+        f.cut(K.spline(P([(0.0, 0.07), (0.035, 0.005), (-0.035, 0.005)]), closed=True, n=3, tension=0.1))
+        mouth = [(-0.24, -0.02), (-0.15, -0.075), (-0.115, -0.04), (-0.09, -0.09), (0.04, -0.095), (0.07, -0.05),
+                 (0.10, -0.095), (0.24, -0.02), (0.19, -0.13), (0.10, -0.19), (0.075, -0.15), (0.045, -0.20),
+                 (-0.06, -0.20), (-0.09, -0.155), (-0.12, -0.185), (-0.19, -0.13)]
+        f.cut(K.spline(P(mouth), closed=True, n=5, tension=0.2))
+    elif kind == "gruselig":
+        eye = [(0.035, 0.055), (0.13, 0.08), (0.22, 0.17), (0.19, 0.055), (0.13, 0.02), (0.06, 0.025)]
+        for e in (eye, mir(eye)):
+            f.cut(K.spline(P(e), closed=True, n=5, tension=0.25))
+        for side in (1, -1):                                                    # zornige Brauen
+            f.cut(K.stroke([(side * 0.04 * s, 0.13 * s + cy), (side * 0.13 * s, 0.155 * s + cy),
+                            (side * 0.21 * s, 0.235 * s + cy)], max(sw, 0.014 * s), sw, "spitz"))
+        f.cut(K.spline(P([(0.0, 0.0), (0.03, -0.045), (0.0, -0.035), (-0.03, -0.045)]), closed=True, n=3,
+                       tension=0.2))
+        mouth = [(-0.25, -0.03), (-0.17, -0.08), (-0.14, -0.15), (-0.11, -0.085), (-0.04, -0.095), (-0.02, -0.13),
+                 (0.0, -0.095), (0.06, -0.09), (0.10, -0.165), (0.13, -0.085), (0.18, -0.075), (0.25, -0.03),
+                 (0.20, -0.14), (0.16, -0.17), (0.13, -0.135), (0.10, -0.205), (0.0, -0.235), (-0.07, -0.225),
+                 (-0.09, -0.17), (-0.12, -0.215), (-0.20, -0.15)]
+        f.cut(K.spline(P(mouth), closed=True, n=4, tension=0.1))
+    elif kind == "froehlich":
+        for side in (1, -1):                                                    # lachende Halbmond-Augen
+            c = (side * 0.12, 0.08)
+            top = [(c[0] + 0.08 * math.cos(a), c[1] + 0.09 * math.sin(a)) for a in
+                   (math.radians(d) for d in range(0, 181, 15))]
+            bot = [(c[0] + 0.065 * math.cos(a), c[1] + 0.012 + 0.04 * math.sin(a)) for a in
+                   (math.radians(d) for d in range(180, -1, -15))]
+            f.cut(P(top + bot))
+            f.cut(K.circle(side * 0.19 * s, -0.035 * s + cy, max(0.025 * s, sw), 24))     # Bäckchen
+        f.cut(K.circle(0.0, 0.0 + cy, max(0.024 * s, sw), 20))
+        smile = [(-0.22, -0.05), (-0.11, -0.085), (0.0, -0.09), (0.11, -0.085), (0.22, -0.05), (0.17, -0.15),
+                 (0.08, -0.205), (0.0, -0.215), (-0.08, -0.205), (-0.17, -0.15)]
+        f.cut(K.spline(P(smile), closed=True, n=6))
+        for x in (-0.06, 0.06):                                                 # Zähne stehen als Stege
+            f.add(K.stroke(P([(x, -0.075), (x, -0.15)]), max(w, 0.026 * s), max(w, 0.02 * s), "flach"))
+    elif kind == "katze":
+        eye = [(0.04, 0.07), (0.10, 0.13), (0.19, 0.15), (0.20, 0.08), (0.13, 0.035), (0.07, 0.04)]
+        for side, e in ((1, eye), (-1, mir(eye))):
+            f.cut(K.spline(P(e), closed=True, n=5))
+            f.add(K.stroke(P([(side * 0.125, 0.165), (side * 0.13, 0.09), (side * 0.125, 0.02)]),
+                           max(w, 0.022 * s), max(w, 0.016 * s), "spitz"))    # Schlitzpupille
+            for dy, k in ((0.0, -0.03), (0.035, 0.0), (-0.035, -0.06)):
+                f.cut(K.stroke(P([(side * 0.09, -0.04 + dy), (side * 0.17, -0.04 + dy + k * 0.5),
+                                  (side * 0.25, -0.04 + dy + k)]), sw, sw * 0.6, "spitz"))
+        f.cut(K.spline(P([(-0.035, 0.0), (0.035, 0.0), (0.0, -0.035)]), closed=True, n=3, tension=0.2))
+        f.cut(K.stroke(P([(-0.075, -0.075), (-0.035, -0.10), (0.0, -0.065), (0.035, -0.10), (0.075, -0.075)]),
+                       max(sw, 0.016 * s), None, "rund"))
+    elif kind == "fledermaus":
+        bat, _ = fledermaus(0.50 * s, "segeln", cfg, augen=False)
+        for sgn, poly in bat.place(0.02 * s, -0.07 * s + cy, 1.0, math.radians(-8)).ops:
+            if sgn == "+":
+                f.cut(poly)
+        small, _ = fledermaus(0.17 * s, "hoch", cfg, augen=False)
+        for sgn, poly in small.place(0.17 * s, 0.17 * s + cy, 1.0, math.radians(12)).ops:
+            if sgn == "+":
+                f.cut(poly)
+        mr = 0.07 * s
+        f.cut(K.chain(K.arc(-0.15 * s, 0.15 * s + cy, mr, math.radians(60), math.radians(300), 24),
+                      list(reversed(K.arc(-0.125 * s, 0.165 * s + cy, mr * 0.8, math.radians(75), math.radians(285),
+                                          24)))))
+    elif kind == "hexe":
+        from pakete import bibliothek
+        G = bibliothek("verzierungen").G
+        f.cut(G.place(G.witch_unit(), 0.0, -0.04 * s + cy, 0.56 * s))
+        f.cut(K.circle(0.13 * s, 0.17 * s + cy, 0.06 * s, 40))                # Vollmond hinter der Hexe
+        for x, y, r in ((-0.17, 0.15, 0.022), (-0.09, 0.21, 0.016), (0.21, 0.05, 0.016)):
+            if r * s >= 2.4 * sw:
+                f.cut(K.star(x * s, y * s + cy, r * s, r * s * 0.45, 5))
+    elif kind == "spinnennetz":
+        R = 0.22 * s
+        wx, wy = -0.03 * s, cy + 0.03 * s
+        f.cut(K.circle(wx, wy, R, 72))
+        netz_, _, _, _, radii = netz(wx, wy, R + w * 0.5, math.pi / 2, math.pi / 2 + TAU, 4, 10, w, seed, False, True,
+                                     voll=True)
+        f.merge(netz_)
+        # Spinne hängt am Faden rechts unten (als Silhouette ausgeschnitten)
+        a = math.radians(-38)
+        top = (wx + R * math.cos(a), wy + R * math.sin(a))
+        sx, sy = 0.20 * s, cy - 0.17 * s
+        f.cut(K.stroke(K.bez(top, (sx + 0.02 * s, (top[1] + sy) / 2), (sx, sy + 0.03 * s), 10), sw, sw, "rund"))
+        for sgn, poly in spinne(0.15 * s, cfg, sx, sy, 0.0, zeichnung=False).ops:
+            if sgn == "+":
+                f.cut(poly)
+        f.gravur = getattr(f, "gravur", []) + netz_.gravur
+    else:
+        raise ValueError(kind)
+
+
+def kuerbis_gross(S: float, cfg, gesicht: str = "gruselig", blatt: bool = True, rippen: bool = True,
+                  seed: int = 1) -> Figur:
+    """Bauchiger Kürbis aus sieben Rippen-Buckeln, Breite ~S, Mitte 0/0 (unten bei y ≈ −0.37·S): gebogener
+    Stiel mit Kerben, Blatt mit Adern, eingerollte Ranke, Rippen als Schlitze, geschnitztes Gesicht."""
+    s = S
+    w, sw = wmin(cfg), smin(cfg)
+    f = Figur()
+    f.gravur = []
+    lobes = [(0.0, 0.0, 0.17, 0.37), (0.12, -0.005, 0.17, 0.365), (-0.12, -0.005, 0.17, 0.365),
+             (0.25, -0.02, 0.15, 0.335), (-0.25, -0.02, 0.15, 0.335), (0.355, -0.06, 0.115, 0.26),
+             (-0.355, -0.06, 0.115, 0.26)]
+    for x, y, rx, ry in lobes:
+        f.add(K.ellipse(x * s, y * s, rx * s, ry * s, 0.0, 72))
+    # Stiel: gebogen, oben schräg abgebrochen, mit Kerben
+    stem = [(0.0, 0.31), (0.005, 0.40), (0.03, 0.47), (0.07, 0.51)]
+    f.line(K.spline([(x * s, y * s) for x, y in stem], n=8), 0.075 * s, 0.05 * s, cap="flach")
+    f.add([(0.05 * s, 0.535 * s), (0.105 * s, 0.505 * s), (0.085 * s, 0.48 * s), (0.045 * s, 0.50 * s)])
+    if 0.075 * s >= 2 * sw + 3 * w:
+        f.cut(K.stroke([(0.012 * s, 0.37 * s), (0.02 * s, 0.43 * s), (0.04 * s, 0.47 * s)], sw, sw * 0.6, "spitz"))
+    if blatt:
+        mid = K.bez((0.04 * s, 0.39 * s), (0.17 * s, 0.50 * s), (0.34 * s, 0.45 * s), 20)
+        lw_ = [max(0.13 * s * math.sin(math.pi * (0.06 + 0.94 * i / 20)) ** 0.75, w) *
+               (1 + 0.16 * math.sin(i * 2.3)) for i in range(21)]
+        f.add(K.stroke(mid, 0, widths=lw_, cap="spitz"))
+        if 0.13 * s >= sw + 2 * w + 1:
+            f.cut(K.stroke(mid[3:17], sw, sw * 0.6, "spitz"))
+            for i in (6, 9, 12):
+                q = mid[i]
+                for d in (1, -1):
+                    L = 0.035 * s * (1.2 - i / 20)
+                    if L > 2 * sw:
+                        f.cut(K.stroke([(q[0] + 0.008 * s, q[1] + d * 0.006 * s),
+                                        (q[0] + 0.008 * s + L * 0.6, q[1] + d * L)], sw, sw * 0.5, "spitz"))
+        # Ranke: aus dem Stiel nach links, eingerollt
+        cx_, cy_ = -0.15 * s, 0.40 * s
+        tr = [(0.0, 0.36 * s), (-0.06 * s, 0.41 * s), (-0.12 * s, 0.43 * s)]
+        tr += [(cx_ + 0.035 * s * (1 - t / 14) * math.cos(1.2 + t * 0.55),
+                cy_ + 0.035 * s * (1 - t / 14) * math.sin(1.2 + t * 0.55)) for t in range(0, 12)]
+        f.line(K.spline(tr, n=6), max(0.016 * s, w), max(0.011 * s, w))
+    # Rippen zwischen den Buckeln (Schlitze außerhalb des Gesichts), weitere Rippen graviert
+    if rippen:
+        for side in (1, -1):
+            for x0, bend, y0, y1 in ((0.305, 0.045, 0.24, -0.27), (0.19, 0.03, 0.30, -0.30)):
+                path = K.bez((side * x0 * s, y0 * s), (side * (x0 + bend) * s, 0.0), (side * x0 * s, y1 * s), 20)
+                if x0 < 0.25:                                   # innere Rippe: nur oberhalb und unterhalb des Gesichts
+                    for seg in (path[:5], path[-5:]):
+                        f.cut(K.stroke(seg, sw, sw * 0.6, "spitz"))
+                else:
+                    f.cut(K.stroke(path, sw, sw * 0.7, "rund"))
+            f.gravur.append((K.bez((side * 0.06 * s, 0.33 * s), (side * 0.085 * s, 0.0), (side * 0.06 * s, -0.33 * s),
+                                   20), False))
+            f.gravur.append((K.bez((side * 0.40 * s, 0.17 * s), (side * 0.45 * s, -0.04 * s),
+                                   (side * 0.40 * s, -0.25 * s), 16), False))
+    for k in range(3):                                                      # Glanzlicht links oben
+        f.gravur.append((K.arc(-0.05 * s, 0.0, (0.33 - 0.025 * k) * s, math.radians(122 + 4 * k),
+                               math.radians(150 - 4 * k), 12), False))
+    for dx in (-0.015, 0.012):                                               # Stielfasern
+        f.gravur.append((K.spline([(dx * s, 0.33 * s), (dx * 1.2 * s + 0.01 * s, 0.42 * s),
+                                   (dx * s + 0.04 * s, 0.48 * s)], n=6), False))
+    kuerbis_gesicht(f, gesicht, s, cfg, cy=-0.01 * s, seed=seed)
+    return f
+
+
+# --------------------------------------------------------------------------------------------------
+# Efeu
+# --------------------------------------------------------------------------------------------------
+
+def efeublatt(cx: float, cy: float, g: float, ang: float) -> Tuple[Poly, List[Poly]]:
+    """Dreilappiges Efeublatt, Stielansatz bei (cx, cy), Länge g, zeigt in Richtung ang.
+    Liefert (Umriss, Adern)."""
+    half = [(0.0, 0.0), (0.08, -0.20), (0.30, -0.44), (0.42, -0.24), (0.62, -0.32), (0.74, -0.14), (1.0, 0.0)]
+    pts = half + [(x, -y) for x, y in reversed(half[1:-1])]
+    ca, sa = math.cos(ang), math.sin(ang)
+    T = lambda p: (cx + (p[0] * ca - p[1] * sa) * g, cy + (p[0] * sa + p[1] * ca) * g)
+    outline = K.spline([T(p) for p in pts], closed=True, n=6, tension=0.4)
+    veins = [[T((0.08, 0.0)), T((0.88, 0.0))]]
+    for d in (1, -1):
+        veins.append([T((0.12, 0.0)), T((0.30, d * 0.34))])
+        veins.append([T((0.30, 0.0)), T((0.60, d * 0.24))])
+    return outline, veins
+
+
+def efeuranke(f: Figur, pfad: Sequence[Point], g: float, cfg, seed: int = 1, blatt_alle: float = 1.0,
+              seite: int = 1) -> List[Tuple[Poly, bool]]:
+    """Ranke als Material entlang pfad mit Efeublättern abwechselnd links/rechts. Liefert Gravur (Blattumrisse
+    und Adern), damit Blätter auch auf gleichfarbigem Grund sichtbar sind."""
+    w = wmin(cfg)
+    r = K.rng(seed, "efeu", len(pfad))
+    p = K.resample(pfad, max(1.0, g * 0.18))
+    f.line(p, max(w, 0.10 * g), max(w * 0.9, 0.06 * g))
+    gr: List[Tuple[Poly, bool]] = [(p, False)]
+    L = K.path_len(p)
+    n = max(2, int(L / (g * 0.75 * blatt_alle)))
+    for k in range(1, n + 1):
+        i = min(len(p) - 2, int(k / (n + 1) * (len(p) - 1)))
+        a = math.atan2(p[i + 1][1] - p[i][1], p[i + 1][0] - p[i][0])
+        side = 1 if k % 2 else -1
+        aa = a + side * seite * math.radians(55 + 20 * r.random())
+        size = g * (0.75 + 0.35 * r.random()) * (0.6 + 0.4 * k / n)
+        stem = (p[i][0] + math.cos(aa) * size * 0.25, p[i][1] + math.sin(aa) * size * 0.25)
+        f.line([p[i], stem], max(w, 0.05 * g))
+        out, veins = efeublatt(stem[0], stem[1], size, aa)
+        f.add(out)
+        gr.append((out, True))
+        gr += [(v, False) for v in veins]
+    return gr
+
+
+# --------------------------------------------------------------------------------------------------
+# Hexe auf dem Besen (Silhouette) und Silhouetten als Polygon
+# --------------------------------------------------------------------------------------------------
+
+def hexe(S: float, cfg, katze_: bool = True) -> Figur:
+    """Hexe auf dem Besen nach rechts fliegend, Breite ~S, Mitte 0/0: geknickter Hut mit Krempe, Hakennase
+    und spitzes Kinn, wehende Haare, gezackter Umhang, Schnabelschuh, Besen mit gebundenem Reisig und
+    eine Katze mit hochgestelltem Schwanz hinten auf dem Besen."""
+    s = S
+    w = wmin(cfg)
+    f = Figur()
+    R = lambda pts: [(x * s, y * s) for x, y in pts]
+    lw = lambda v: max(w, v * s)
+    # Besen: Stiel, Bindung, Reisig
+    f.line(R([(-0.34, -0.055), (0.0, -0.03), (0.47, 0.0)]), lw(0.022), lw(0.016))
+    f.add(K.ellipse(-0.335 * s, -0.056 * s, 0.022 * s, 0.03 * s, 0.1, 24))
+    for k in range(7):
+        t = k / 6
+        tip = (-0.52 + 0.02 * math.sin(k * 1.7), -0.15 + 0.16 * t)
+        f.line(K.bez(R([(-0.33, -0.056)])[0], R([(-0.42, -0.07 + 0.06 * (t - 0.5))])[0], R([tip])[0], 8),
+               lw(0.024), max(w * 0.8, 0.004 * s), "spitz")
+    # Rock und Bein mit Schnabelschuh
+    f.add(K.spline(R([(-0.10, 0.02), (0.06, 0.03), (0.10, -0.03), (0.06, -0.08), (-0.04, -0.07), (-0.12, -0.03)]),
+                   closed=True, n=6))
+    f.line(R([(0.06, -0.06), (0.12, -0.11), (0.15, -0.115)]), lw(0.028), lw(0.02))
+    f.add(K.spline(R([(0.13, -0.10), (0.19, -0.105), (0.215, -0.085), (0.19, -0.125), (0.13, -0.13)]),
+                   closed=True, n=4))
+    # Oberkörper vorgebeugt, Arm zum Stiel
+    f.add(K.spline(R([(-0.04, 0.02), (0.03, 0.16), (0.08, 0.21), (0.12, 0.18), (0.07, 0.03)]), closed=True, n=6))
+    f.line(R([(0.09, 0.17), (0.17, 0.09), (0.25, 0.015)]), lw(0.026), lw(0.02))
+    f.add(K.circle(0.255 * s, 0.012 * s, 0.018 * s, 16))
+    # Umhang mit gezacktem Saum
+    cape = R([(0.06, 0.21), (-0.03, 0.205), (-0.11, 0.19), (-0.19, 0.20), (-0.16, 0.16), (-0.21, 0.145),
+              (-0.15, 0.115), (-0.18, 0.085), (-0.11, 0.08), (-0.10, 0.04), (-0.05, 0.05), (0.02, 0.12)])
+    f.add(K.spline(cape, closed=True, n=4, tension=0.3))
+    # Kopf, Hakennase, Kinn
+    f.add(K.circle(0.12 * s, 0.255 * s, 0.042 * s, 32))
+    f.add(K.spline(R([(0.14, 0.27), (0.19, 0.255), (0.215, 0.235), (0.185, 0.245), (0.15, 0.245)]), closed=True,
+                   n=4, tension=0.3))
+    f.add(K.spline(R([(0.12, 0.22), (0.16, 0.205), (0.17, 0.19), (0.14, 0.205), (0.11, 0.215)]), closed=True,
+                   n=4, tension=0.3))
+    # Haare wehen nach hinten
+    for k, (ex, ey) in enumerate(((0.0, 0.255), (-0.03, 0.235), (0.01, 0.215), (-0.04, 0.27))):
+        f.line(K.bez(R([(0.10, 0.25)])[0], R([((0.10 + ex) / 2, 0.245 + 0.015 * (k % 2))])[0], R([(ex, ey)])[0], 8),
+               lw(0.011), max(w * 0.8, 0.004 * s), "spitz")
+    # Hut: Krempe und geknickte Spitze
+    f.add(K.ellipse(0.105 * s, 0.295 * s, 0.10 * s, 0.017 * s, math.radians(8), 36))
+    f.add(K.spline(R([(0.06, 0.30), (0.08, 0.37), (0.06, 0.43), (-0.02, 0.47), (0.03, 0.42), (0.10, 0.37),
+                      (0.15, 0.30)]), closed=True, n=6, tension=0.4))
+    # Katze auf dem Besen
+    if katze_:
+        cx, cy = -0.25, -0.05
+        f.add(K.ellipse((cx) * s, (cy + 0.045) * s, 0.04 * s, 0.05 * s, 0.0, 28))
+        f.add(K.circle((cx + 0.012) * s, (cy + 0.11) * s, 0.03 * s, 24))
+        for d in (-1, 1):
+            f.add(R([(cx + 0.012 + d * 0.012, cy + 0.125), (cx + 0.012 + d * 0.032, cy + 0.16),
+                     (cx + 0.012 + d * 0.03, cy + 0.115)]))
+        f.line(K.spline(R([(cx - 0.03, cy + 0.02), (cx - 0.08, cy + 0.04), (cx - 0.09, cy + 0.10),
+                           (cx - 0.07, cy + 0.14)]), n=6), lw(0.014), max(w * 0.9, 0.008 * s))
+    return f
+
+
+def silhouette(fig: Figur, cfg, name: str = "silhouette") -> List[Point]:
+    """Nur die Außenkontur einer Figur (Durchbrüche entfallen) als laserfestes Polygon."""
+    notes: List[str] = []
+    plus = Figur([o for o in fig.ops if o[0] == "+"])
+    return teil(name, plus, cfg, notes).outline
+
+
+def silhouette_loch(fig: Figur, cfg, name: str = "loch") -> List[Point]:
+    """Außenkontur einer Figur als Durchbruch: so geglättet, dass sie als Innenschnitt kerf-fest ist."""
+    notes: List[str] = []
+    x0, y0, x1, y1 = fig.bbox()
+    m = 3 * wmin(cfg) + 3
+    rahmen = Figur().add(K.rect(x0 - m, y0 - m, x1 - x0 + 2 * m, y1 - y0 + 2 * m))
+    rahmen.ops += [("-", p) for s, p in fig.ops if s == "+"]
+    holes = teil(name, rahmen, cfg, notes).holes
+    if not holes:
+        raise ValueError("Silhouette zu klein")
+    from steckwerk import signed_area
+    return max(holes, key=lambda h: abs(signed_area(h)))

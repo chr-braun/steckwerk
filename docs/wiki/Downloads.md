@@ -26,7 +26,7 @@ Laden in der App unter Einstellungen → Pakete → **Paket laden …**
 | [verzierungen-2.0.0.swpaket](dateien/verzierungen-2.0.0.swpaket) | Grundlagen 2.0.0 (zuerst laden, alle anderen brauchen es) |
 | [wohnen-1.0.0.swpaket](dateien/wohnen-1.0.0.swpaket) | Wohnen 1.0.0 |
 | [weihnacht-2.0.0.swpaket](dateien/weihnacht-2.0.0.swpaket) | Weihnachten 2.0.0 |
-| [halloween-1.3.0.swpaket](dateien/halloween-1.3.0.swpaket) | Halloween 1.3.0 |
+| [halloween-1.4.0.swpaket](dateien/halloween-1.4.0.swpaket) | Halloween 1.4.0 (fein gezeichnet) |
 | [ebenen-1.2.0.swpaket](dateien/ebenen-1.2.0.swpaket) | Mehrlagig 1.2.0 |
 | [wichtel-1.0.1.swpaket](dateien/wichtel-1.0.1.swpaket) | Wichtel 1.0.1 |
 

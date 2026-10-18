@@ -1,20 +1,18 @@
 """
 Halloween-Anhänger – filigrane Hänger für Zweige, Fenster und Geschenke.
 
-Fledermaus, Gespenst, Totenkopf, Katze, Hexenhut, Kürbis und Spinnennetz – jeweils mit
-Durchbrüchen und feinen Gravuren (Flügelknochen, Stofffalten, Schädelnähte, Sterne …) und einer
-Aufhängeöse. Mit „alle“ entsteht das ganze Set auf einmal. Ein Name kann eingraviert werden.
+Fledermaus, Gespenst, Totenkopf, Katze, Hexenhut, Kürbis und Spinnennetz – fein gezeichnet mit
+Durchbrüchen (Flügelknochen, Zahnreihen, Schnurrhaare, Sterne und Mond, Blattadern, Netzfäden) und
+Gravuren (Schädelnähte, Brauen, Fell, Flicken mit Stichen) und einer Aufhängeöse. Mit „alle“ entsteht das ganze Set auf einmal. Ein Name kann eingraviert werden.
 """
 import importlib.util
 import math
 import os
-import random
 import sys
 
-from steckwerk import Assembly, Part, arc_points, circle, min_distance, oriented, point_in_polygon
+from steckwerk import Assembly
 from models import _deko as dk
 from models._font import STYLES, fit_text, unsupported
-from models._shapes import union_circle
 from pakete import bibliothek, num, sel, txt
 
 
@@ -42,109 +40,113 @@ INFO = dict(
 )
 
 
-# Figuren aus der Motiv-Bibliothek der Engine: Umriss, Innenformen und Gravurdetails kommen von dort
-# (dieselben Motive wie in den Motiv-Vorlagen). Je Motiv: Platz für den Namen (Mitte, Breite, Höhe als
-# Anteil der Größe) und die bevorzugte Lage der Öse (x als Anteil der Größe).
-BIBLIOTHEK = {
-    "fledermaus": dict(),
-    "geist": dict(text=((0.0, -0.25), 0.34, 0.08)),
-    "totenkopf": dict(),
-    "katze": dict(oese=0.05),
-    "hexenhut": dict(text=((0.0, -0.33), 0.56, 0.05), oese=0.2),
-    "kuerbis": dict(text=((0.0, 0.19), 0.30, 0.06)),
-}
+_here = os.path.dirname(os.path.abspath(__file__))
 
 
-def _aus_bibliothek(mid, S):
-    import motive as mt
-    m = mt.load(mid)
-    fl = max(m["flaechen"], key=lambda f: abs(g.signed_area(f["aussen"])))
-    poly = mt.place(fl["aussen"], 0.0, 0.0, S)
-    holes = [g.dedupe(mt.place(h, 0.0, 0.0, S), 0.25) for h in fl["loecher"]]
-    lines = [mt.place(li, 0.0, 0.0, S) for li in m["linien"]]
-    return poly, holes, lines
+def _sub(name):
+    path = os.path.join(_here, name + ".py")
+    key = "swpaket_halloween_" + name
+    mod = sys.modules.get(key)
+    if mod is None or getattr(mod, "__file__", None) != path:
+        spec = importlib.util.spec_from_file_location(key, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[key] = mod
+        spec.loader.exec_module(mod)
+    return mod
 
 
-def _oese_x(poly, S, bevorzugt):
-    """x der Öse: höchster Punkt nahe der bevorzugten Stelle (sonst der höchste überhaupt)."""
-    nah = [p for p in poly if abs(p[0] - bevorzugt * S) < 0.25 * S]
-    return max(nah or poly, key=lambda p: p[1])[0]
+SP = _sub("_spuk")
+K = SP.K
 
 
-def _eyelet(outline, x, y_top, r, web):
-    """Öse oben anfügen: Ring mit Loch. Liefert (Kontur, Lochkreis)."""
-    for dy in (0.35, 0.5, 0.65):
-        for dx in (0.0, 0.5, -0.5, 1.0, -1.0):
-            cx, cy = x + dx * r, y_top + dy * r
-            try:
-                out = union_circle(outline, cx, cy, r)
-            except ValueError:
-                continue
-            hole = circle(cx, cy, r - max(web * 1.3, 0.38 * r), 0.05)
-            if g.polygon_ok(oriented(out, True)) and min_distance(hole, out, limit=web) >= web:
-                return out, hole
-    raise ValueError("Öse passt nicht – Anhänger größer wählen")
+def _netz_scheibe(S, cfg):
+    """Runder Anhänger: Rand, Netz mit durchhängenden Fäden und Tautropfen, Kreuzspinne in der Mitte."""
+    w = SP.wmin(cfg)
+    R = S / 2
+    rand = max(1.4 * w, 0.035 * S)
+    f = SP.Figur()
+    f.add(K.circle(0.0, 0.0, R, 96))
+    f.cut(K.circle(0.0, 0.0, R - rand, 96))
+    ringe = max(3, min(6, int((R - rand) / (2.2 * w + 2.4))))
+    speichen = max(8, min(14, int(S / 8)))
+    netz, _, _, _, radii = SP.netz(0.0, 0.0, R - rand * 0.3, math.pi / 2, math.pi / 2 + SP.TAU, ringe, speichen, w,
+                                   cfg.seed, False, True, voll=True)
+    f.merge(netz)
+    a = math.radians(-40)
+    r0 = radii[max(0, ringe // 2 - 1)]
+    sp_ = (0.40 * S, cfg, r0 * math.cos(a), r0 * math.sin(a), a - math.pi / 2 + 0.35)
+    f.merge(SP.spinne_frei(*sp_))
+    f.merge(SP.spinne(*sp_))
+    f.gravur = netz.gravur
+    return f
 
 
-def build_one(cfg, name, motiv, S, text, schrift, rng, web):
-    holes = []
-    eng = []                                   # (punkte, geschlossen)
-    put = []                                   # geschlossene Ornamente (nur ganz)
-    text_box = None
-    if motiv in BIBLIOTHEK:
-        poly, holes, lines = _aus_bibliothek(motiv, S)
-        eng += [(li, False) for li in lines]
-        bx = BIBLIOTHEK[motiv]
-        if bx.get("text"):
-            (tx, ty), tw, th = bx["text"]
-            text_box = ((tx * S, ty * S), tw * S, th * S)
-        eye_x = _oese_x(poly, S, bx.get("oese", 0.0))
-        eye_y = max(p[1] for p in poly)
-    elif motiv == "spinnennetz":
-        R = S / 2
-        poly = circle(0.0, 0.0, R, cfg.arc_tolerance)
-        holes = g.web(0.0, 0.0, R - max(web, 1.4) * 1.2, math.radians(90), math.radians(450), 5, 12,
-                      max(web, 1.4))[1]
-        put.append(g.spider(0.0, -0.02 * S, 0.30 * S, 0.5))
-        eye_x, eye_y = 0.0, R
-        holes = [h for h in holes if not any(point_in_polygon(p, put[-1]) for p in h) and
-                 min_distance(h, put[-1], limit=1.0) >= 1.0]
+def figur(motiv, S, cfg):
+    """Figur des Motivs (Größe S) und das Feld für den Namen ((x, y), Breite, Höhe) oder None."""
+    if motiv == "fledermaus":
+        f, _ = SP.fledermaus(S, "segeln", cfg)
+        return SP.eingepasst(f, S), None
+    if motiv == "geist":
+        f, _ = SP.gespenst(S, cfg)
+        f = SP.eingepasst(f, S)
+        return f, ((0.0, -0.06 * S), 0.34 * S, 0.09 * S)
+    if motiv == "totenkopf":
+        return SP.eingepasst(SP.totenkopf(S, cfg), S), None
+    if motiv == "katze":
+        return SP.eingepasst(SP.katze(S, cfg), S), None
+    if motiv == "hexenhut":
+        f = SP.eingepasst(SP.hexenhut(S, cfg), S)
+        return f, ((0.0, -0.25 * S), 0.62 * S, 0.055 * S)
+    if motiv == "kuerbis":
+        f, _ = SP.kuerbis(S, cfg, "klassisch", cfg.seed)
+        return SP.eingepasst(f, S), ((0.0, 0.0), 0.0, 0.0)
+    if motiv == "spinnennetz":
+        return _netz_scheibe(S, cfg), None
+    raise ValueError(motiv)
+
+
+def build_one(cfg, name, motiv, S, text, schrift, notes):
+    f, feld = figur(motiv, S, cfg)
+    gr = list(getattr(f, "gravur", []))
+    # Öse oben an der höchsten Stelle nahe der Mitte (Hexenhut: an der Spitze, Katze: am Ohr)
+    x0, y0, x1, y1 = f.bbox()
+    d = max(2.5, min(5.0, 0.05 * S))
+    if motiv == "hexenhut":
+        xs = [q for s_, p in f.ops if s_ == "+" for q in p]
+        tip = max(xs, key=lambda q: q[1] + 0.25 * q[0])
+        ort, eins0 = (tip[0], tip[1]), 0.7
+    elif motiv == "katze":
+        xe = -0.13 * (x1 - x0) + (x0 + x1) / 2
+        ort, eins0 = (xe, SP.oberkante(f, xe, 0.02 * S)), 0.6
     else:
-        raise ValueError(motiv)
-    if motiv not in ("spinnennetz",):
-        poly = oriented(poly, True)
-    # Öse oben
-    r_e = max(0.07 * S, 3.4)
-    top_pts = [p for p in poly if abs(p[0] - eye_x) < r_e * 0.6]
-    y_top = max(p[1] for p in top_pts) if top_pts else eye_y
-    outline, eye_hole = _eyelet(poly, eye_x, y_top, r_e, web)
-    part = Part(f"{name}", outline)
-    part.add_hole(eye_hole)
-    for h in holes:
-        if g.hole_ok(h, 0.3) and abs(g.signed_area(h)) > 2.0 and \
-                min_distance(h, outline, limit=web) >= web and min_distance(h, eye_hole, limit=web) >= web and \
-                all(min_distance(h, q, limit=web) >= web for q in part.holes):
-            part.add_hole(h)
-        elif motiv in BIBLIOTHEK:
-            eng.append((h, True))                    # zu fein zum Ausschneiden: als Umriss gravieren
-    cv = dk.Canvas(part, margin=0.9, hole_margin=0.9, seed=cfg.seed)
-    for p_ in put:
-        cv.put(p_, True, reserve=0.6)
-    if text and text_box:
-        (tx, ty), bw_, bh_ = text_box
+        xm = (x0 + x1) / 2
+        ort, eins0 = (xm, SP.oberkante(f, xm, 0.06 * S)), 0.45
+    part = None
+    for eins in (eins0, eins0 - 0.2, eins0 - 0.4, eins0 - 0.6):
+        g_ = SP.Figur(list(f.ops))
+        loch = SP.oese(g_, ort[0], ort[1], d, cfg, einsatz=eins)
+        try:
+            part = SP.teil(name, g_, cfg, notes, [loch])
+            break
+        except ValueError:
+            continue
+    if part is None:
+        raise ValueError(f"{name}: Öse passt nicht – Anhänger größer wählen")
+    if motiv == "katze" and getattr(f, "gloeckchen", None):
+        gx, gy, gr_ = f.gloeckchen
+        gr.append((K.circle(gx, gy, max(gr_, 1.2), 20), True))
+    SP.gravur(part, gr, cfg.seed)
+    if text and feld:
+        cv = dk.Canvas(part, margin=0.9, hole_margin=0.9, seed=cfg.seed)
+        (tx, ty), bw_, bh_ = feld
+        if motiv == "kuerbis":
+            (tx, ty), bw_, bh_ = (0.0, -0.33 * S), 0.40 * S, 0.07 * S
         try:
             strokes, _ = fit_text(text, tx, ty, bw_, bh_, min_h=2.2, max_cap=bh_, style=schrift)
             for st in strokes:
                 cv.draw(st)
-            cv.block_strokes([(st, False) for st in strokes], 0.6)
-            xs = [x for st in strokes for x, _ in st]
-            ys = [y for st in strokes for _, y in st]
-            if xs:
-                cv.block_box((min(xs), min(ys), max(xs), max(ys)), 1.2)   # Details nicht durch den Namen
         except ValueError:
-            pass
-    for pts, closed in eng:
-        cv.draw(pts, closed)
+            notes.append(f"{name}: Name passt nicht – kürzer oder Anhänger größer wählen.")
     return part
 
 
@@ -157,12 +159,12 @@ def build(cfg, name="halloween_anhaenger", motiv="alle", size=80.0, text="", sch
     bad = unsupported(text or "")
     if bad:
         raise ValueError(f"Zeichen {''.join(bad)!r} gibt es in der Gravurschrift nicht")
-    web = max(cfg.min_web * 1.5, 1.5)
-    rng = random.Random(cfg.seed)
+    notes = []
     motifs = [m for m, _ in MOTIFS] if motiv == "alle" else [motiv]
     asm = Assembly(name, params=dict(motiv=motiv, size=S, **({"text": text} if text else {})))
     for m in motifs:
-        asm.parts.append(build_one(cfg, f"{name}_{m}", m, S, text, schrift, rng, web))
+        asm.parts.append(build_one(cfg, f"{name}_{m}", m, S, text, schrift, notes))
+    asm.notes.extend(dict.fromkeys(notes))
     asm.notes.append("Anhänger an einem Faden durch die Öse aufhängen. Tipp: schwarz lasiert vor einem "
                      "hellen Fenster wirken sie wie Scherenschnitte.")
     return asm

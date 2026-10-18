@@ -2,6 +2,25 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Paket-Updates – 2026-10-18
+
+- **Halloween** 1.4.0 – alle Motive fein gezeichnet, mit weichen Konturen, mehr Durchbrüchen und Gravuren:
+  - **Anhänger** mit eigenen, fein gezeichneten Figuren statt der Motiv-Bibliothek: Totenkopf mit Jochbeinen, zwei Zahnreihen und Nähten, sitzende Katze mit
+    Mandelaugen, Schnurrhaaren und Glöckchen, Hexenhut mit Knick, Schnalle, Sternen, Mond und Flicken.
+  - **Kürbis-Leuchte** aus sieben Rippen-Buckeln mit gekerbtem Stiel, Blatt mit Adern und eingerollter Ranke.
+    Alle sieben Gesichter neu (gruselig mit Brauen und Fangzähnen, fröhlich mit Bäckchen, Katze mit
+    Schlitzpupillen, Hexe vor dem Vollmond, Spinnennetz mit hängender Spinne …), um die Schnitzkanten läuft
+    eine gravierte Schale.
+  - **Grabstein** auf einem Sockel mit Fugen: Totenkopf als Durchbruch mit gravierten Knochen, feine Risse,
+    abgeplatzte Kanten, Moos und Grasbüschel, Efeu mit dreilappigen Blättern über der Kante. Das Kreuz hat
+    Kleeblattenden.
+  - **Spukschloss**: Vor dem Mond fliegt eine neue Hexe mit wehenden Haaren und Umhang, hinten auf dem Besen
+    sitzt ihre Katze. Fledermäuse und die hängende Spinne sind feiner, ein seltener Prüffehler bei 600 mm
+    Breite ist behoben.
+  - **Süßigkeitenschale** mit vier Gesichtern (neu: fröhlich und Katze), der Kessel mit Rührlöffel.
+  - Die **Spinne** in Netz, Girlande und Schale hat geknickte Beine mit Gelenken und eine klare Taille.
+
+
 ## 2.8.0 – 2026-10-17
 
 - Neues Themenpaket **Verkauf** 1.0.0 mit dem Flaschenschild: Preisschild zum Aufhängen am Flaschenhals oder an einer Kordel, mit deinem Logo (aus „Motive importieren“) oder einer Kopfzeile, Preis inkl. MwSt. und Grundpreis je Liter, den Steckwerk selbst ausrechnet. Über eine Preisliste entstehen alle Schilder auf einmal.
