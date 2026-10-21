@@ -1,23 +1,21 @@
 {
   "standard": 1,
-  "erstellt": "2026-10-17",
+  "erstellt": "2026-10-21",
   "programm": {
-    "version": "2.8.0",
-    "datum": "2026-10-17",
+    "version": "2.9.0",
+    "datum": "2026-10-21",
     "hinweise": [
-      "Neues Themenpaket Verkauf 1.0.0 mit dem Flaschenschild: Preisschild zum Aufhängen am Flaschenhals oder an einer Kordel, mit deinem Logo (aus „Motive importieren“) oder einer Kopfzeile, Preis inkl. MwSt. und Grundpreis je Liter, den Steckwerk selbst ausrechnet. Über eine Preisliste entstehen alle Schilder auf einmal.",
-      "Die Schrift kennt jetzt auch €, % und den Mittelpunkt ·.",
-      "Textfelder in Paketen können mehrzeilig sein."
+      "Neue native Mac-App Steckwerk Desktop (SwiftUI, macOS 14+, gleiche Versionsnummer wie Steckwerk) unter packaging/swift: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Updates als echtes Mac-Fenster. Sie aktualisiert sich selbst aus dem Update-Kanal („Updates → Installieren und neu starten“). Die bisherige App bleibt.",
+      "„Motiv zeichnen“ kann jetzt auch ChatGPT (OpenAI, gpt-image-1 oder gpt-image-1-mini) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter."
     ],
     "hinweise_en": [
-      "New theme package Shop 1.0.0 with the bottle tag: a price tag that hangs on the bottle neck or on a cord, with your logo (from \"Import motifs\") or a header line, price incl. VAT and the unit price per litre, which Steckwerk works out itself. A price list makes all tags at once.",
-      "The font now also knows €, % and the middle dot ·.",
-      "Text fields in packages can have several lines."
+      "New native Mac app Steckwerk Desktop (SwiftUI, macOS 14+, same version number as Steckwerk): the same engine without a browser – model list, form, sheet preview, check report, export, packages, AI, material and updates in a real Mac window. It updates itself from the update channel (\"Updates → Install and restart\"). The existing app stays.",
+      "\"Draw motif\" can now also use ChatGPT (OpenAI, gpt-image-1 or gpt-image-1-mini) with your own OpenAI key. Costs count towards the same monthly limit as OpenRouter."
     ],
     "mac": {
-      "datei": "Steckwerk-2.8.0-macOS.zip",
-      "sha256": "814bb826dfdc5d031a23e86dcdde874845695d4790fff2b59aa2041d9a192279",
-      "groesse": 470223
+      "datei": "Steckwerk-2.9.0-macOS.zip",
+      "sha256": "cab1a32a5b355be99631f37b669756e78be1ff270716b761b41977c5b9bbbc89",
+      "groesse": 471706
     }
   },
   "pakete": [
@@ -328,5 +326,18 @@
         "Door sign"
       ]
     }
-  ]
+  ],
+  "desktop": {
+    "version": "2.9.0",
+    "datum": "2026-10-21",
+    "hinweise": [
+      "Neue native Mac-App Steckwerk Desktop (SwiftUI, macOS 14+, gleiche Versionsnummer wie Steckwerk) unter packaging/swift: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Updates als echtes Mac-Fenster. Sie aktualisiert sich selbst aus dem Update-Kanal („Updates → Installieren und neu starten“). Die bisherige App bleibt.",
+      "„Motiv zeichnen“ kann jetzt auch ChatGPT (OpenAI, gpt-image-1 oder gpt-image-1-mini) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter."
+    ],
+    "mac": {
+      "datei": "Steckwerk-Desktop-2.9.0-macOS.zip",
+      "sha256": "39c5b51fbb36e211f7973a47765f6e141ca144987099718cac9fea655ca537a1",
+      "groesse": 1577284
+    }
+  }
 }
