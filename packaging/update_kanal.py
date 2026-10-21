@@ -2,11 +2,13 @@
 """
 update_kanal.py – Update-Kanal für Steckwerk bauen bzw. auffrischen.
 
-  python3 packaging/update_kanal.py KANAL [--mac Steckwerk-1.7.0-macOS.zip] [--paket datei.swpaket ...]
+  python3 packaging/update_kanal.py KANAL [--mac Steckwerk-1.7.0-macOS.zip] [--desktop Steckwerk-Desktop-macOS.zip]
+                                         [--paket datei.swpaket ...]
 
 KANAL ist ein Ordner (z. B. ein Checkout des Branches „updates“). Neue Dateien werden hineinkopiert,
 danach wird feed.json aus dem Inhalt neu geschrieben: die neueste Mac-App und je Paket die neueste
-Version. Ältere Dateien werden entfernt, damit der Kanal klein bleibt. Die Hinweise zur Programmversion
+Version. Steckwerk Desktop (ZIP aus dem CI) wird mit aufgenommen, wenn es dieselbe Version hat
+wie das Programm. Ältere Dateien werden entfernt, damit der Kanal klein bleibt. Die Hinweise zur Programmversion
 kommen aus dem passenden Abschnitt der CHANGELOG.md.
 
 Danach den Ordner veröffentlichen (Branch „updates“ pushen); Steckwerk findet die Neuerungen
@@ -33,6 +35,7 @@ sys.path.insert(0, ROOT)
 from updater import STANDARD, ver  # noqa: E402
 
 MAC_RE = re.compile(r"^Steckwerk-(\d+\.\d+\.\d+)-macOS\.zip$")
+DESKTOP_RE = re.compile(r"^Steckwerk-Desktop-(\d+\.\d+\.\d+)-macOS\.zip$")
 
 
 def sha256(path: str) -> str:
@@ -63,11 +66,12 @@ def changelog_notes(version: str, path: str = os.path.join(ROOT, "CHANGELOG.md")
     return [n.replace("`", "").replace("**", "") for n in notes if not n.startswith(skip)]
 
 
-def mac_version(path: str) -> str:
+def mac_version(path: str, app: str = "Steckwerk.app") -> str:
     with zipfile.ZipFile(path) as z:
-        name = next((n for n in z.namelist() if n.endswith("Steckwerk.app/Contents/Info.plist")), None)
+        name = next((n for n in z.namelist() if n.endswith(app + "/Contents/Info.plist") and not n.startswith("__MACOSX")),
+                    None)
         if not name:
-            raise SystemExit(f"{path}: keine Steckwerk.app darin")
+            raise SystemExit(f"{path}: keine {app} darin")
         return str(plistlib.loads(z.read(name)).get("CFBundleShortVersionString"))
 
 
@@ -102,11 +106,14 @@ def paket_inhalt(path: str, m: Dict[str, Any], andere: str = "") -> Tuple[List[s
 
 
 def build(kanal: str, mac: Optional[str] = None, pakete: List[str] = (), notes: Optional[List[str]] = None,
-          seite: str = "", today: Optional[str] = None) -> Dict[str, Any]:
+          seite: str = "", today: Optional[str] = None, desktop: Optional[str] = None) -> Dict[str, Any]:
     os.makedirs(os.path.join(kanal, "pakete"), exist_ok=True)
     if mac:
         v = mac_version(mac)
         shutil.copyfile(mac, os.path.join(kanal, f"Steckwerk-{v}-macOS.zip"))
+    if desktop:
+        v = mac_version(desktop, "Steckwerk Desktop.app")
+        shutil.copyfile(desktop, os.path.join(kanal, f"Steckwerk-Desktop-{v}-macOS.zip"))
     for p in pakete:
         m = paket_manifest(p)
         shutil.copyfile(p, os.path.join(kanal, "pakete", f"{m['id']}-{m['version']}.swpaket"))
@@ -135,6 +142,19 @@ def build(kanal: str, mac: Optional[str] = None, pakete: List[str] = (), notes: 
                            "groesse": os.path.getsize(os.path.join(kanal, f))}
         if seite:
             programm["seite"] = seite
+
+    desktops = sorted((f for f in os.listdir(kanal) if DESKTOP_RE.match(f)), key=lambda f: ver(DESKTOP_RE.match(f).group(1)))
+    for f in desktops[:-1]:
+        os.remove(os.path.join(kanal, f))
+    programm.pop("desktop", None)
+    if desktops and not macs:                       # Kanal nur mit Steckwerk Desktop
+        v = DESKTOP_RE.match(desktops[-1]).group(1)
+        if programm.get("version") != v:
+            programm = {"version": v, "datum": today or time.strftime("%Y-%m-%d"), "hinweise": changelog_notes(v)}
+    if desktops and DESKTOP_RE.match(desktops[-1]).group(1) == programm.get("version"):
+        f = desktops[-1]
+        programm["desktop"] = {"datei": f, "sha256": sha256(os.path.join(kanal, f)),
+                               "groesse": os.path.getsize(os.path.join(kanal, f))}
 
     newest: Dict[str, tuple] = {}
     for path in glob.glob(os.path.join(kanal, "pakete", "*.swpaket")):
@@ -167,12 +187,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Steckwerk-Update-Kanal bauen")
     ap.add_argument("kanal", help="Ordner des Update-Kanals")
     ap.add_argument("--mac", help="Mac-App als ZIP (aus packaging/build_macos.py)")
+    ap.add_argument("--desktop", help="Steckwerk Desktop als ZIP (aus dem CI, macos-desktop.yml)")
     ap.add_argument("--paket", action="append", default=[], help=".swpaket-Datei (mehrfach möglich)")
     ap.add_argument("--seite", default="", help="Webseite mit Download für Nicht-Mac-Nutzer")
     a = ap.parse_args(argv)
-    feed = build(a.kanal, a.mac, a.paket, seite=a.seite)
+    feed = build(a.kanal, a.mac, a.paket, seite=a.seite, desktop=a.desktop)
     prog = feed["programm"]
-    print(f"Kanal {a.kanal}: Programm {prog.get('version', '–')}, "
+    print(f"Kanal {a.kanal}: Programm {prog.get('version', '–')}{' + Desktop' if prog.get('desktop') else ''}, "
           f"{len(feed['pakete'])} Paket(e): " + ", ".join(f"{p['id']} {p['version']}" for p in feed["pakete"]))
     return 0
 

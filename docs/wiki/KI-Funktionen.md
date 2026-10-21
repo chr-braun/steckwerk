@@ -38,7 +38,12 @@ dem Mac und gelten noch als experimentell.
 **OpenRouter (mit eigenem Schlüssel):** Schlüssel von openrouter.ai unter Einstellungen → Assistent
 eintragen. Er liegt im Schlüsselbund, an OpenRouter geht nur die Beschreibung.
 
-Empfohlene Modelle (Kosten pro Bild geschätzt, Stand Oktober 2026):
+**ChatGPT (OpenAI, mit eigenem Schlüssel):** Schlüssel von platform.openai.com in der Mac-App unter
+**Einstellungen → KI-Anbieter** eintragen. Genutzt wird das Bildmodell `gpt-image-1` (Auflösung 1024 × 1024).
+Die Beschreibung geht an OpenAI. Die Kosten werden nicht mitgezählt, weil die Antwort keine Kostenangabe
+enthält; das Monatslimit gilt aber auch hier. ChatGPT liefert nur Bilder, der Assistent bleibt bei Ollama.
+
+Empfohlene Modelle (OpenRouter, Kosten pro Bild geschätzt, Stand Oktober 2026):
 
 | Modell | ca. Kosten | Warum |
 |---|---|---|
@@ -52,5 +57,5 @@ Kosten und deine Monatssumme. Ein **Monatslimit** kannst du selbst setzen.
 
 ## Hinweis
 
-Getestet wurde mit nachgebautem Ollama und OpenRouter. Echte Bilder konnten aus der Cloud-Umgebung nicht
+Getestet wurde mit nachgebautem Ollama, OpenRouter und OpenAI. Echte Bilder konnten aus der Cloud-Umgebung nicht
 erzeugt werden – der erste echte Test passiert also bei dir am Mac.

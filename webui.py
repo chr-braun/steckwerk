@@ -23,6 +23,7 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/update-check        → was es Neues gibt (Programm und Pakete aus dem Update-Kanal)
   POST /api/update-paket        {id} oder {alle: true} → Paket(e) aus dem Kanal installieren
   POST /api/update-programm     Mac-App durch die neue Version ersetzen und neu starten (nur App)
+  POST /api/update-desktop      {bundle} → Steckwerk Desktop an ihrem Ort ersetzen (Neustart macht die App)
   POST /api/update-einstellungen {kanal, token, auto} → Einstellungen ändern (Schlüssel wird nie zurückgegeben)
   POST /api/assistent    {model, beschreibung, params} → Werte-Vorschlag vom lokalen Sprachmodell (Ollama)
   POST /api/assistent-status         {url?} → Ollama erreichbar? installierte Modelle
@@ -41,6 +42,7 @@ import argparse
 import json
 import os
 import socket
+import socketserver
 import sys
 import threading
 import time
@@ -175,7 +177,7 @@ class Handler(BaseHTTPRequestHandler):
                 if self.lan:
                     return self._json({"ok": False, "error": "Nur am Rechner selbst änderbar"}, 403)
                 d = bildgen.save_settings(quelle=req.get("quelle"), ollama_modell=req.get("ollama_modell"),
-                                          openrouter_modell=req.get("openrouter_modell"), key=req.get("key"),
+                                          openrouter_modell=req.get("openrouter_modell"), chatgpt_modell=req.get("chatgpt_modell"), key=req.get("key"),
                                           limit=req.get("limit"))
                 self._json({"ok": True, "bilder": d})
             elif path == "/api/bild-modelle":
@@ -375,7 +377,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"ok": False, "error": "Updates nur am Rechner selbst installieren"}, 403)
         try:
             if path == "/api/update-check":
-                d = updater.check(self.bundle)
+                d = updater.check(self.bundle, desktop=str(req["desktop"]) if req.get("desktop") else None)
                 d["einstellungen"] = updater.settings()
                 return self._json(d)
             if path == "/api/update-einstellungen":
@@ -402,6 +404,10 @@ class Handler(BaseHTTPRequestHandler):
                     threading.Timer(0.5, self.session.request_quit).start()
                 return self._json({"ok": True, "version": version,
                                    "message": f"Steckwerk {version} ist installiert und startet gleich neu"})
+            if path == "/api/update-desktop":
+                target, version = updater.install_desktop(str(req.get("bundle") or ""))
+                return self._json({"ok": True, "version": version, "pfad": target,
+                                   "message": f"Steckwerk Desktop {version} ist installiert und startet gleich neu"})
             self._json({"error": "nicht gefunden"}, 404)
         except (updater.UpdateFehler, pakete.PaketFehler) as e:
             err = {"ok": False, "error": str(e)}
@@ -421,6 +427,17 @@ def lan_ip() -> str:
         return "127.0.0.1"
 
 
+class Server(ThreadingHTTPServer):
+    """Wie ThreadingHTTPServer, aber ohne socket.getfqdn() beim Start – diese Namensauflösung hängt auf macOS
+    teils viele Sekunden, und der Name wird hier nicht gebraucht."""
+
+    def server_bind(self) -> None:
+        socketserver.TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name = str(host)
+        self.server_port = port
+
+
 def make_server(host: str = "127.0.0.1", port: int = 8765, out_dir: str = "out", quiet: bool = False,
                 app: bool = False, session: Optional[Session] = None,
                 open_folder: Optional[Callable[[str], None]] = None, bundle: Optional[str] = None):
@@ -428,7 +445,7 @@ def make_server(host: str = "127.0.0.1", port: int = 8765, out_dir: str = "out",
              "app": app, "session": session,
              "open_folder": staticmethod(open_folder) if open_folder else None}
     handler = type("SteckwerkHandler", (Handler,), attrs)
-    return ThreadingHTTPServer((host, port), handler)
+    return Server((host, port), handler)
 
 
 def main(argv=None) -> int:

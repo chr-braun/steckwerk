@@ -1,6 +1,6 @@
 # Downloads
 
-Hier liegt alles zum Herunterladen, Stand 16.10.2026.
+Hier liegt alles zum Herunterladen, Stand 17.10.2026.
 
 ## Programm
 
@@ -9,6 +9,13 @@ Hier liegt alles zum Herunterladen, Stand 16.10.2026.
 | [Steckwerk-2.6.0-macOS.zip](dateien/Steckwerk-2.6.0-macOS.zip) | Mac-App, aktuelle Version. Installieren: siehe [Installation](Installation.md). |
 
 Ältere Versionen brauchst du nicht: Die App aktualisiert sich selbst über [Updates](Updates.md).
+
+## Steckwerk Desktop (native App)
+
+Die App ohne Browser wird bei jedem Push automatisch gebaut. Auf GitHub unter
+[Actions → macOS Desktop](https://github.com/chr-braun/steckwerk/actions/workflows/macos-desktop.yml)
+den neuesten erfolgreichen Lauf öffnen und das Artefakt **Steckwerk-Desktop-macOS-dmg** laden
+(GitHub-Anmeldung nötig, 14 Tage verfügbar). Anleitung: [Steckwerk Desktop](Steckwerk-Desktop.md).
 
 ## Pakete
 

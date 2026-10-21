@@ -2,6 +2,17 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## 2.9.0 – 2026-10-21
+
+- Neu: **Steckwerk Desktop**, eine eigene Mac-App (DMG) mit eingebauter Engine. Modelle, Pakete, KI und Material in einem Fenster; die Vorschau baut sich beim Ändern jedes Werts von selbst neu.
+- Steckwerk Desktop aktualisiert sich selbst: Unter „Updates“ lädt „Installieren und neu starten“ die neue Version aus dem Update-Kanal, prüft sie und ersetzt die App. Beim Start sucht sie von selbst nach Updates (abschaltbar).
+- Alle 19 eingebauten Motive sind neu und deutlich detaillierter gezeichnet, mit feinen Innenformen und Gravurlinien.
+- Silhouetten aus Motiven gravieren die Motivlinien mit.
+- Bilder für „Motiv zeichnen“ können jetzt auch von ChatGPT kommen; der Schlüssel liegt im Schlüsselbund.
+- Halloween 1.4.0: Die Anhänger nehmen ihre Figuren aus der Motiv-Bibliothek und haben Platz für den Namen.
+- Weihnachten 2.0.1: Die Zuckerstange trägt keine Stechpalme mehr, nur noch die Schleife.
+- Der Start geht auf dem Mac schneller (keine Namensauflösung mehr beim Serverstart).
+
 ## 2.8.0 – 2026-10-17
 
 - Neues Themenpaket **Verkauf** 1.0.0 mit dem Flaschenschild: Preisschild zum Aufhängen am Flaschenhals oder an einer Kordel, mit deinem Logo (aus „Motive importieren“) oder einer Kopfzeile, Preis inkl. MwSt. und Grundpreis je Liter, den Steckwerk selbst ausrechnet. Über eine Preisliste entstehen alle Schilder auf einmal.
