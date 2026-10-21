@@ -2,6 +2,11 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## 2.9.0 – 2026-10-21
+
+- New native Mac app **Steckwerk Desktop** (SwiftUI, macOS 14+, same version number as Steckwerk): the same engine without a browser – model list, form, sheet preview, check report, export, packages, AI, material and updates in a real Mac window. It updates itself from the update channel ("Updates → Install and restart"). The existing app stays.
+- "Draw motif" can now also use **ChatGPT** (OpenAI, gpt-image-1 or gpt-image-1-mini) with your own OpenAI key. Costs count towards the same monthly limit as OpenRouter.
+
 ## 2.8.0 – 2026-10-17
 
 - New theme package **Shop** 1.0.0 with the bottle tag: a price tag that hangs on the bottle neck or on a cord, with your logo (from "Import motifs") or a header line, price incl. VAT and the unit price per litre, which Steckwerk works out itself. A price list makes all tags at once.

@@ -2,7 +2,7 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
-## Unveröffentlicht
+## 2.9.0 – 2026-10-21
 
 - Neue native Mac-App **Steckwerk Desktop** (SwiftUI, macOS 14+, gleiche Versionsnummer wie Steckwerk) unter `packaging/swift`: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Updates als echtes Mac-Fenster. Sie aktualisiert sich selbst aus dem Update-Kanal („Updates → Installieren und neu starten“). Die bisherige App bleibt.
 - „Motiv zeichnen“ kann jetzt auch **ChatGPT** (OpenAI, `gpt-image-1` oder `gpt-image-1-mini`) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter.
