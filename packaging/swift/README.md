@@ -50,10 +50,19 @@ den Tests abgedeckt; `SteckwerkDesktop` sind die SwiftUI-Ansichten. CI: `.github
 Die Test-Fixtures in `Tests/SteckwerkDesktopTests/Fixtures/` stammen direkt aus der Engine
 (`service.schema()` gekürzt, `service.generate({"model": "wichtelhaus"})`).
 
-## Grenzen (Version 0.1)
+## Updates
 
-- Programm-Updates installiert die native App nicht selbst; sie zeigt neue Versionen und verlinkt die Seite.
-  Pakete aus dem Kanal installiert sie wie gewohnt.
+Die App hat dieselbe Versionsnummer wie Steckwerk, weil sie die Engine mitbringt. Unter *Updates* prüft sie
+den Update-Kanal (Eintrag `desktop` in `feed.json`) und ersetzt sich mit „Installieren und neu starten“ selbst:
+ZIP laden, Prüfsumme und Version prüfen, die App in ihrem Ordner austauschen, neu öffnen. Das klappt nur mit
+der eigenen Engine und aus /Applications (bzw. einem Ordner mit Schreibrechten). Pakete aktualisiert die
+Seite *Pakete* wie gewohnt.
+
+Für Herausgeber: Ein Tag `v*` baut in GitHub Actions zusätzlich `Steckwerk-Desktop-<version>-macOS.zip`
+und hängt es ans Release. In den Kanal kommt es wie die Browser-App per
+`python3 packaging/update_kanal.py <kanal> --desktop Steckwerk-Desktop-<version>-macOS.zip`.
+
+## Grenzen
 - Kein Platzierungs-Editor für Motive (Werte x/y/Größe/Drehung stehen im Formular).
 - Der Assistent (Werte aus einer Beschreibung) läuft weiter nur über Ollama. ChatGPT ist als dritter Anbieter
   nur für „Motiv zeichnen“ eingebaut (`bildgen.py`, Modell `gpt-image-1` oder `gpt-image-1-mini`): ein

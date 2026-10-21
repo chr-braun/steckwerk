@@ -96,6 +96,20 @@ public final class Engine: @unchecked Sendable {
         return .success(Locations(python: py, engineDir: dir.path, starter: starter.path))
     }
 
+    /// Pfad der laufenden „Steckwerk Desktop.app“ – nur dann sind Programm-Updates möglich.
+    public static func runningBundle(_ bundle: Bundle = .main) -> String? {
+        let path = bundle.bundlePath
+        return path.hasSuffix(".app") ? path : nil
+    }
+
+    /// Neue App kurz nach dem Beenden dieser Instanz öffnen (wie der Updater der Browser-App).
+    public static func relaunch(_ appPath: String) throws {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/bin/sh")
+        p.arguments = ["-c", "sleep 1.5; open \"$0\"", appPath]
+        try p.run()
+    }
+
     // MARK: - Starten / Beenden
 
     /// Läuft schon eine Engine (z. B. die Browser-App)? Dann wird sie mitbenutzt.
@@ -106,7 +120,7 @@ public final class Engine: @unchecked Sendable {
     }
 
     /// Engine starten und auf den Port warten (höchstens `timeout` Sekunden).
-    public func start(outDir: String, timeout: TimeInterval = 15) async throws -> (Bridge, PingInfo) {
+    public func start(outDir: String, timeout: TimeInterval = 45) async throws -> (Bridge, PingInfo) {
         let loc: Locations
         switch Engine.locate() {
         case .success(let l): loc = l
@@ -116,6 +130,7 @@ public final class Engine: @unchecked Sendable {
         p.executableURL = URL(fileURLWithPath: loc.python)
         p.arguments = ["-u", loc.starter, "--engine", loc.engineDir, "--port", "0", "--out", outDir,
                        "--parent", String(ProcessInfo.processInfo.processIdentifier)]
+        if let bundle = Engine.runningBundle() { p.arguments! += ["--bundle", bundle] }
         p.currentDirectoryURL = URL(fileURLWithPath: loc.engineDir)
         var env = ProcessInfo.processInfo.environment
         env["PYTHONDONTWRITEBYTECODE"] = "1"

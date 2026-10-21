@@ -8,14 +8,15 @@
 # Liste aus packaging/build_macos.py) plus bridge_start.py. Python kommt vom Mac.
 set -eu
 
-VERSION="0.1.0"
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 ROOT="$(cd "$HERE/../.." && pwd -P)"
 OUT="${1:-$HERE/../dist}"
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd -P)"
 APP="$OUT/Steckwerk Desktop.app"
-ENGINE_VERSION="$(cd "$ROOT" && python3 -c 'import steckwerk; print(steckwerk.__version__)')"
+# Die App trägt die Engine in sich, deshalb hat sie dieselbe Version wie Steckwerk (steckwerk.py).
+VERSION="$(cd "$ROOT" && python3 -c 'import steckwerk; print(steckwerk.__version__)')"
+ENGINE_VERSION="$VERSION"
 
 cd "$HERE"
 if swift build -c release --arch arm64 --arch x86_64 >/dev/null 2>&1; then
