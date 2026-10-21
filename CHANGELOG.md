@@ -2,6 +2,11 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Unveröffentlicht
+
+- Neue native Mac-App **Steckwerk Desktop** (SwiftUI, macOS 14+, Version 0.1.0) unter `packaging/swift`: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Update-Check als echtes Mac-Fenster. Die bisherige App bleibt.
+- „Motiv zeichnen“ kann jetzt auch **ChatGPT** (OpenAI, `gpt-image-1` oder `gpt-image-1-mini`) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter.
+
 ## 2.8.0 – 2026-10-17
 
 - Neues Themenpaket **Verkauf** 1.0.0 mit dem Flaschenschild: Preisschild zum Aufhängen am Flaschenhals oder an einer Kordel, mit deinem Logo (aus „Motive importieren“) oder einer Kopfzeile, Preis inkl. MwSt. und Grundpreis je Liter, den Steckwerk selbst ausrechnet. Über eine Preisliste entstehen alle Schilder auf einmal.

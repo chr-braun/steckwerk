@@ -72,6 +72,14 @@ class Fake(BaseHTTPRequestHandler):
             if req["model"].startswith("qwen"):
                 return self._j({"response": "Hallo", "done": True})
             return self._j({"image": base64.b64encode(_png()).decode(), "done": True})
+        if self.path == "/images/generations":
+            if self.headers.get("Authorization") != "Bearer sk-openai-test":
+                return self._j({"error": {"message": "Incorrect API key provided"}}, 401)
+            if "Leer" in req["prompt"]:
+                return self._j({"error": {"message": "You exceeded your current quota"}}, 429)
+            return self._j({"data": [{"b64_json": base64.b64encode(_png()).decode()}], "output_format": "png",
+                            "usage": {"input_tokens": 80, "output_tokens": 1056,
+                                      "input_tokens_details": {"text_tokens": 80, "image_tokens": 0}}})
         if self.path == "/images":
             if self.headers.get("Authorization") != "Bearer sk-or-test":
                 return self._j({"error": {"message": "bad key"}}, 401)
@@ -89,6 +97,7 @@ def fake(tmp_path, monkeypatch):
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     url = "http://127.0.0.1:%d" % srv.server_address[1]
     monkeypatch.setattr(bildgen, "OPENROUTER", url)
+    monkeypatch.setattr(bildgen, "OPENAI", url)
     bildgen._cache.clear()
     assistent.save_settings(an=True, url=url, modell="qwen2.5:3b")
     yield url
@@ -241,3 +250,59 @@ def test_webui_routen(server):
         assert code == 403
     finally:
         srv.RequestHandlerClass.lan = False
+
+
+def test_chatgpt_bild_kosten_limit(fake):
+    with pytest.raises(bildgen.BildFehler, match="Für OpenAI fehlt noch der Schlüssel"):
+        bildgen.erzeugen("Eule", quelle="chatgpt")
+    s = bildgen.save_settings(quelle="chatgpt", chatgpt_key="sk-openai-test")
+    assert s["quelle"] == "chatgpt" and s["chatgpt_key_gesetzt"] and not s["key_gesetzt"]
+    assert s["chatgpt_modell"] == "gpt-image-1"
+    d = bildgen.erzeugen("Eule auf einem Ast")
+    assert d["ok"] and d["quelle"] == "chatgpt" and d["typ"] == "image/png"
+    assert base64.b64decode(d["bild"])[:4] == b"\x89PNG"
+    assert d["kosten"] == round((80 * 5.0 + 1056 * 40.0) / 1e6, 4) and d["monat"]["bilder"] == 1
+    path, req, auth = Fake.last
+    assert path == "/images/generations" and req["model"] == "gpt-image-1" and auth == "Bearer sk-openai-test"
+    assert "response_format" not in req and req["size"] == "1024x1024"
+    bildgen.save_settings(limit=0.01)
+    with pytest.raises(bildgen.BildFehler, match="Monatslimit"):
+        bildgen.erzeugen("Eule")
+
+
+def test_chatgpt_fehler_auf_deutsch(fake):
+    bildgen.save_settings(chatgpt_key="sk-openai-falsch")
+    with pytest.raises(bildgen.BildFehler, match="OpenAI lehnt den Schlüssel ab"):
+        bildgen.erzeugen("Eule", quelle="chatgpt")
+    bildgen.save_settings(chatgpt_key="sk-openai-test")
+    with pytest.raises(bildgen.BildFehler, match="kein Guthaben"):
+        bildgen.erzeugen("Leer", quelle="chatgpt")
+    with pytest.raises(bildgen.BildFehler, match="sieht nicht richtig aus"):
+        bildgen.save_settings(chatgpt_key="zwei worte")
+    with pytest.raises(bildgen.BildFehler, match="Quelle unbekannt"):
+        bildgen.save_settings(quelle="dalle")
+
+
+def test_chatgpt_modelle_und_webui(fake):
+    m = bildgen.chatgpt_modelle()
+    assert m[0]["id"] == "gpt-image-1" and m[0]["empfohlen"] and 0.03 < m[0]["kosten"] < 0.06
+    assert m[1]["kosten"] < m[0]["kosten"]
+    srv = webui.make_server("127.0.0.1", 0)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        def post(path, body):
+            req = urllib.request.Request("http://127.0.0.1:%d%s" % (srv.server_address[1], path),
+                                         data=json.dumps(body).encode(), method="POST",
+                                         headers={"X-Steckwerk": "1", "Content-Type": "application/json"})
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+            with opener.open(req, timeout=10) as r:
+                return json.loads(r.read())
+        d = post("/api/bild-einstellungen", {"quelle": "chatgpt", "chatgpt_key": "sk-openai-test",
+                                             "chatgpt_modell": "gpt-image-1-mini"})
+        assert d["ok"] and d["bilder"]["chatgpt_modell"] == "gpt-image-1-mini" and "chatgpt_key" not in d["bilder"]
+        assert post("/api/bild-modelle", {"quelle": "chatgpt"})["modelle"][0]["id"] == "gpt-image-1"
+        b = post("/api/bild", {"beschreibung": "Eule", "stil": "silhouette"})
+        assert b["ok"] and b["modell"] == "gpt-image-1-mini"
+        assert b["kosten"] == round((80 * 2.0 + 1056 * 8.0) / 1e6, 4)
+    finally:
+        srv.shutdown()

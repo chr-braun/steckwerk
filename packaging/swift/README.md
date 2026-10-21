@@ -55,4 +55,8 @@ Die Test-Fixtures in `Tests/SteckwerkDesktopTests/Fixtures/` stammen direkt aus 
 - Programm-Updates installiert die native App nicht selbst; sie zeigt neue Versionen und verlinkt die Seite.
   Pakete aus dem Kanal installiert sie wie gewohnt.
 - Kein Platzierungs-Editor für Motive (Werte x/y/Größe/Drehung stehen im Formular).
+- Der Assistent (Werte aus einer Beschreibung) läuft weiter nur über Ollama. ChatGPT ist als dritter Anbieter
+  nur für „Motiv zeichnen“ eingebaut (`bildgen.py`, Modell `gpt-image-1` oder `gpt-image-1-mini`): ein
+  OpenAI-Chat-Weg hätte den Assistenten um eine zweite, kostenpflichtige Schnittstelle erweitert, ohne dass
+  die Werte besser würden.
 - Oberfläche nur auf Deutsch.
