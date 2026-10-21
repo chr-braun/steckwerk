@@ -2,12 +2,22 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## 2.9.0 – 2026-10-21
+
+- New: **Steckwerk Desktop**, a native Mac app (DMG) with the engine built in. Models, packages, AI and material in one window; the preview rebuilds by itself whenever you change a value.
+- Steckwerk Desktop updates itself: under "Updates", "Install and restart" loads the new version from the update channel, checks it and replaces the app. At launch it looks for updates by itself (can be switched off).
+- All 19 built-in motifs are redrawn with much more detail, with fine inner shapes and engraved lines.
+- Silhouettes made from motifs engrave the motif lines too.
+- Images for "Draw a motif" can now also come from ChatGPT; the key is kept in the keychain.
+- Halloween 1.4.0: the tags take their figures from the motif library and leave room for the name.
+- Christmas 2.0.1: the candy cane no longer carries holly, just the bow.
+- Starting is faster on the Mac (no more name lookup when the server starts).
+
 ## 2.8.0 – 2026-10-17
 
 - New theme package **Shop** 1.0.0 with the bottle tag: a price tag that hangs on the bottle neck or on a cord, with your logo (from "Import motifs") or a header line, price incl. VAT and the unit price per litre, which Steckwerk works out itself. A price list makes all tags at once.
 - The font now also knows €, % and the middle dot ·.
 - Text fields in packages can have several lines.
-- Steckwerk Desktop updates itself: under "Updates", "Install and restart" loads the new version from the update channel, checks it and replaces the app. At launch it looks for updates by itself (can be switched off).
 
 ## 2.7.0 – 2026-10-16
 

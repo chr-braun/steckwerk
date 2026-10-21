@@ -47,5 +47,11 @@ seine Version zur Programmversion passt; dann kann sich Steckwerk Desktop selbst
 Die Update-Hinweise kommen aus `CHANGELOG.md` (deutsch) und `CHANGELOG.en.md` (englisch).
 **Wichtig:** Jede neue Version und jedes Paket-Update muss in den Kanal, sonst sieht die App es nicht.
 
-Aktueller Inhalt: Steckwerk 2.6.0, Grundlagen 2.0.0, Wohnen 1.0.0, Weihnachten 2.0.0,
-Halloween 1.3.0, Mehrlagig 1.2.0, Wichtel 1.0.1.
+Aktueller Inhalt: Steckwerk 2.9.0 (Mac-App und Steckwerk Desktop), Grundlagen 2.0.0, Wohnen 1.0.0,
+Weihnachten 2.0.1, Halloween 1.4.0, Mehrlagig 1.2.0, Wichtel 1.0.1, Formen 1.0.0, Schmuck 1.0.0, Verkauf 1.0.0,
+Bewegung 1.0.0.
+
+Seit 2.9.0 kann das CI den Kanal selbst veröffentlichen: Enthält die Commit-Nachricht `[kanal veröffentlichen]`
+(oder startest du „macOS Desktop“ von Hand mit „kanal“), baut der Job „kanal“ nach dem grünen Mac-Bau die Mac-App,
+übernimmt Steckwerk Desktop aus dem Bau, packt alle Pakete neu, deren Version im Kanal fehlt, prüft die
+Prüfsummen und pusht auf `updates`.

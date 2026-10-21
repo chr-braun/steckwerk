@@ -6,14 +6,11 @@ Stand 17.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 - **Repo-Sichtbarkeit:** Das Repo `chr-braun/steckwerk` ist derzeit öffentlich. Ob es so bleibt, entscheidest du.
 - **Pull Request #5** (https://github.com/chr-braun/steckwerk/pull/5) bringt Steckwerk Desktop, die neuen Motive
-  und den Stand 2.8.0 auf den Zielbranch `claude/project-thread-y7q7zo`. Prüfen und mergen liegt bei dir.
-- **Halloween-Paket:** Die Anhänger sind überarbeitet, das Paket trägt aber noch Version 1.3.0. Für ein Update im
-  Kanal muss die Version erhöht, das Paket neu gepackt und in den Kanal gestellt werden.
+  und den Stand 2.9.0 auf den Zielbranch `claude/project-thread-y7q7zo`. Prüfen und mergen liegt bei dir.
 - **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind in Ordnung.
 - **Mac-Zip im Download-Ordner** ist noch 2.6.0. Die neue Desktop-App gibt es als Artefakt aus dem CI.
-- **Selbst-Update von Steckwerk Desktop** greift erst, wenn der Kanal (Branch `updates`) ein Desktop-ZIP enthält:
-  beim nächsten Release `update_kanal.py … --desktop Steckwerk-Desktop-macOS.zip` mitgeben. Die heute installierte
-  Desktop-App kann das Update noch nicht; sie muss einmal von Hand durch die neue ersetzt werden.
+- **Steckwerk Desktop einmal von Hand ersetzen:** Die bisher installierte Desktop-App (2.8.0) kennt das
+  Selbst-Update noch nicht. Einmal das DMG 2.9.0 installieren, ab dann aktualisiert sie sich selbst.
 
 ## Zum Ausprobieren bei dir
 

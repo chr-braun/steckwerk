@@ -24,7 +24,7 @@ Alles ist zwischen dem 9. und 17. Oktober 2026 entstanden. Die Details stehen im
 | 2.6.0 | 16.10. | Pakete aufgeräumt: sechs Themenpakete; Paketkatalog mit Beschreibung, Modellen und Installieren-Knopf |
 | 2.7.0 | 16.10. | Themenpaket Formen 1.0.0 (Steckkörper, Wellenfläche, Stapelvase); alte Einzelpakete werden durch Themenpakete ersetzt |
 | 2.8.0 | 17.10. | Themenpaket Verkauf 1.0.0 mit Flaschenschild und Preisliste; mehrzeilige Textfelder in Paketen; €, % und · in der Schrift |
-| (Entwicklung) | 17.10. | Steckwerk Desktop: native Mac-App mit eingebauter Engine (DMG aus dem CI), Live-Vorschau beim Ändern, größere Motiv-Vorschau; ChatGPT als Bildquelle; 19 Motive neu gezeichnet; Halloween-Anhänger aus der Motiv-Bibliothek; Silhouetten gravieren Motivdetails; Serverstart ohne Namensauflösung (schneller auf dem Mac); Steckwerk Desktop aktualisiert sich selbst aus dem Update-Kanal |
+| 2.9.0 | 21.10. | Steckwerk Desktop: native Mac-App mit eingebauter Engine (DMG aus dem CI), Live-Vorschau beim Ändern, größere Motiv-Vorschau; ChatGPT als Bildquelle; 19 Motive neu gezeichnet; Halloween-Anhänger aus der Motiv-Bibliothek; Silhouetten gravieren Motivdetails; Serverstart ohne Namensauflösung (schneller auf dem Mac); Steckwerk Desktop aktualisiert sich selbst aus dem Update-Kanal |
 
 ## Pakete
 
