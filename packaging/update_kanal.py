@@ -3,6 +3,7 @@
 update_kanal.py – Update-Kanal für Steckwerk bauen bzw. auffrischen.
 
   python3 packaging/update_kanal.py KANAL [--mac Steckwerk-1.7.0-macOS.zip] [--paket datei.swpaket ...]
+                                          [--desktop Steckwerk-Desktop-2.8.0-macOS.zip]
 
 KANAL ist ein Ordner (z. B. ein Checkout des Branches „updates“). Neue Dateien werden hineinkopiert,
 danach wird feed.json aus dem Inhalt neu geschrieben: die neueste Mac-App und je Paket die neueste
@@ -25,7 +26,7 @@ import shutil
 import sys
 import time
 import zipfile
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -33,6 +34,7 @@ sys.path.insert(0, ROOT)
 from updater import STANDARD, ver  # noqa: E402
 
 MAC_RE = re.compile(r"^Steckwerk-(\d+\.\d+\.\d+)-macOS\.zip$")
+DESKTOP_RE = re.compile(r"^Steckwerk-Desktop-(\d+\.\d+\.\d+)-macOS\.zip$")
 
 
 def sha256(path: str) -> str:
@@ -63,11 +65,11 @@ def changelog_notes(version: str, path: str = os.path.join(ROOT, "CHANGELOG.md")
     return [n.replace("`", "").replace("**", "") for n in notes if not n.startswith(skip)]
 
 
-def mac_version(path: str) -> str:
+def mac_version(path: str, app: str = "Steckwerk") -> str:
     with zipfile.ZipFile(path) as z:
-        name = next((n for n in z.namelist() if n.endswith("Steckwerk.app/Contents/Info.plist")), None)
+        name = next((n for n in z.namelist() if ("/" + n).endswith(f"/{app}.app/Contents/Info.plist")), None)
         if not name:
-            raise SystemExit(f"{path}: keine Steckwerk.app darin")
+            raise SystemExit(f"{path}: keine {app}.app darin")
         return str(plistlib.loads(z.read(name)).get("CFBundleShortVersionString"))
 
 
@@ -79,12 +81,55 @@ def paket_manifest(path: str) -> Dict[str, Any]:
         return json.loads(z.read(name).decode("utf-8"))
 
 
+def _quelltext(path: str) -> str:
+    with zipfile.ZipFile(path) as z:
+        return "\n".join(z.read(n).decode("utf-8", "replace") for n in z.namelist() if n.endswith(".py"))
+
+
+def paket_inhalt(path: str, m: Dict[str, Any], andere: str = "") -> Tuple[List[str], List[str]]:
+    """Anzeigenamen der Modelle (deutsch, englisch) – für den Paketkatalog in der App, ohne Code auszuführen.
+    Englische Namen stehen im Paket selbst oder (bei Bibliotheks-Wörterbüchern) in einem anderen Paket: andere."""
+    de, en = [], []
+    alles = _quelltext(path) + "\n" + andere
+    with zipfile.ZipFile(path) as z:
+        files = {n.rstrip("/").split("/")[-1]: n for n in z.namelist()}
+        for model in m.get("modelle") or []:
+            src = z.read(files[model + ".py"]).decode("utf-8") if model + ".py" in files else ""
+            hit = re.search(r'label\s*=\s*"([^"]+)"', src)
+            label = hit.group(1) if hit else model
+            hit = re.search(re.escape(json.dumps(label, ensure_ascii=False)) + r'\s*:\s*"([^"]+)"', alles)
+            de.append(label)
+            en.append(hit.group(1) if hit else label)
+    return de, en
+
+
+def _desktop(kanal: str, old: Dict[str, Any], today: Optional[str]) -> Dict[str, Any]:
+    """Eintrag für die native App: neuestes Steckwerk-Desktop-ZIP im Kanal, ältere werden entfernt."""
+    zips = sorted((f for f in os.listdir(kanal) if DESKTOP_RE.match(f)),
+                  key=lambda f: ver(DESKTOP_RE.match(f).group(1)))
+    for f in zips[:-1]:
+        os.remove(os.path.join(kanal, f))
+    d: Dict[str, Any] = dict(old.get("desktop") or {})
+    if not zips:
+        return d
+    f = zips[-1]
+    v = DESKTOP_RE.match(f).group(1)
+    if d.get("version") != v:
+        d = {"version": v, "datum": today or time.strftime("%Y-%m-%d")}
+    d["hinweise"] = changelog_notes(v) or d.get("hinweise", [])
+    d["mac"] = {"datei": f, "sha256": sha256(os.path.join(kanal, f)), "groesse": os.path.getsize(os.path.join(kanal, f))}
+    return d
+
+
 def build(kanal: str, mac: Optional[str] = None, pakete: List[str] = (), notes: Optional[List[str]] = None,
-          seite: str = "", today: Optional[str] = None) -> Dict[str, Any]:
+          seite: str = "", today: Optional[str] = None, desktop: Optional[str] = None) -> Dict[str, Any]:
     os.makedirs(os.path.join(kanal, "pakete"), exist_ok=True)
     if mac:
         v = mac_version(mac)
         shutil.copyfile(mac, os.path.join(kanal, f"Steckwerk-{v}-macOS.zip"))
+    if desktop:
+        v = mac_version(desktop, "Steckwerk Desktop")
+        shutil.copyfile(desktop, os.path.join(kanal, f"Steckwerk-Desktop-{v}-macOS.zip"))
     for p in pakete:
         m = paket_manifest(p)
         shutil.copyfile(p, os.path.join(kanal, "pakete", f"{m['id']}-{m['version']}.swpaket"))
@@ -124,15 +169,20 @@ def build(kanal: str, mac: Optional[str] = None, pakete: List[str] = (), notes: 
         else:
             os.remove(path)
     eintraege = []
+    andere = "\n".join(_quelltext(path) for _, path in newest.values())
     for pid, (m, path) in sorted(newest.items()):
+        inhalt, inhalt_en = paket_inhalt(path, m, andere)
         eintraege.append({"id": pid, "name": m.get("name", pid), "version": m["version"],
                           "beschreibung": m.get("beschreibung", ""), "autor": m.get("autor", ""),
-                          **{k: m[k] for k in ("name_en", "beschreibung_en", "benoetigt") if m.get(k)},
+                          **{k: m[k] for k in ("name_en", "beschreibung_en", "benoetigt", "ersetzt") if m.get(k)},
                           "steckwerk": m.get("steckwerk") or m.get("laserforge") or "1.5.0",
                           "datei": "pakete/" + os.path.basename(path), "sha256": sha256(path),
-                          "groesse": os.path.getsize(path)})
+                          "groesse": os.path.getsize(path), "inhalt": inhalt, "inhalt_en": inhalt_en})
     feed = {"standard": STANDARD, "erstellt": today or time.strftime("%Y-%m-%d"), "programm": programm,
             "pakete": eintraege}
+    desk = _desktop(kanal, old, today)
+    if desk:
+        feed["desktop"] = desk
     with open(os.path.join(kanal, "feed.json"), "w", encoding="utf-8") as fh:
         json.dump(feed, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
@@ -145,10 +195,12 @@ def main(argv=None) -> int:
     ap.add_argument("--mac", help="Mac-App als ZIP (aus packaging/build_macos.py)")
     ap.add_argument("--paket", action="append", default=[], help=".swpaket-Datei (mehrfach möglich)")
     ap.add_argument("--seite", default="", help="Webseite mit Download für Nicht-Mac-Nutzer")
+    ap.add_argument("--desktop", help="native App „Steckwerk Desktop“ als ZIP (aus packaging/swift/build_app.sh)")
     a = ap.parse_args(argv)
-    feed = build(a.kanal, a.mac, a.paket, seite=a.seite)
+    feed = build(a.kanal, a.mac, a.paket, seite=a.seite, desktop=a.desktop)
     prog = feed["programm"]
     print(f"Kanal {a.kanal}: Programm {prog.get('version', '–')}, "
+          f"Desktop {(feed.get('desktop') or {}).get('version', '–')}, "
           f"{len(feed['pakete'])} Paket(e): " + ", ".join(f"{p['id']} {p['version']}" for p in feed["pakete"]))
     return 0
 

@@ -8,6 +8,8 @@ Steckwerk liest einen Update-Kanal: eine Datei feed.json plus die Dateien, auf d
     "standard": 1,
     "programm": {"version": "1.7.0", "datum": "2026-10-10", "hinweise": ["…"],
                  "mac": {"datei": "Steckwerk-1.7.0-macOS.zip", "sha256": "…", "groesse": 123}},
+    "desktop": {"version": "2.8.0", "datum": "…", "hinweise": ["…"],
+                "mac": {"datei": "Steckwerk-Desktop-2.8.0-macOS.zip", "sha256": "…", "groesse": 789}},
     "pakete": [{"id": "halloween", "name": "Halloween", "version": "1.0.0", "beschreibung": "…",
                 "steckwerk": "1.5.0", "datei": "pakete/halloween-1.0.0.swpaket", "sha256": "…", "groesse": 456}]
   }
@@ -46,6 +48,7 @@ MAX_FEED = 1024 * 1024
 MAX_DATEI = 80 * 1024 * 1024
 MAC = sys.platform == "darwin"
 KEYCHAIN = "Steckwerk Updates"
+DESKTOP_APP = "Steckwerk Desktop"
 GITHUB_HOSTS = {"raw.githubusercontent.com", "api.github.com", "github.com", "objects.githubusercontent.com"}
 
 
@@ -282,8 +285,11 @@ def check(bundle: Optional[str] = None, feed: Optional[Dict[str, Any]] = None) -
             continue
         cur = have.get(p["id"])
         need = str(p.get("steckwerk") or p.get("laserforge") or "0")
+        alte = [str(r) for r in (p.get("ersetzt") or []) if str(r) in have]
         if ver(need) > ver(__version__):
             status = "zu_neu"
+        elif cur is None and alte:                 # löst installierte Pakete ab (ab 2.5.0) → wie ein Update
+            status = "update"
         elif cur is None:
             status = "neu"
         elif ver(p.get("version")) > ver(cur):
@@ -293,8 +299,9 @@ def check(bundle: Optional[str] = None, feed: Optional[Dict[str, Any]] = None) -
         pk.append(dict(id=str(p["id"]), name=str(p.get("name", p["id"])), version=str(p.get("version", "")),
                        beschreibung=str(p.get("beschreibung", "")), name_en=str(p.get("name_en", "")),
                        beschreibung_en=str(p.get("beschreibung_en", "")), installiert=cur, steckwerk=need, status=status,
-                       benoetigt=sorted(str(k) for k in (p.get("benoetigt") or {})),
-                       groesse=int(p.get("groesse", 0) or 0)))
+                       benoetigt=sorted(str(k) for k in (p.get("benoetigt") or {})), ersetzt=alte,
+                       groesse=int(p.get("groesse", 0) or 0),
+                       inhalt=[str(x) for x in p.get("inhalt") or []], inhalt_en=[str(x) for x in p.get("inhalt_en") or []]))
     pk.sort(key=lambda p: (["update", "neu", "zu_neu", "aktuell"].index(p["status"]), p["name"].lower()))
     anzahl = int(programm["neu"]) + sum(p["status"] in ("update", "neu") for p in pk)
     return {"ok": True, "programm": programm, "pakete": pk, "anzahl": anzahl,
@@ -351,8 +358,9 @@ def program_installable(bundle: Optional[str]) -> Tuple[bool, str]:
     return True, ""
 
 
-def _extract_app(data: bytes, dest: str) -> str:
-    """Mac-ZIP sicher entpacken (Rechte bleiben erhalten) und den Pfad der Steckwerk.app liefern."""
+def _extract_app(data: bytes, dest: str, name: str = "Steckwerk") -> str:
+    """Mac-ZIP sicher entpacken (Rechte bleiben erhalten) und den Pfad der <name>.app liefern."""
+    bundle_name = name + ".app"
     try:
         zf = zipfile.ZipFile(__import__("io").BytesIO(data))
     except zipfile.BadZipFile:
@@ -374,10 +382,10 @@ def _extract_app(data: bytes, dest: str) -> str:
         with zf.open(info) as src, open(target, "wb") as out:
             shutil.copyfileobj(src, out)
         os.chmod(target, (mode & 0o755) or 0o644)
-        if "Steckwerk.app" in parts and app is None:
-            app = os.path.join(dest, *parts[: parts.index("Steckwerk.app") + 1])
+        if bundle_name in parts and app is None:
+            app = os.path.join(dest, *parts[: parts.index(bundle_name) + 1])
     if not app or not os.path.isfile(os.path.join(app, "Contents", "Info.plist")):
-        raise UpdateFehler("Im Update fehlt die Steckwerk.app")
+        raise UpdateFehler(f"Im Update fehlt die {bundle_name}")
     return app
 
 
@@ -405,6 +413,51 @@ def install_program(bundle: str, feed: Optional[Dict[str, Any]] = None) -> Tuple
             raise UpdateFehler(f"Das Update enthält Version {got} statt {want} – nichts geändert")
         import steckwerk_app
         target = steckwerk_app.install_bundle(app, os.path.dirname(os.path.realpath(bundle)))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return target, want
+
+
+# --- Native App „Steckwerk Desktop“ ----------------------------------------------------------------
+
+def desktop_check(bundle: Optional[str], feed: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Gibt es eine neuere Steckwerk Desktop.app im Kanal? bundle = Pfad der laufenden App."""
+    feed = feed or load_feed()
+    d = feed.get("desktop") or {}
+    try:
+        installiert = app_version(bundle) if bundle else ""
+    except (OSError, ValueError):
+        installiert = ""
+    neu = bool(d.get("version")) and ver(d.get("version")) > ver(installiert or "0")
+    ok, grund = program_installable(bundle)
+    if not ok and bundle is None:
+        grund = "Updates installiert nur die fertige App aus /Applications (nicht „swift run“)."
+    if neu and not d.get("mac"):
+        ok, grund = False, "Für diese Version gibt es kein Mac-Paket im Kanal."
+    return dict(ok=True, installiert=installiert, version=str(d.get("version", "")), neu=neu,
+                datum=str(d.get("datum", "")), hinweise=[str(h) for h in d.get("hinweise", [])][:30],
+                kann_installieren=bool(neu and ok), grund="" if ok else grund, kanal=feed.get("_url", ""))
+
+
+def install_desktop(bundle: str, feed: Optional[Dict[str, Any]] = None) -> Tuple[str, str]:
+    """Neue Steckwerk Desktop.app laden, prüfen und die laufende ersetzen. Liefert (Pfad, Version)."""
+    ok, grund = program_installable(bundle)
+    if not ok:
+        raise UpdateFehler(grund)
+    feed = feed or load_feed()
+    d = feed.get("desktop") or {}
+    want = str(d.get("version", ""))
+    if not want or ver(want) <= ver(app_version(bundle)):
+        raise UpdateFehler(f"{DESKTOP_APP} {app_version(bundle)} ist schon aktuell")
+    data = download(feed, _entry(d.get("mac"), "desktop.mac"))
+    tmp = tempfile.mkdtemp(prefix="swupdate_", dir=data_dir())
+    try:
+        app = _extract_app(data, tmp, DESKTOP_APP)
+        got = app_version(app)
+        if got != want:
+            raise UpdateFehler(f"Das Update enthält Version {got} statt {want} – nichts geändert")
+        import steckwerk_app
+        target = steckwerk_app.install_bundle(app, os.path.dirname(os.path.realpath(bundle)), DESKTOP_APP)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     return target, want

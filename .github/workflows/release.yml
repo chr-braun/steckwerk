@@ -34,3 +34,20 @@ jobs:
           V=${GITHUB_REF_NAME#v}
           awk -v v="$V" '$0 ~ "^## "v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
           gh release create "$GITHUB_REF_NAME" dist/*.zip dist/*.swpaket --title "Steckwerk $V" --notes-file notes.md
+
+  desktop:
+    name: Steckwerk Desktop (macOS)
+    needs: release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: App bauen und testen
+        working-directory: packaging/swift
+        run: swift test && ./build_app.sh ../../dist
+      - name: Ans Release hängen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" dist/Steckwerk-Desktop-*-macOS.zip --clobber

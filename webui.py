@@ -27,9 +27,9 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/assistent    {model, beschreibung, params} → Werte-Vorschlag vom lokalen Sprachmodell (Ollama)
   POST /api/assistent-status         {url?} → Ollama erreichbar? installierte Modelle
   POST /api/assistent-einstellungen  {an, url, modell} → Assistent einstellen
-  POST /api/bild          {beschreibung, stil, quelle?, modell?} → Motiv-Bild vom Bildmodell (Ollama oder OpenRouter)
+  POST /api/bild          {beschreibung, stil, quelle?, modell?} → Motiv-Bild vom Bildmodell (Ollama, OpenRouter, ChatGPT)
   POST /api/bild-modelle  {quelle, neu?} → Bildmodelle der Quelle (OpenRouter mit geschätzten Kosten je Bild)
-  POST /api/bild-einstellungen {quelle, ollama_modell, openrouter_modell, key, limit} → Schlüssel wird nie zurückgegeben
+  POST /api/bild-einstellungen {quelle, ollama_modell, openrouter_modell, chatgpt_modell, key, chatgpt_key, limit} → Schlüssel wird nie zurückgegeben
   POST /api/ping         {client} → Lebenszeichen eines offenen Fensters
   POST /api/bye          {client} → Fenster wurde geschlossen
   POST /api/open-folder  Ausgabeordner im Finder/Explorer öffnen (nur App)
@@ -176,16 +176,19 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"ok": False, "error": "Nur am Rechner selbst änderbar"}, 403)
                 d = bildgen.save_settings(quelle=req.get("quelle"), ollama_modell=req.get("ollama_modell"),
                                           openrouter_modell=req.get("openrouter_modell"), key=req.get("key"),
-                                          limit=req.get("limit"))
+                                          limit=req.get("limit"), chatgpt_modell=req.get("chatgpt_modell"),
+                                          chatgpt_key=req.get("chatgpt_key"))
                 self._json({"ok": True, "bilder": d})
             elif path == "/api/bild-modelle":
                 if req.get("quelle") == "openrouter":
                     self._json({"ok": True, "modelle": bildgen.openrouter_modelle(bool(req.get("neu")))})
+                elif req.get("quelle") == "chatgpt":
+                    self._json({"ok": True, "modelle": bildgen.chatgpt_modelle()})
                 else:
                     self._json({"ok": True, "modelle": bildgen.ollama_modelle()})
             elif path == "/api/bild":
                 quelle = req.get("quelle") or None
-                if self.lan and (quelle or bildgen.settings()["quelle"]) == "openrouter":
+                if self.lan and (quelle or bildgen.settings()["quelle"]) in bildgen.KOSTENPFLICHTIG:
                     return self._json({"ok": False, "error": "Kostenpflichtige Bilder nur am Rechner selbst"}, 403)
                 self._json(bildgen.erzeugen(str(req.get("beschreibung") or ""), str(req.get("stil") or "silhouette"),
                                             quelle, req.get("modell") or None))
