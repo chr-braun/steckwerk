@@ -148,25 +148,38 @@ jobs:
 
   kanal:
     name: Update-Kanal veröffentlichen
-    needs: build
     if: >-
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[kanal veröffentlichen]')) ||
       (github.event_name == 'workflow_dispatch' && inputs.kanal)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
     permissions:
       contents: write
+      actions: read
     concurrency:
       group: update-kanal
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
 
-      - name: Steckwerk Desktop aus dem Bau-Job holen
-        uses: actions/download-artifact@v4
-        with:
-          name: Steckwerk-Desktop-macOS
-          path: ${{ runner.temp }}/rel
+      # Steckwerk Desktop aus einem grünen Mac-Lauf für genau diesen Commit (Push- oder PR-Lauf) holen.
+      # So hängt die Veröffentlichung nicht daran, dass gerade dieser Lauf einen Mac-Runner bekommt.
+      - name: Steckwerk Desktop aus einem grünen Mac-Lauf holen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 90); do
+            RUN="$(gh run list -R "$GITHUB_REPOSITORY" --workflow macos-desktop.yml --commit "$GITHUB_SHA" \
+                     --status success --json databaseId,event --jq '.[0].databaseId // empty')"
+            if [ -n "$RUN" ] && gh run download -R "$GITHUB_REPOSITORY" "$RUN" -n Steckwerk-Desktop-macOS -D "$RUNNER_TEMP/rel"; then
+              echo "Steckwerk Desktop aus Lauf $RUN"
+              ls -la "$RUNNER_TEMP/rel"
+              exit 0
+            fi
+            sleep 60
+          done
+          echo "Kein grüner Mac-Lauf mit Steckwerk Desktop für $GITHUB_SHA" >&2
+          exit 1
 
       - name: Mac-App und Pakete bauen
         env:

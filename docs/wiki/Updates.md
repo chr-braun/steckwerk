@@ -52,6 +52,6 @@ Weihnachten 2.0.1, Halloween 1.4.0, Mehrlagig 1.2.0, Wichtel 1.0.1, Formen 1.0.0
 Bewegung 1.0.0.
 
 Seit 2.9.0 kann das CI den Kanal selbst veröffentlichen: Enthält die Commit-Nachricht `[kanal veröffentlichen]`
-(oder startest du „macOS Desktop“ von Hand mit „kanal“), baut der Job „kanal“ nach dem grünen Mac-Bau die Mac-App,
-übernimmt Steckwerk Desktop aus dem Bau, packt alle Pakete neu, deren Version im Kanal fehlt, prüft die
+(oder startest du „macOS Desktop“ von Hand mit „kanal“), baut der Job „kanal“ die Mac-App,
+übernimmt Steckwerk Desktop aus einem grünen Mac-Lauf für denselben Commit (wartet bis zu 90 Minuten darauf), packt alle Pakete neu, deren Version im Kanal fehlt, prüft die
 Prüfsummen und pusht auf `updates`.
