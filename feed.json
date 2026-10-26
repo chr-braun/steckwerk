@@ -1,21 +1,31 @@
 {
   "standard": 1,
-  "erstellt": "2026-10-21",
+  "erstellt": "2026-10-26",
   "programm": {
-    "version": "2.9.0",
-    "datum": "2026-10-21",
+    "version": "2.10.0",
+    "datum": "2026-10-26",
     "hinweise": [
-      "Neue native Mac-App Steckwerk Desktop (SwiftUI, macOS 14+, gleiche Versionsnummer wie Steckwerk) unter packaging/swift: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Updates als echtes Mac-Fenster. Sie aktualisiert sich selbst aus dem Update-Kanal („Updates → Installieren und neu starten“). Die bisherige App bleibt.",
-      "„Motiv zeichnen“ kann jetzt auch ChatGPT (OpenAI, gpt-image-1 oder gpt-image-1-mini) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter."
+      "Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.",
+      "Alle 19 eingebauten Motive sind neu und deutlich detaillierter gezeichnet, mit feinen Innenformen und Gravurlinien.",
+      "Silhouetten aus Motiven gravieren die Motivlinien mit.",
+      "Halloween 1.4.0: Die Anhänger nehmen ihre Figuren aus der Motiv-Bibliothek und haben Platz für den Namen.",
+      "Weihnachten 2.0.1: Die Zuckerstange trägt keine Stechpalme mehr, nur noch die Schleife.",
+      "Der Start geht auf dem Mac schneller (keine Namensauflösung mehr beim Serverstart).",
+      "Steckwerk Desktop: Modelle in der Seitenleiste lassen sich wieder durchsuchen."
     ],
     "hinweise_en": [
-      "New native Mac app Steckwerk Desktop (SwiftUI, macOS 14+, same version number as Steckwerk): the same engine without a browser – model list, form, sheet preview, check report, export, packages, AI, material and updates in a real Mac window. It updates itself from the update channel (\"Updates → Install and restart\"). The existing app stays.",
-      "\"Draw motif\" can now also use ChatGPT (OpenAI, gpt-image-1 or gpt-image-1-mini) with your own OpenAI key. Costs count towards the same monthly limit as OpenRouter."
+      "Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to \"Updates\"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.",
+      "All 19 built-in motifs are redrawn with much more detail, with fine inner shapes and engraved lines.",
+      "Silhouettes made from motifs engrave the motif lines too.",
+      "Halloween 1.4.0: the tags take their figures from the motif library and leave room for the name.",
+      "Christmas 2.0.1: the candy cane no longer carries holly, just the bow.",
+      "Starting is faster on the Mac (no more name lookup when the server starts).",
+      "Steckwerk Desktop: models in the sidebar can be searched again."
     ],
     "mac": {
-      "datei": "Steckwerk-2.9.0-macOS.zip",
-      "sha256": "cab1a32a5b355be99631f37b669756e78be1ff270716b761b41977c5b9bbbc89",
-      "groesse": 471706
+      "datei": "Steckwerk-2.10.0-macOS.zip",
+      "sha256": "6f9341adea8652b2dc70e621b70a6ec6ec718ca84998b2bff180c234c3def045",
+      "groesse": 492840
     }
   },
   "pakete": [
@@ -101,7 +111,7 @@
     {
       "id": "halloween",
       "name": "Halloween",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "beschreibung": "Gruselige Laser-Deko: Spukschloss-Szenen im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set, filigranes Spinnennetz, Skelett-Hampelmann, Fledermaus-Girlande und Süßigkeitenschale als Hexenkessel oder Kürbis.",
       "autor": "Christian & Claude",
       "name_en": "Halloween",
@@ -109,10 +119,10 @@
       "benoetigt": {
         "verzierungen": "1.1.0"
       },
-      "steckwerk": "2.4.0",
-      "datei": "pakete/halloween-1.3.0.swpaket",
-      "sha256": "b7deae3a7344b5f3b2db4e7412fec194642bd8c885f3041e67d724a9bad271db",
-      "groesse": 55458,
+      "steckwerk": "2.10.0",
+      "datei": "pakete/halloween-1.4.0.swpaket",
+      "sha256": "a4a0cc1bfe3f2a753976555c27048116f7dc8bbab373e457a2945e6d15d67d24",
+      "groesse": 54908,
       "inhalt": [
         "Spukschloss-Fensterbild",
         "Kürbis-Leuchte",
@@ -201,7 +211,7 @@
     {
       "id": "weihnacht",
       "name": "Weihnachten",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "beschreibung": "Alles für Weihnachten in einem Paket: Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken.",
       "autor": "Christian & Claude",
       "name_en": "Christmas",
@@ -213,9 +223,9 @@
         "filigran"
       ],
       "steckwerk": "2.6.0",
-      "datei": "pakete/weihnacht-2.0.0.swpaket",
-      "sha256": "c5af1a468201fe12112defbec93f2a5fe02c67386d89f0ea5b37fe971787cbbd",
-      "groesse": 59007,
+      "datei": "pakete/weihnacht-2.0.1.swpaket",
+      "sha256": "a18ec7115a5787426fd8ce79d7348ef51be5a6af4141915d9d9e37d3fba465de",
+      "groesse": 58997,
       "inhalt": [
         "Zierschlitten",
         "Steckkrippe",
@@ -328,16 +338,21 @@
     }
   ],
   "desktop": {
-    "version": "2.9.0",
-    "datum": "2026-10-21",
+    "version": "2.10.0",
+    "datum": "2026-10-26",
     "hinweise": [
-      "Neue native Mac-App Steckwerk Desktop (SwiftUI, macOS 14+, gleiche Versionsnummer wie Steckwerk) unter packaging/swift: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Updates als echtes Mac-Fenster. Sie aktualisiert sich selbst aus dem Update-Kanal („Updates → Installieren und neu starten“). Die bisherige App bleibt.",
-      "„Motiv zeichnen“ kann jetzt auch ChatGPT (OpenAI, gpt-image-1 oder gpt-image-1-mini) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter."
+      "Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.",
+      "Alle 19 eingebauten Motive sind neu und deutlich detaillierter gezeichnet, mit feinen Innenformen und Gravurlinien.",
+      "Silhouetten aus Motiven gravieren die Motivlinien mit.",
+      "Halloween 1.4.0: Die Anhänger nehmen ihre Figuren aus der Motiv-Bibliothek und haben Platz für den Namen.",
+      "Weihnachten 2.0.1: Die Zuckerstange trägt keine Stechpalme mehr, nur noch die Schleife.",
+      "Der Start geht auf dem Mac schneller (keine Namensauflösung mehr beim Serverstart).",
+      "Steckwerk Desktop: Modelle in der Seitenleiste lassen sich wieder durchsuchen."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.9.0-macOS.zip",
-      "sha256": "39c5b51fbb36e211f7973a47765f6e141ca144987099718cac9fea655ca537a1",
-      "groesse": 1577284
+      "datei": "Steckwerk-Desktop-2.10.0-macOS.zip",
+      "sha256": "392e851de7fd8c1e1ce026a2862d8b1b05b2dbcce4a3321215673ee33bac26d9",
+      "groesse": 1832849
     }
   }
 }
