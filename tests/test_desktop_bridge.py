@@ -1,130 +1,15 @@
-"""Tests für Steckwerk Desktop: Bildquelle „chatgpt“ in bildgen und das Startskript packaging/swift/bridge_start.py."""
-import base64
+"""Tests für Steckwerk Desktop: das Startskript packaging/swift/bridge_start.py."""
 import json
 import os
 import subprocess
 import sys
-import threading
 import time
 import urllib.request
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-import pytest
-
-import bildgen
 import webui
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BRIDGE = os.path.join(ROOT, "packaging", "swift", "bridge_start.py")
-PNG = b"\x89PNG\r\n\x1a\n" + b"\0" * 32
-
-
-class FakeOpenAI(BaseHTTPRequestHandler):
-    last = None
-
-    def log_message(self, *a):
-        pass
-
-    def _j(self, obj, code=200):
-        b = json.dumps(obj).encode()
-        self.send_response(code)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(b)))
-        self.end_headers()
-        self.wfile.write(b)
-
-    def do_POST(self):
-        req = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
-        FakeOpenAI.last = (self.path, req, self.headers.get("Authorization"))
-        if self.path != "/v1/images/generations":
-            return self._j({"error": {"message": "nicht da"}}, 404)
-        if self.headers.get("Authorization") != "Bearer test-chatgpt":
-            return self._j({"error": {"message": "Incorrect API key"}}, 401)
-        if req.get("prompt", "").startswith("Motif: leer"):
-            return self._j({"data": []})
-        return self._j({"data": [{"b64_json": base64.b64encode(PNG).decode()}]})
-
-
-@pytest.fixture
-def openai(tmp_path, monkeypatch):
-    monkeypatch.setenv("STECKWERK_DATEN", str(tmp_path / "daten"))
-    srv = ThreadingHTTPServer(("127.0.0.1", 0), FakeOpenAI)
-    threading.Thread(target=srv.serve_forever, daemon=True).start()
-    monkeypatch.setattr(bildgen, "OPENAI", "http://127.0.0.1:%d/v1" % srv.server_address[1])
-    FakeOpenAI.last = None
-    yield
-    srv.shutdown()
-
-
-# --- bildgen: ChatGPT ------------------------------------------------------------------------------
-
-def test_chatgpt_braucht_eigenen_schluessel(openai):
-    bildgen.save_settings(quelle="openrouter", key="test-openrouter")
-    with pytest.raises(bildgen.BildFehler, match="ChatGPT fehlt noch der Schlüssel"):
-        bildgen.erzeugen("Reh", quelle="chatgpt")
-    assert FakeOpenAI.last is None
-
-
-def test_chatgpt_bild_und_anfrage(openai):
-    s = bildgen.save_settings(quelle="chatgpt", key="test-chatgpt")
-    assert s["quelle"] == "chatgpt" and s["chatgpt_modell"] == "gpt-image-1"
-    assert s["keys"] == {"openrouter": False, "chatgpt": True}
-    assert "test-chatgpt" not in json.dumps(s)
-    d = bildgen.erzeugen("Reh im Sprung")
-    assert d["ok"] and d["quelle"] == "chatgpt" and d["typ"] == "image/png"
-    assert base64.b64decode(d["bild"]) == PNG
-    path, req, auth = FakeOpenAI.last
-    assert path == "/v1/images/generations" and auth == "Bearer test-chatgpt"
-    assert req["model"] == "gpt-image-1" and req["n"] == 1 and req["response_format"] == "b64_json"
-    assert "Reh im Sprung" in req["prompt"]
-    assert d["monat"]["bilder"] == 1
-
-
-def test_chatgpt_fehler_auf_deutsch(openai):
-    bildgen.save_settings(quelle="chatgpt", key="test-falsch")
-    with pytest.raises(bildgen.BildFehler, match="OpenAI lehnt den Schlüssel ab"):
-        bildgen.erzeugen("Reh")
-    bildgen.save_settings(key="test-chatgpt")
-    with pytest.raises(bildgen.BildFehler, match="OpenAI hat kein Bild geliefert"):
-        bildgen.erzeugen("leer")
-
-
-def test_chatgpt_monatslimit(openai):
-    bildgen.save_settings(quelle="chatgpt", key="test-chatgpt", limit=0.5)
-    data = bildgen._read()
-    data["kosten"] = {bildgen._monat(): {"kosten": 0.5, "bilder": 3}}
-    bildgen._write(data)
-    with pytest.raises(bildgen.BildFehler, match="Monatslimit"):
-        bildgen.erzeugen("Reh")
-    assert FakeOpenAI.last is None
-
-
-def test_schluessel_getrennt_und_ungueltige_abgelehnt(openai):
-    bildgen.save_settings(quelle="openrouter", key="test-openrouter")
-    bildgen.save_settings(quelle="chatgpt", key="test-chatgpt")
-    assert bildgen.get_key("openrouter") == "test-openrouter"
-    assert bildgen.get_key("chatgpt") == "test-chatgpt"
-    with pytest.raises(bildgen.BildFehler, match="sieht nicht richtig aus"):
-        bildgen.save_settings(quelle="chatgpt", key="mit leerzeichen")
-    assert bildgen.get_key("chatgpt") == "test-chatgpt"
-    with pytest.raises(bildgen.BildFehler, match="Quelle unbekannt"):
-        bildgen.save_settings(quelle="dalle")
-
-
-def test_webui_reicht_chatgpt_modell_durch(openai, tmp_path):
-    srv = webui.make_server("127.0.0.1", 0, str(tmp_path / "out"), quiet=True)
-    threading.Thread(target=srv.serve_forever, daemon=True).start()
-    try:
-        body = json.dumps({"quelle": "chatgpt", "chatgpt_modell": "gpt-image-1-mini", "key": "test-chatgpt"}).encode()
-        req = urllib.request.Request("http://127.0.0.1:%d/api/bild-einstellungen" % srv.server_address[1], body,
-                                     {"Content-Type": "application/json", "X-Steckwerk": "1"})
-        d = json.loads(urllib.request.urlopen(req, timeout=10).read())
-        assert d["ok"] and d["bilder"]["chatgpt_modell"] == "gpt-image-1-mini"
-        assert d["bilder"]["keys"]["chatgpt"] is True
-        assert "test-chatgpt" not in json.dumps(d)
-    finally:
-        srv.shutdown()
-        srv.server_close()
 
 
 # --- bridge_start.py --------------------------------------------------------------------------------

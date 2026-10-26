@@ -29,7 +29,7 @@ App einen Hinweis mit dem Weg zur Installation.
 
 ## Bedienung
 
-- **Seitenleiste:** Modelle nach Gruppen, darunter Pakete, KI, Material und Updates.
+- **Seitenleiste:** Modelle nach Gruppen mit Suchfeld, darunter Pakete, KI, Material und Updates.
 - **Formular:** Abschnitte wie in der Weboberfläche, Zahlen mit Stepper und Einheit, Auswahllisten, Schalter,
   Textfelder (mehrzeilig, wo sinnvoll) und das Motiv-Raster mit Vorschaubildern.
 - **Motive vorab sehen:** Im Motiv-Raster und in der Motivliste stehen die Motive groß, bevor du sie platzierst.

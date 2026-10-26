@@ -23,14 +23,16 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/update-check        → was es Neues gibt (Programm und Pakete aus dem Update-Kanal)
   POST /api/update-paket        {id} oder {alle: true} → Paket(e) aus dem Kanal installieren
   POST /api/update-programm     Mac-App durch die neue Version ersetzen und neu starten (nur App)
-  POST /api/update-desktop      {bundle} → Steckwerk Desktop an ihrem Ort ersetzen (Neustart macht die App)
+  POST /api/desktop-check       {bundle} → gibt es eine neuere Steckwerk Desktop.app im Update-Kanal?
+  POST /api/desktop-install     {bundle} → Steckwerk Desktop laden, prüfen und an ihrem Ort ersetzen
+                                (den Neustart macht die App)
   POST /api/update-einstellungen {kanal, token, auto} → Einstellungen ändern (Schlüssel wird nie zurückgegeben)
   POST /api/assistent    {model, beschreibung, params} → Werte-Vorschlag vom lokalen Sprachmodell (Ollama)
   POST /api/assistent-status         {url?} → Ollama erreichbar? installierte Modelle
   POST /api/assistent-einstellungen  {an, url, modell} → Assistent einstellen
-  POST /api/bild          {beschreibung, stil, quelle?, modell?} → Motiv-Bild vom Bildmodell (Ollama oder OpenRouter)
+  POST /api/bild          {beschreibung, stil, quelle?, modell?} → Motiv-Bild vom Bildmodell (Ollama, OpenRouter, ChatGPT)
   POST /api/bild-modelle  {quelle, neu?} → Bildmodelle der Quelle (OpenRouter mit geschätzten Kosten je Bild)
-  POST /api/bild-einstellungen {quelle, ollama_modell, openrouter_modell, key, limit} → Schlüssel wird nie zurückgegeben
+  POST /api/bild-einstellungen {quelle, ollama_modell, openrouter_modell, chatgpt_modell, key, chatgpt_key, limit} → Schlüssel wird nie zurückgegeben
   POST /api/ping         {client} → Lebenszeichen eines offenen Fensters
   POST /api/bye          {client} → Fenster wurde geschlossen
   POST /api/open-folder  Ausgabeordner im Finder/Explorer öffnen (nur App)
@@ -177,17 +179,20 @@ class Handler(BaseHTTPRequestHandler):
                 if self.lan:
                     return self._json({"ok": False, "error": "Nur am Rechner selbst änderbar"}, 403)
                 d = bildgen.save_settings(quelle=req.get("quelle"), ollama_modell=req.get("ollama_modell"),
-                                          openrouter_modell=req.get("openrouter_modell"), chatgpt_modell=req.get("chatgpt_modell"), key=req.get("key"),
-                                          limit=req.get("limit"))
+                                          openrouter_modell=req.get("openrouter_modell"), key=req.get("key"),
+                                          limit=req.get("limit"), chatgpt_modell=req.get("chatgpt_modell"),
+                                          chatgpt_key=req.get("chatgpt_key"))
                 self._json({"ok": True, "bilder": d})
             elif path == "/api/bild-modelle":
                 if req.get("quelle") == "openrouter":
                     self._json({"ok": True, "modelle": bildgen.openrouter_modelle(bool(req.get("neu")))})
+                elif req.get("quelle") == "chatgpt":
+                    self._json({"ok": True, "modelle": bildgen.chatgpt_modelle()})
                 else:
                     self._json({"ok": True, "modelle": bildgen.ollama_modelle()})
             elif path == "/api/bild":
                 quelle = req.get("quelle") or None
-                if self.lan and (quelle or bildgen.settings()["quelle"]) == "openrouter":
+                if self.lan and (quelle or bildgen.settings()["quelle"]) in bildgen.KOSTENPFLICHTIG:
                     return self._json({"ok": False, "error": "Kostenpflichtige Bilder nur am Rechner selbst"}, 403)
                 self._json(bildgen.erzeugen(str(req.get("beschreibung") or ""), str(req.get("stil") or "silhouette"),
                                             quelle, req.get("modell") or None))
@@ -315,7 +320,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"ok": False, "error": str(e)}, 400)
                 service.reload_pakete()
                 self._json({"ok": True, "message": msg, "schema": self._schema()})
-            elif path.startswith("/api/update-"):
+            elif path.startswith(("/api/update-", "/api/desktop-")):
                 self._touch()
                 self._update(path, req)
             elif path in ("/api/motiv-import", "/api/motiv-entfernen"):
@@ -377,7 +382,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"ok": False, "error": "Updates nur am Rechner selbst installieren"}, 403)
         try:
             if path == "/api/update-check":
-                d = updater.check(self.bundle, desktop=str(req["desktop"]) if req.get("desktop") else None)
+                d = updater.check(self.bundle)
                 d["einstellungen"] = updater.settings()
                 return self._json(d)
             if path == "/api/update-einstellungen":
@@ -404,7 +409,9 @@ class Handler(BaseHTTPRequestHandler):
                     threading.Timer(0.5, self.session.request_quit).start()
                 return self._json({"ok": True, "version": version,
                                    "message": f"Steckwerk {version} ist installiert und startet gleich neu"})
-            if path == "/api/update-desktop":
+            if path == "/api/desktop-check":
+                return self._json(updater.desktop_check(str(req.get("bundle") or "") or None))
+            if path == "/api/desktop-install":
                 target, version = updater.install_desktop(str(req.get("bundle") or ""))
                 return self._json({"ok": True, "version": version, "pfad": target,
                                    "message": f"Steckwerk Desktop {version} ist installiert und startet gleich neu"})

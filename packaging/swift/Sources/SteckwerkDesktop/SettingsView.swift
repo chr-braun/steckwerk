@@ -113,12 +113,8 @@ struct KISettingsView: View {
 
     /// Schlüssel für einen Anbieter setzen, ohne den Standard-Anbieter zu ändern.
     private func saveKey(_ key: String, for provider: String) {
-        let keep = bilder?.quelle ?? "ollama"
         perform { client in
-            try await client.bildEinstellungen(quelle: provider, key: key)
-            if keep != provider {
-                try await client.bildEinstellungen(quelle: keep)
-            }
+            try await client.bildSchluessel(key, anbieter: provider)
         }
     }
 

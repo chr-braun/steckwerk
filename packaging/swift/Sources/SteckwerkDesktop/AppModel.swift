@@ -44,8 +44,9 @@ final class AppModel: ObservableObject {
     @Published private(set) var isPreviewing = false
     @Published var statusMessage: String?
     @Published var alert: AppAlert?
-    /// Ergebnis der letzten Update-Prüfung (beim Start oder unter „Updates“).
+    /// Ergebnis der letzten Update-Prüfung (beim Start oder unter „Updates“): Pakete und die App selbst.
     @Published var updateCheck: UpdateCheck?
+    @Published var desktopCheck: DesktopCheck?
 
     private(set) var client: EngineClient?
     private var engine: EngineProcess?
@@ -183,12 +184,17 @@ final class AppModel: ObservableObject {
     }
 
     /// Anzahl der Updates für das Abzeichen in der Seitenleiste.
-    var updateCount: Int { updateCheck?.updates ?? 0 }
+    var updateCount: Int {
+        let pakete = updateCheck?.pakete.filter { $0.installiert != nil && $0.installable }.count ?? 0
+        return pakete + (desktopCheck?.neu == true ? 1 : 0)
+    }
 
     func checkForUpdates(quiet: Bool = false) async {
         guard let client else { return }
         do {
-            updateCheck = try await client.updateCheck(desktop: Self.bundlePath)
+            async let pakete = client.updateCheck()
+            async let app = client.desktopCheck(bundle: Self.bundlePath)
+            (updateCheck, desktopCheck) = try await (pakete, app)
         } catch {
             if !quiet { show(error, title: "Update-Prüfung fehlgeschlagen") }
         }

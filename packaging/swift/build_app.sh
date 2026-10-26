@@ -1,7 +1,8 @@
 #!/bin/bash
 # Baut „Steckwerk Desktop.app“ (universell: Apple Silicon und Intel) mit eingebauter Python-Engine.
 #
-#   ./build_app.sh [Zielordner]               App bauen (Default: ../dist), nur auf macOS
+#   ./build_app.sh [Zielordner]               App und Steckwerk-Desktop-<Version>-macOS.zip bauen
+#                                             (Default: ../dist), nur auf macOS
 #   ./build_app.sh --engine-only <Ordner>     nur die Engine-Dateien kopieren (zum Prüfen, auch unter Linux)
 #
 # Die App ist ad hoc signiert, nicht notarisiert: beim ersten Start einmal unter
@@ -84,3 +85,9 @@ PLIST
 
 codesign --force --deep --sign - "$APP"
 echo "Fertig: $APP (Version $VERSION, $(lipo -archs "$APP/Contents/MacOS/$EXE"))"
+
+# ZIP für Release und Update-Kanal: ohne macOS-Zusatzdaten (__MACOSX), damit es sich sauber austauschen lässt.
+ZIP="$OUT/Steckwerk-Desktop-$VERSION-macOS.zip"
+rm -f "$ZIP"
+(cd "$OUT" && ditto -c -k --norsrc --noextattr --noacl --keepParent "Steckwerk Desktop.app" "$ZIP")
+echo "ZIP:    $ZIP"

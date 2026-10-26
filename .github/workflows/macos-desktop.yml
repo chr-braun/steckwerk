@@ -1,9 +1,7 @@
 name: macOS Desktop
 
 # Baut die native App „Steckwerk Desktop“ (packaging/swift) auf einem macOS-Runner.
-# Der Branch „updates“ und Tags werden bewusst nicht angefasst – außer im Job „kanal“: Der läuft nur, wenn
-# die Commit-Nachricht „[kanal veröffentlichen]“ enthält oder beim manuellen Start „kanal“ gewählt ist, und
-# stellt dann Mac-App, Steckwerk Desktop und die geänderten Pakete in den Update-Kanal.
+# Der Branch „updates“ und Tags werden bewusst nicht angefasst; veröffentlicht wird über release.yml.
 on:
   push:
     branches-ignore: [updates]
@@ -28,11 +26,6 @@ on:
       - "motive/**"
       - "web/**"
   workflow_dispatch:
-    inputs:
-      kanal:
-        description: "Update-Kanal (Branch updates) mit dieser Version veröffentlichen"
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -90,7 +83,7 @@ jobs:
 
       - name: ZIP erstellen
         working-directory: packaging/dist
-        run: ditto -c -k --norsrc --noextattr --noacl --keepParent "Steckwerk Desktop.app" Steckwerk-Desktop-macOS.zip
+        run: cp Steckwerk-Desktop-*-macOS.zip Steckwerk-Desktop-macOS.zip
 
       - name: Selbst-Update prüfen (ältere App durch das ZIP ersetzen, danach Signatur und Selbsttest)
         run: |
@@ -105,11 +98,10 @@ jobs:
           from steckwerk import __version__
           t = sys.argv[1]
           feed = update_kanal.build(os.path.join(t, "kanal"), None, [], desktop="packaging/dist/Steckwerk-Desktop-macOS.zip")
-          assert feed["programm"]["desktop"], feed
+          assert feed["desktop"]["version"] == __version__ and feed["desktop"]["mac"], feed
           app = os.path.join(t, "Programme", "Steckwerk Desktop.app")
-          updater.__version__ = "0.0.1"
-          check = updater.check(desktop=app)["programm"]
-          assert check["kann_installieren"], check
+          check = updater.desktop_check(app)
+          assert check["neu"] and check["kann_installieren"], check
           print(updater.install_desktop(app))
           assert updater.app_version(app) == __version__
           PY
@@ -145,93 +137,3 @@ jobs:
           path: packaging/dist/Steckwerk-Desktop-macOS.zip
           retention-days: 14
           if-no-files-found: error
-
-  kanal:
-    name: Update-Kanal veröffentlichen
-    if: >-
-      (github.event_name == 'push' && contains(github.event.head_commit.message, '[kanal veröffentlichen]')) ||
-      (github.event_name == 'workflow_dispatch' && inputs.kanal)
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    permissions:
-      contents: write
-      actions: read
-    concurrency:
-      group: update-kanal
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v4
-
-      # Steckwerk Desktop aus einem grünen Mac-Lauf für genau diesen Commit (Push- oder PR-Lauf) holen.
-      # So hängt die Veröffentlichung nicht daran, dass gerade dieser Lauf einen Mac-Runner bekommt.
-      - name: Steckwerk Desktop aus einem grünen Mac-Lauf holen
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for i in $(seq 1 90); do
-            RUN="$(gh run list -R "$GITHUB_REPOSITORY" --workflow macos-desktop.yml --commit "$GITHUB_SHA" \
-                     --status success --json databaseId,event --jq '.[0].databaseId // empty')"
-            if [ -n "$RUN" ] && gh run download -R "$GITHUB_REPOSITORY" "$RUN" -n Steckwerk-Desktop-macOS -D "$RUNNER_TEMP/rel"; then
-              echo "Steckwerk Desktop aus Lauf $RUN"
-              ls -la "$RUNNER_TEMP/rel"
-              exit 0
-            fi
-            sleep 60
-          done
-          echo "Kein grüner Mac-Lauf mit Steckwerk Desktop für $GITHUB_SHA" >&2
-          exit 1
-
-      - name: Mac-App und Pakete bauen
-        env:
-          STECKWERK_PAKETE: ${{ runner.temp }}/inst
-          STECKWERK_DATEN: ${{ runner.temp }}/daten
-        run: |
-          REL="$RUNNER_TEMP/rel"
-          python3 packaging/build_macos.py --out "$REL" --no-app
-          git fetch --depth=1 origin updates
-          git worktree add "$RUNNER_TEMP/kanal" FETCH_HEAD
-          # Pakete, deren Version im Kanal fehlt, neu packen (Abhängigkeiten aus den Quellen installieren)
-          python3 cli.py --paket-installieren paketquellen/verzierungen
-          for d in paketquellen/*/; do
-            [ -f "$d/paket.json" ] || continue
-            id="$(python3 -c 'import json,sys; m=json.load(open(sys.argv[1])); print(m["id"]+"-"+m["version"])' "$d/paket.json")"
-            if ! git -C "$RUNNER_TEMP/kanal" ls-files --error-unmatch "pakete/$id.swpaket" >/dev/null 2>&1 \
-               && [ -n "$(git -C "$RUNNER_TEMP/kanal" ls-files "pakete/${id%%-*}-*.swpaket")" ]; then
-              python3 cli.py --paket-packen "$d" --out "$REL"
-            fi
-          done
-          ls -la "$REL"
-
-      - name: Kanal bauen und prüfen
-        run: |
-          REL="$RUNNER_TEMP/rel"
-          K="$RUNNER_TEMP/kanal"
-          V="$(python3 -c 'from steckwerk import __version__; print(__version__)')"
-          PAKETE=()
-          for f in "$REL"/*.swpaket; do [ -e "$f" ] && PAKETE+=(--paket "$f"); done
-          python3 packaging/update_kanal.py "$K" --mac "$REL/Steckwerk-$V-macOS.zip" \
-            --desktop "$REL/Steckwerk-Desktop-macOS.zip" "${PAKETE[@]}"
-          python3 - "$K" "$V" <<'PY'
-          import hashlib, json, os, sys
-          k, v = sys.argv[1], sys.argv[2]
-          feed = json.load(open(os.path.join(k, "feed.json")))
-          prog = feed["programm"]
-          assert prog["version"] == v and prog["mac"] and prog["desktop"] and prog["hinweise"], prog
-          for e in [prog["mac"], prog["desktop"]] + feed["pakete"]:
-              data = open(os.path.join(k, e["datei"]), "rb").read()
-              assert hashlib.sha256(data).hexdigest() == e["sha256"], e["datei"]
-          print("Programm", v, "+ Desktop;", ", ".join(f"{p['id']} {p['version']}" for p in feed["pakete"]))
-          PY
-          git -C "$K" status --short
-
-      - name: Kanal veröffentlichen
-        run: |
-          K="$RUNNER_TEMP/kanal"
-          V="$(python3 -c 'from steckwerk import __version__; print(__version__)')"
-          cd "$K"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then echo "Kanal ist schon aktuell"; exit 0; fi
-          git commit -m "Kanal: Steckwerk $V mit Steckwerk Desktop"
-          git push origin HEAD:updates

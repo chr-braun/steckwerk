@@ -2,16 +2,20 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
-## 2.9.0 – 2026-10-21
+## 2.10.0 – 2026-10-26
 
-- New: **Steckwerk Desktop**, a native Mac app (DMG) with the engine built in. Models, packages, AI and material in one window; the preview rebuilds by itself whenever you change a value.
-- Steckwerk Desktop updates itself: under "Updates", "Install and restart" loads the new version from the update channel, checks it and replaces the app. At launch it looks for updates by itself (can be switched off).
+- Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to "Updates"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.
 - All 19 built-in motifs are redrawn with much more detail, with fine inner shapes and engraved lines.
 - Silhouettes made from motifs engrave the motif lines too.
-- Images for "Draw a motif" can now also come from ChatGPT; the key is kept in the keychain.
 - Halloween 1.4.0: the tags take their figures from the motif library and leave room for the name.
 - Christmas 2.0.1: the candy cane no longer carries holly, just the bow.
 - Starting is faster on the Mac (no more name lookup when the server starts).
+- Steckwerk Desktop: models in the sidebar can be searched again.
+
+## 2.9.0 – 2026-10-21
+
+- New native Mac app **Steckwerk Desktop** (SwiftUI, macOS 14+, same version number as Steckwerk): the same engine without a browser – model list, form, sheet preview, check report, export, packages, AI, material and updates in a real Mac window. It updates itself from the update channel ("Updates → Install and restart"). The existing app stays.
+- "Draw motif" can now also use **ChatGPT** (OpenAI, gpt-image-1 or gpt-image-1-mini) with your own OpenAI key. Costs count towards the same monthly limit as OpenRouter.
 
 ## 2.8.0 – 2026-10-17
 

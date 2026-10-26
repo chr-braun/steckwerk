@@ -85,15 +85,15 @@ final class EngineClientTests: XCTestCase {
         let fake = FakeTransport()
         fake.respond("/api/bild-einstellungen", json: #"{"ok": true, "bilder": {"key_gesetzt": true}}"#)
         let client = EngineClient(baseURL: base, transport: fake)
-        try await client.bildEinstellungen(quelle: "chatgpt", key: "geheim-test")
+        try await client.bildSchluessel("geheim-test", anbieter: "chatgpt")
         XCTAssertEqual(fake.requests.count, 1)
         XCTAssertEqual(fake.requests[0].url?.path, "/api/bild-einstellungen")
-        XCTAssertEqual(try fake.body(of: 0), ["quelle": .string("chatgpt"), "key": .string("geheim-test")])
+        XCTAssertEqual(try fake.body(of: 0), ["chatgpt_key": .string("geheim-test")])
         XCTAssertFalse(fake.requests[0].url?.absoluteString.contains("geheim") ?? true, "Schlüssel nie in der URL")
 
         fake.respond("/api/bild-einstellungen", status: 400, json: #"{"ok": false, "error": "Der Schlüssel sieht nicht richtig aus"}"#)
         do {
-            try await client.bildEinstellungen(quelle: "openrouter", key: "mit leerzeichen")
+            try await client.bildSchluessel("mit leerzeichen", anbieter: "openrouter")
             XCTFail("Fehler erwartet")
         } catch {
             XCTAssertEqual(error as? EngineError, .server("Der Schlüssel sieht nicht richtig aus"))
@@ -120,16 +120,25 @@ final class EngineClientTests: XCTestCase {
 
     func testDesktopUpdate() async throws {
         let fake = FakeTransport()
-        fake.respond("/api/update-check", json: #"{"ok": true, "programm": {"version": "9.0.0", "neu": true, "kann_installieren": true}, "pakete": []}"#)
-        fake.respond("/api/update-desktop", json: #"{"ok": true, "version": "9.0.0", "pfad": "/Applications/Steckwerk Desktop.app", "message": "ok"}"#)
+        fake.respond("/api/desktop-check", json: #"{"ok": true, "installiert": "2.9.0", "version": "2.10.0", "neu": true, "kann_installieren": true, "hinweise": ["Neu"]}"#)
+        fake.respond("/api/desktop-install", json: #"{"ok": true, "version": "2.10.0", "pfad": "/Applications/Steckwerk Desktop.app", "message": "ok"}"#)
         let client = EngineClient(baseURL: base, transport: fake)
-        let check = try await client.updateCheck(desktop: "/Applications/Steckwerk Desktop.app")
-        XCTAssertTrue(check.programm.kannInstallieren)
-        XCTAssertEqual(try fake.body(of: 0)["desktop"], .string("/Applications/Steckwerk Desktop.app"))
+        let check = try await client.desktopCheck(bundle: "/Applications/Steckwerk Desktop.app")
+        XCTAssertTrue(check.neu && check.kannInstallieren)
+        XCTAssertEqual(check.version, "2.10.0")
+        XCTAssertEqual(check.hinweise, ["Neu"])
+        XCTAssertEqual(try fake.body(of: 0)["bundle"], .string("/Applications/Steckwerk Desktop.app"))
         let done = try await client.desktopInstallieren(bundle: "/Applications/Steckwerk Desktop.app")
-        XCTAssertEqual(done.version, "9.0.0")
+        XCTAssertEqual(done.version, "2.10.0")
         XCTAssertEqual(done.pfad, "/Applications/Steckwerk Desktop.app")
         XCTAssertEqual(try fake.body(of: 1)["bundle"], .string("/Applications/Steckwerk Desktop.app"))
+        _ = try await client.desktopCheck(bundle: nil)
+        XCTAssertEqual(try fake.body(of: 2), [:])
+    }
+
+    func testBildSettingsKeysAusEinzelfeldern() throws {
+        let s = try JSONDecoder().decode(BildSettings.self, from: Data(#"{"key_gesetzt": true, "chatgpt_key_gesetzt": false}"#.utf8))
+        XCTAssertEqual(s.keys, ["openrouter": true, "chatgpt": false])
     }
 
     func testKanalPaketInstallable() throws {

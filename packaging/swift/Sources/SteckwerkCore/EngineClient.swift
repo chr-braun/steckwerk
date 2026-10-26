@@ -155,15 +155,19 @@ public struct EngineClient: Sendable {
         try await call("api/paket-entfernen", ["id": .string(id)], as: MessageResponse.self)
     }
 
-    /// `desktop` = Pfad der laufenden „Steckwerk Desktop.app“, damit die Engine sagt, ob sie die App ersetzen kann.
-    public func updateCheck(desktop: String? = nil) async throws -> UpdateCheck {
-        let body: [String: JSONValue] = desktop.map { ["desktop": .string($0)] } ?? [:]
-        return try await call("api/update-check", body, as: UpdateCheck.self, timeout: 60)
+    public func updateCheck() async throws -> UpdateCheck {
+        try await call("api/update-check", [:], as: UpdateCheck.self, timeout: 60)
+    }
+
+    /// Gibt es eine neuere „Steckwerk Desktop.app“ im Kanal? `bundle` = Pfad der laufenden App (nil bei `swift run`).
+    public func desktopCheck(bundle: String?) async throws -> DesktopCheck {
+        let body: [String: JSONValue] = bundle.map { ["bundle": .string($0)] } ?? [:]
+        return try await call("api/desktop-check", body, as: DesktopCheck.self, timeout: 60)
     }
 
     /// Lädt die neue App aus dem Kanal, prüft sie und ersetzt `bundle`. Neu starten muss die App selbst.
     public func desktopInstallieren(bundle: String) async throws -> DesktopUpdateResponse {
-        try await call("api/update-desktop", ["bundle": .string(bundle)], as: DesktopUpdateResponse.self, timeout: 600)
+        try await call("api/desktop-install", ["bundle": .string(bundle)], as: DesktopUpdateResponse.self, timeout: 600)
     }
 
     public func kanalPaketInstallieren(id: String) async throws -> MessageResponse {
@@ -197,12 +201,18 @@ public struct EngineClient: Sendable {
 
     /// Bild-Einstellungen ändern. Ein Schlüssel geht nur an die lokale Engine, die ihn im Schlüsselbund ablegt;
     /// zurück kommt er nie.
-    public func bildEinstellungen(quelle: String? = nil, key: String? = nil, limit: Double? = nil) async throws {
+    public func bildEinstellungen(quelle: String? = nil, limit: Double? = nil) async throws {
         var body: [String: JSONValue] = [:]
         if let quelle { body["quelle"] = .string(quelle) }
-        if let key { body["key"] = .string(key) }
         if let limit { body["limit"] = .double(limit) }
         _ = try await call("api/bild-einstellungen", body, as: PingResponse.self)
+    }
+
+    /// Schlüssel eines kostenpflichtigen Bild-Anbieters setzen ("" löscht ihn). Er geht nur an die Engine,
+    /// die ihn im Schlüsselbund ablegt; die Standard-Quelle bleibt unverändert.
+    public func bildSchluessel(_ key: String, anbieter: String) async throws {
+        let feld = anbieter == "chatgpt" ? "chatgpt_key" : "key"
+        _ = try await call("api/bild-einstellungen", [feld: .string(key)], as: PingResponse.self)
     }
 
     public func motivImport(data: Data, filename: String, name: String) async throws -> MotivResponse {

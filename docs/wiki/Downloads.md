@@ -1,6 +1,6 @@
 # Downloads
 
-Hier liegt alles zum Herunterladen, Stand 17.10.2026.
+Hier liegt alles zum Herunterladen, Stand 26.10.2026.
 
 ## Programm
 

@@ -73,7 +73,7 @@ final class IntegrationTests: XCTestCase {
         XCTAssertTrue(saved.files.contains { $0.hasSuffix("pruefbericht.txt") })
 
         do {
-            try await client.bildEinstellungen(quelle: "chatgpt", key: "kein gültiger schlüssel")
+            try await client.bildSchluessel("kein gültiger schlüssel", anbieter: "chatgpt")
             XCTFail("ein Schlüssel mit Leerzeichen muss abgelehnt werden")
         } catch let error as EngineError {
             XCTAssertTrue(error.localizedDescription.contains("Schlüssel"))

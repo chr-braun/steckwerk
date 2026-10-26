@@ -68,6 +68,14 @@ final class SchemaTests: XCTestCase {
         XCTAssertEqual(keys, ["thickness", "kerf", "scale", "openings", "sheet_width", "sheet_height", "cut_color", "engrave_color"])
     }
 
+    func testSidebarSearch() throws {
+        let schema = try Fixture.schema()
+        XCTAssertEqual(schema.sidebarGroups(matching: "").count, schema.sidebarGroups.count)
+        let hits = schema.sidebarGroups(matching: "  WICHTEL ").flatMap(\.models).map(\.id)
+        XCTAssertEqual(hits, ["wichtelhaus"])
+        XCTAssertTrue(schema.sidebarGroups(matching: "gibt es nicht").isEmpty)
+    }
+
     func testSidebarGroupsFollowEngineOrder() throws {
         let schema = try Fixture.schema()
         let groups = schema.sidebarGroups

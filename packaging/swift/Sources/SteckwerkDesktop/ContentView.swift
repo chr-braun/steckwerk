@@ -92,11 +92,12 @@ private struct MainSplitView: View {
 @MainActor
 private struct SidebarView: View {
     @EnvironmentObject var model: AppModel
+    @State var suche = ""
 
     var body: some View {
         List(selection: $model.selection) {
             if let schema = model.schema {
-                ForEach(schema.sidebarGroups) { group in
+                ForEach(schema.sidebarGroups(matching: suche)) { group in
                     Section(group.label) {
                         ForEach(group.models) { entry in
                             Text(entry.info.label)
@@ -116,6 +117,7 @@ private struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        .searchable(text: $suche, placement: .sidebar, prompt: "Modelle suchen")
     }
 }
 

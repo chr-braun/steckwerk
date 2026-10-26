@@ -44,6 +44,18 @@ public struct Schema: Decodable, Sendable {
         }
     }
 
+    /// Seitenleiste gefiltert: Treffer in Name, Beschreibung, Gruppe oder Kennung (ohne Groß-/Kleinschreibung).
+    public func sidebarGroups(matching query: String) -> [ModelGroup] {
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return sidebarGroups }
+        return sidebarGroups.compactMap { group in
+            let hits = group.models.filter { e in
+                [e.id, e.info.label, e.info.desc, group.label].contains { $0.lowercased().contains(q) }
+            }
+            return hits.isEmpty ? nil : ModelGroup(id: group.id, label: group.label, models: hits)
+        }
+    }
+
     public func motiv(id: String) -> Motiv? {
         motive.first { $0.id == id }
     }
@@ -297,6 +309,7 @@ public struct BildSettings: Decodable, Sendable {
         case openrouterModell = "openrouter_modell"
         case chatgptModell = "chatgpt_modell"
         case keyGesetzt = "key_gesetzt"
+        case chatgptKeyGesetzt = "chatgpt_key_gesetzt"
     }
 
     public init(from decoder: Decoder) throws {
@@ -306,7 +319,9 @@ public struct BildSettings: Decodable, Sendable {
         openrouterModell = (try? c.decodeIfPresent(String.self, forKey: .openrouterModell)) ?? ""
         chatgptModell = (try? c.decodeIfPresent(String.self, forKey: .chatgptModell)) ?? ""
         keyGesetzt = (try? c.decodeIfPresent(Bool.self, forKey: .keyGesetzt)) ?? false
-        keys = (try? c.decodeIfPresent([String: Bool].self, forKey: .keys)) ?? [:]
+        let chatgpt = (try? c.decodeIfPresent(Bool.self, forKey: .chatgptKeyGesetzt)) ?? false
+        keys = (try? c.decodeIfPresent([String: Bool].self, forKey: .keys))
+            ?? ["openrouter": keyGesetzt, "chatgpt": chatgpt]
         limit = (try? c.decodeIfPresent(Double.self, forKey: .limit)) ?? 0
         stile = (try? c.decodeIfPresent([ParamOption].self, forKey: .stile)) ?? []
     }

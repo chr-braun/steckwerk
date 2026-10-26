@@ -123,7 +123,32 @@ public struct MessageResponse: Decodable, Sendable {
     }
 }
 
-/// Antwort von POST /api/update-desktop: neue App liegt am alten Ort und will neu gestartet werden.
+/// Antwort von POST /api/desktop-check: Stand der „Steckwerk Desktop.app“ im Update-Kanal.
+public struct DesktopCheck: Decodable, Sendable {
+    public let installiert: String
+    public let version: String
+    public let neu: Bool
+    public let hinweise: [String]
+    public let kannInstallieren: Bool
+    public let grund: String
+
+    enum CodingKeys: String, CodingKey {
+        case installiert, version, neu, hinweise, grund
+        case kannInstallieren = "kann_installieren"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        installiert = (try? c.decodeIfPresent(String.self, forKey: .installiert)) ?? ""
+        version = (try? c.decodeIfPresent(String.self, forKey: .version)) ?? ""
+        neu = (try? c.decodeIfPresent(Bool.self, forKey: .neu)) ?? false
+        hinweise = (try? c.decodeIfPresent([String].self, forKey: .hinweise)) ?? []
+        kannInstallieren = (try? c.decodeIfPresent(Bool.self, forKey: .kannInstallieren)) ?? false
+        grund = (try? c.decodeIfPresent(String.self, forKey: .grund)) ?? ""
+    }
+}
+
+/// Antwort von POST /api/desktop-install: neue App liegt am alten Ort und will neu gestartet werden.
 public struct DesktopUpdateResponse: Decodable, Sendable {
     public let version: String
     public let pfad: String

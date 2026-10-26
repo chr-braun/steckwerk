@@ -25,7 +25,7 @@ Geometrie, Validator, Pakete, Updates und KI bleiben vollständig in Python; Swi
 
 ## Bedienung
 
-- **Seitenleiste:** Modelle nach Gruppen, darunter *Pakete*, *KI*, *Material* und *Updates*.
+- **Seitenleiste:** Modelle nach Gruppen mit Suchfeld, darunter *Pakete*, *KI*, *Material* und *Updates*.
 - **Modell:** links das Formular (Abschnitte wie in der Weboberfläche, Zahlen mit Stepper und Einheit,
   Auswahllisten, Schalter, Text, Motiv-Raster), rechts Vorschau und Prüfbericht.
 - **Bauen & prüfen** (⌘B): baut über die Engine und zeigt z. B. „0 FEHLER · 8 Teile · 1 Blatt · CUT-READY“.
@@ -63,7 +63,7 @@ packaging/swift/
   Sources/SteckwerkDesktop/  SwiftUI-Oberfläche
   Tests/SteckwerkCoreTests/  Unit- und Integrationstests (Fixtures aus echten, bereinigten Antworten)
   bridge_start.py            startet die Engine für die App (nur Standardbibliothek, Python 3.9+)
-  build_app.sh               baut das .app-Bundle
+  build_app.sh               baut das .app-Bundle und Steckwerk-Desktop-<Version>-macOS.zip
 ```
 
 ### Lebenszyklus der Engine
@@ -82,7 +82,7 @@ cd packaging/swift
 swift build
 STECKWERK_ROOT="$(cd ../.. && pwd)" swift test     # inkl. Integrationstest gegen die echte Engine
 STECKWERK_ROOT="$(cd ../.. && pwd)" swift run SteckwerkDesktop
-./build_app.sh ../dist                              # App-Bundle
+./build_app.sh ../dist                              # App-Bundle und ZIP
 "../dist/Steckwerk Desktop.app/Contents/MacOS/SteckwerkDesktop" --self-test
 ```
 

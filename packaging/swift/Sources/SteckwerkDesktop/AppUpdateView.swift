@@ -29,8 +29,10 @@ struct AppUpdateView: View {
                 }
                 Toggle("Beim Start nach Updates suchen", isOn: $beimStart)
 
+                if let app = model.desktopCheck {
+                    programm(app)
+                }
                 if let check = model.updateCheck {
-                    programm(check.programm)
                     pakete(check)
                 }
                 if let message {
@@ -47,10 +49,10 @@ struct AppUpdateView: View {
     }
 
     @ViewBuilder
-    private func programm(_ p: ProgrammInfo) -> some View {
+    private func programm(_ p: DesktopCheck) -> some View {
         if p.neu {
             VStack(alignment: .leading, spacing: 6) {
-                Label("Steckwerk \(p.version) ist verfügbar (installiert: \(p.installiert))", systemImage: "sparkles")
+                Label("Steckwerk Desktop \(p.version) ist verfügbar (installiert: \(p.installiert))", systemImage: "sparkles")
                     .foregroundStyle(Theme.accent)
                     .font(.headline)
                 ForEach(Array(p.hinweise.enumerated()), id: \.offset) { _, hinweis in
@@ -78,7 +80,8 @@ struct AppUpdateView: View {
                 }
             }
         } else {
-            Label("Steckwerk \(p.installiert) ist aktuell", systemImage: "checkmark.circle")
+            Label("Steckwerk Desktop \(p.installiert.isEmpty ? AppModel.appVersion : p.installiert) ist aktuell",
+                  systemImage: "checkmark.circle")
                 .foregroundStyle(Theme.ok)
         }
     }

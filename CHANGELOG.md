@@ -2,16 +2,20 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
-## 2.9.0 – 2026-10-21
+## 2.10.0 – 2026-10-26
 
-- Neu: **Steckwerk Desktop**, eine eigene Mac-App (DMG) mit eingebauter Engine. Modelle, Pakete, KI und Material in einem Fenster; die Vorschau baut sich beim Ändern jedes Werts von selbst neu.
-- Steckwerk Desktop aktualisiert sich selbst: Unter „Updates“ lädt „Installieren und neu starten“ die neue Version aus dem Update-Kanal, prüft sie und ersetzt die App. Beim Start sucht sie von selbst nach Updates (abschaltbar).
+- Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.
 - Alle 19 eingebauten Motive sind neu und deutlich detaillierter gezeichnet, mit feinen Innenformen und Gravurlinien.
 - Silhouetten aus Motiven gravieren die Motivlinien mit.
-- Bilder für „Motiv zeichnen“ können jetzt auch von ChatGPT kommen; der Schlüssel liegt im Schlüsselbund.
 - Halloween 1.4.0: Die Anhänger nehmen ihre Figuren aus der Motiv-Bibliothek und haben Platz für den Namen.
 - Weihnachten 2.0.1: Die Zuckerstange trägt keine Stechpalme mehr, nur noch die Schleife.
 - Der Start geht auf dem Mac schneller (keine Namensauflösung mehr beim Serverstart).
+- Steckwerk Desktop: Modelle in der Seitenleiste lassen sich wieder durchsuchen.
+
+## 2.9.0 – 2026-10-21
+
+- Neue native Mac-App **Steckwerk Desktop** (SwiftUI, macOS 14+, gleiche Versionsnummer wie Steckwerk) unter `packaging/swift`: dieselbe Engine, aber ohne Browser – Modellliste, Formular, Blattvorschau, Prüfbericht, Export, Pakete, KI, Material und Updates als echtes Mac-Fenster. Sie aktualisiert sich selbst aus dem Update-Kanal („Updates → Installieren und neu starten“). Die bisherige App bleibt.
+- „Motiv zeichnen“ kann jetzt auch **ChatGPT** (OpenAI, `gpt-image-1` oder `gpt-image-1-mini`) mit eigenem OpenAI-Schlüssel. Die Kosten zählen zum selben Monatslimit wie OpenRouter.
 
 ## 2.8.0 – 2026-10-17
 
