@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04      # ubuntu-latest (26.04) hat kein Python 3.9 mehr
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
@@ -69,7 +69,7 @@ jobs:
   kanal:
     name: Update-Kanal
     needs: [release, desktop]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04      # ubuntu-latest (26.04) hat kein Python 3.9 mehr
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4

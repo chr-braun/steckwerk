@@ -12,7 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        # ubuntu-24.04 fest: ubuntu-latest (26.04) hat kein Python 3.9 mehr
+        os: [ubuntu-24.04]
         python: ["3.9", "3.12"]
         include:
           - os: macos-latest
