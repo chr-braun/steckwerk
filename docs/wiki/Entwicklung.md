@@ -51,7 +51,7 @@ python3 -m pip install pytest
 python3 -m pytest -q
 ```
 
-Stand 26.10.2026: PYTESTS Python-Tests, dazu 59 Swift-Tests. Die Swift-Tests laufen in CI auf macOS,
+Stand 26.10.2026: 1321 Python-Tests, dazu 59 Swift-Tests. Die Swift-Tests laufen in CI auf macOS,
 inklusive Integrationstest gegen die echte Engine. Auf GitHub laufen sie bei jedem Push (Python 3.9 und
 3.12, Linux und macOS). Abgedeckt sind jede Gestaltungsoption, Engine, Validator (positiv und negativ),
 jedes Modell, CLI, Weboberfläche, App-Betrieb, Pakete, Motive, Updater und der Assistent (mit
