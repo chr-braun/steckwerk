@@ -14,6 +14,20 @@ Einstellungen → Motive → **Motiv hochladen …**
 19 Motive sind schon eingebaut. Seit 2.3.0 kannst du Motive auch von einer KI zeichnen lassen, siehe
 [KI-Funktionen](KI-Funktionen.md).
 
+## Eingebaute Motive (überarbeitet, 17.10.2026)
+
+Die 19 eingebauten Motive sind neu gezeichnet: mit Innenformen (Fenster, Gesichter, Federn) und Gravurdetails
+(Falten, Schuppen, Girlanden). Jedes Motiv hängt zusammen und baut in allen Vorlagen ohne Fehler; ausschneidbar
+ab etwa 10 bis 18 mm. Die Silhouette graviert die Details eines Motivs jetzt mit.
+
+Erzeugt werden sie von `packaging/motive_bauen.py` aus Vektor-Zeichnungen:
+
+```bash
+python3 packaging/motive_bauen.py                  # alle neu erzeugen
+python3 packaging/motive_bauen.py katze stern      # nur diese
+python3 packaging/motive_bauen.py --svg quellen/   # zusätzlich SVG-Quellen, z. B. für Inkscape
+```
+
 ## Vorlagen
 
 Aufsteller mit Sockel, Schild, Anhänger, Untersetzer und **Silhouette** (das Motiv selbst als Umriss, mit

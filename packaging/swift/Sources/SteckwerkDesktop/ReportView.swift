@@ -1,67 +1,85 @@
 import SteckwerkCore
 import SwiftUI
 
-/// Prüfbericht nativ: Zeilen grün/orange/rot, darunter die Montagehinweise.
+/// Prüfbericht nativ: Zusammenfassung grün/rot, Fehler, Montagehinweise und die einzelnen Prüfzeilen.
+@MainActor
 struct ReportView: View {
-    @Environment(\.dismiss) private var dismiss
-    let result: GenerateResult?
+    let result: GenerateResponse
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text("Prüfbericht").font(.title2.weight(.semibold))
-                Spacer()
-                if let r = result {
-                    Label(r.statusLine, systemImage: r.ok ? "checkmark.seal.fill" : "xmark.octagon.fill")
-                        .foregroundStyle(r.ok ? Theme.ok : Theme.fehler)
+        ScrollView {
+            VStack(alignment: .leading, spacing: Theme.spacing) {
+                ForEach(result.assemblies) { assembly in
+                    AssemblyReport(assembly: assembly)
                 }
-                Button("Fertig") { dismiss() }.keyboardShortcut(.defaultAction)
             }
-            .padding()
-            Divider()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    if let err = result?.error {
-                        Text(err).foregroundStyle(Theme.fehler)
+            .padding(Theme.spacing)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+@MainActor
+private struct AssemblyReport: View {
+    let assembly: Assembly
+    @State var showLines = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(assembly.summary, systemImage: assembly.ok ? "checkmark.seal.fill" : "xmark.octagon.fill")
+                .font(.headline)
+                .foregroundStyle(assembly.ok ? Theme.ok : Theme.error)
+                .textSelection(.enabled)
+
+            Text("\(assembly.parts) Teile · \(assembly.joints) Verbindungen · \(assembly.sheets.count) Blatt")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if !assembly.errors.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Fehler").font(.subheadline.bold())
+                    ForEach(Array(assembly.errors.enumerated()), id: \.offset) { _, error in
+                        Label(error, systemImage: "xmark.circle")
+                            .foregroundStyle(Theme.error)
+                            .textSelection(.enabled)
                     }
-                    ForEach(result?.assemblies ?? []) { a in
-                        Card {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(a.summary).font(.headline).foregroundStyle(a.ok ? Theme.ok : Theme.fehler)
-                                Text("\(a.parts) Teile · \(a.joints) Verbindungen")
-                                    .font(.caption).foregroundStyle(.secondary)
-                                ForEach(Array(a.reportLines.enumerated()), id: \.offset) { _, line in
-                                    if !line.text.trimmingCharacters(in: .whitespaces).isEmpty {
-                                        Text(line.text)
-                                            .font(.system(.caption, design: .monospaced))
-                                            .foregroundStyle(color(line.level))
-                                            .textSelection(.enabled)
-                                    }
-                                }
-                                if !a.notes.isEmpty {
-                                    Divider().padding(.vertical, 4)
-                                    Text("Montage").font(.subheadline.weight(.semibold))
-                                    ForEach(a.notes, id: \.self) { n in
-                                        Label(n, systemImage: "wrench.and.screwdriver")
-                                            .font(.callout)
-                                    }
-                                }
-                            }
+                }
+            }
+
+            if !assembly.notes.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Montagehinweise").font(.subheadline.bold())
+                    ForEach(Array(assembly.notes.enumerated()), id: \.offset) { index, note in
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text("\(index + 1).").monospacedDigit().foregroundStyle(.secondary)
+                            Text(note).textSelection(.enabled)
                         }
                     }
                 }
-                .padding()
+            }
+
+            DisclosureGroup("Prüfbericht (\(ReportFormatter.lines(assembly.report).count) Zeilen)", isExpanded: $showLines) {
+                VStack(alignment: .leading, spacing: 2) {
+                    ForEach(Array(ReportFormatter.lines(assembly.report).enumerated()), id: \.offset) { _, line in
+                        Text(line.text)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(color(line.status))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.top, 4)
             }
         }
-        .background(Theme.paper)
+        .card()
     }
 
-    private func color(_ l: ReportLine.Level) -> Color {
-        switch l {
+    private func color(_ status: ReportStatus) -> Color {
+        switch status {
         case .ok: return Theme.ok
-        case .warnung: return Theme.warnung
-        case .fehler: return Theme.fehler
-        case .info: return .primary
+        case .error: return Theme.error
+        case .warning: return Theme.warning
+        case .info: return .secondary
         }
     }
 }

@@ -1,107 +1,167 @@
 import SteckwerkCore
 import SwiftUI
 
-/// Mitte: Blattvorschau, Statuszeile, Prüfbericht und Montagehinweise.
+/// Rechte Seite: Bauen & prüfen, Ergebnisstatus, Vorschau, Prüfbericht und Export.
+@MainActor
 struct BuildView: View {
-    @Environment(AppModel.self) private var model
-    let key: String
-    let info: ModelInfo
-    @State private var sheetIndex = 0
-    @State private var showReport = false
+    @EnvironmentObject var model: AppModel
+    let modelID: String
 
-    private var sheets: [(Assembly, Sheet)] {
-        (model.result?.assemblies ?? []).flatMap { a in a.sheets.map { (a, $0) } }
+    private var result: GenerateResponse? {
+        model.resultModelID == modelID ? model.result : nil
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            header
+            toolbar
+                .padding(Theme.spacing)
             Divider()
-            if let err = model.result?.error, model.resultKey?.model == key {
-                ContentUnavailableView("Nicht baubar", systemImage: "xmark.octagon", description: Text(err))
-            } else if model.resultKey?.model == key, !sheets.isEmpty {
-                let idx = min(sheetIndex, sheets.count - 1)
-                PreviewCanvas(drawing: sheets[idx].1.drawing,
-                              cutColor: model.config["cut_color"]?.stringValue ?? "#000000",
-                              checked: sheets[idx].1.checked)
-                    .id(sheets[idx].1.file + (model.resultKey.map { "\($0.hashValue)" } ?? ""))
-                if sheets.count > 1 {
-                    Picker("Blatt", selection: $sheetIndex) {
-                        ForEach(sheets.indices, id: \.self) { i in
-                            Text(sheets[i].1.file.replacingOccurrences(of: ".svg", with: "")).tag(i)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .padding(8)
-                }
+            if let result {
+                content(result)
             } else {
-                ProgressView("Baue „\(info.label)“ …")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 8) {
+                    Image(systemName: "hammer")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary)
+                    Text("Mit „Bauen & prüfen“ (⌘B) entsteht der Blattplan.")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationTitle(info.label)
-        .navigationSubtitle(subtitle)
-        .toolbar {
-            ToolbarItemGroup {
-                Button { Task { await model.build() } } label: {
-                    Label("Bauen & prüfen", systemImage: "hammer")
+        .background(Theme.background)
+    }
+
+    private var toolbar: some View {
+        HStack(spacing: 10) {
+            Button {
+                Task { await model.build() }
+            } label: {
+                Label("Bauen & prüfen", systemImage: "checkmark.seal")
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(model.isBuilding)
+
+            if model.isBuilding {
+                ProgressView().controlSize(.small)
+            } else if model.isPreviewing {
+                ProgressView().controlSize(.small)
+                Text("Vorschau wird aktualisiert …")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if let result {
+                StatusPill(result: result, stale: model.resultIsStale)
+            }
+
+            Spacer()
+
+            if let message = model.statusMessage {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Menu {
+                Button("In Ordner exportieren … (⌘E)") {
+                    Task { await model.exportToChosenFolder() }
                 }
-                .help("Bauen & prüfen (⌘B)")
-                Button { showReport = true } label: {
-                    Label("Prüfbericht", systemImage: "checkmark.seal")
-                }
-                .disabled(model.result == nil)
-                Button { model.exportWithPanel() } label: {
-                    Label("Exportieren", systemImage: "square.and.arrow.down")
+                Button("In den Steckwerk-Ordner speichern") {
+                    Task { await model.saveToEngineFolder() }
                 }
                 .disabled(!model.canExport)
-                .help("SVG und Prüfbericht speichern (⌘E)")
+                Divider()
+                Button("Steckwerk-Ordner öffnen") {
+                    Task { await model.openFolder() }
+                }
+            } label: {
+                Label("Exportieren", systemImage: "square.and.arrow.up")
             }
+            .fixedSize()
         }
-        .sheet(isPresented: $showReport) {
-            ReportView(result: model.result)
-                .frame(minWidth: 640, minHeight: 480)
-        }
-        .onChange(of: key) { sheetIndex = 0 }
     }
 
-    private var subtitle: String {
-        let parts = sheets.map { $0.1.parts }.reduce(0, +)
-        return "\(info.group) · \(parts) Teile"
-    }
-
-    private var header: some View {
-        HStack(spacing: 10) {
-            statusPill
-            if let msg = model.message {
-                Text(msg).font(.callout).foregroundStyle(.secondary).lineLimit(1)
+    @ViewBuilder
+    private func content(_ result: GenerateResponse) -> some View {
+        if result.assemblies.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Nicht gebaut", systemImage: "xmark.octagon.fill")
+                    .foregroundStyle(Theme.error)
+                    .font(.headline)
+                Text(result.error ?? "Die Engine hat nichts geliefert.")
+                    .textSelection(.enabled)
             }
-            Spacer()
-            if let r = model.result {
-                Text(String(format: "%.2f s", r.elapsed)).font(.caption).foregroundStyle(.secondary)
-            }
-        }
-        .padding(.horizontal, Theme.padding)
-        .padding(.vertical, 8)
-    }
-
-    @ViewBuilder private var statusPill: some View {
-        if let r = model.result, model.resultKey?.model == key {
-            Button { showReport = true } label: {
-                Label(r.statusLine, systemImage: r.ok ? "checkmark.circle.fill" : "xmark.octagon.fill")
-                    .font(.callout.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .foregroundStyle(r.ok ? Theme.ok : Theme.fehler)
-                    .background((r.ok ? Theme.ok : Theme.fehler).opacity(0.12), in: Capsule())
-            }
-            .buttonStyle(.plain)
-            .help("Prüfbericht öffnen")
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         } else {
-            Label("noch nicht geprüft", systemImage: "circle.dashed")
-                .font(.callout)
-                .foregroundStyle(.secondary)
+            VSplitView {
+                PreviewPane(result: result)
+                    .frame(minHeight: 260, idealHeight: 420)
+                ReportView(result: result)
+                    .frame(minHeight: 160)
+            }
+        }
+    }
+}
+
+@MainActor
+private struct StatusPill: View {
+    let result: GenerateResponse
+    let stale: Bool
+
+    var body: some View {
+        let good = result.canExport
+        HStack(spacing: 6) {
+            Image(systemName: good ? "checkmark.circle.fill" : "xmark.octagon.fill")
+            Text(ReportFormatter.statusText(result))
+                .lineLimit(1)
+            if stale {
+                Text("· Werte geändert")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .font(.callout.weight(.medium))
+        .foregroundStyle(good ? Theme.ok : Theme.error)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background(Capsule().fill((good ? Theme.ok : Theme.error).opacity(0.12)))
+    }
+}
+
+/// Blattplan-Auswahl und native Vorschau.
+@MainActor
+private struct PreviewPane: View {
+    @EnvironmentObject var model: AppModel
+    let result: GenerateResponse
+
+    private var sheets: [(title: String, sheet: SheetResult)] {
+        result.assemblies.flatMap { a in a.sheets.map { (a.name + " · " + $0.file, $0) } }
+    }
+
+    var body: some View {
+        let all = sheets
+        let index = min(model.selectedSheet, max(all.count - 1, 0))
+        VStack(spacing: 0) {
+            if all.count > 1 {
+                Picker("Blatt", selection: $model.selectedSheet) {
+                    ForEach(all.indices, id: \.self) { i in
+                        Text(all[i].title).tag(i)
+                    }
+                }
+                .pickerStyle(.menu)
+                .padding(.horizontal, Theme.spacing)
+                .padding(.top, 8)
+            }
+            if model.geometry.indices.contains(index) {
+                PreviewCanvas(geometry: model.geometry[index], checked: all[index].sheet.checked)
+                    .padding(Theme.spacing)
+            } else {
+                Text("Keine Vorschau")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
     }
 }

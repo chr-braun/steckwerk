@@ -1,142 +1,139 @@
-import AppKit
 import SteckwerkCore
 import SwiftUI
 
-/// Versionen und Update-Check: Steckwerk Desktop ersetzt sich selbst aus dem Update-Kanal,
-/// Pakete aktualisiert die Seite „Pakete“.
+/// Versionen und Updates: die App selbst und Pakete aus dem Steckwerk-Kanal.
+@MainActor
 struct AppUpdateView: View {
-    @Environment(AppModel.self) private var model
-    @State private var check: JSONValue?
-    @State private var loading = false
+    @EnvironmentObject var model: AppModel
+    @AppStorage(AppModel.autoUpdateKey) var beimStart = true
+    @State var busy = false
+    @State var installing = false
+    @State var message: String?
 
     var body: some View {
         Form {
-            Section("Versionen") {
-                LabeledContent("Steckwerk Desktop", value: model.appVersion)
-                if case .laeuft(_, let v, let eigen) = model.engineState {
-                    LabeledContent("Engine", value: v + (eigen ? "" : " (mitbenutzt)"))
-                } else {
-                    LabeledContent("Engine", value: model.engineState.label)
-                }
+            Section("Version") {
+                LabeledContent("Steckwerk Desktop", value: AppModel.appVersion)
+                LabeledContent("Engine", value: model.engineVersion ?? "–")
             }
-            DesktopUpdateSection()
-            Section("Engine und Pakete") {
+
+            Section {
                 HStack {
-                    Button("Nach Updates suchen") { Task { await run() } }
-                    if loading { ProgressView().controlSize(.small) }
-                }
-                if let p = check?["programm"] {
-                    if p["neu"]?.boolValue == true {
-                        Text("Neue Engine-Version \(p["version"]?.stringValue ?? "") vom \(p["datum"]?.stringValue ?? "")")
-                            .font(.headline)
-                        ForEach((p["hinweise"]?.arrayValue ?? []).compactMap(\.stringValue), id: \.self) { h in
-                            Label(h, systemImage: "sparkle").font(.callout)
-                        }
-                        if let s = p["seite"]?.stringValue, let url = URL(string: s), !s.isEmpty {
-                            Link("Zur Download-Seite", destination: url)
-                        }
-                    } else {
-                        Label("Steckwerk \(p["installiert"]?.stringValue ?? "") ist aktuell", systemImage: "checkmark.circle")
-                            .foregroundStyle(Theme.ok)
+                    Button {
+                        Task { await runCheck() }
+                    } label: {
+                        Label("Nach Updates suchen", systemImage: "arrow.down.circle")
                     }
-                    let n = check?["updates"]?.doubleValue ?? 0
-                    if n > 0 {
-                        Text("Für \(Int(n)) Paket(e) gibt es Updates – siehe „Pakete“.")
-                            .font(.callout).foregroundStyle(.secondary)
-                    }
+                    .disabled(busy)
+                    if busy { ProgressView().controlSize(.small) }
                 }
-                if let k = check?["kanal"]?.stringValue {
-                    Text(k).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
+                Toggle("Beim Start nach Updates suchen", isOn: $beimStart)
+
+                if let app = model.desktopCheck {
+                    programm(app)
                 }
+                if let check = model.updateCheck {
+                    pakete(check)
+                }
+                if let message {
+                    Text(message).textSelection(.enabled)
+                }
+            } header: {
+                Text("Updates")
+            } footer: {
+                Text("Fragt den Steckwerk-Update-Kanal im Internet ab. Jede Datei wird vor dem Installieren über ihre Prüfsumme geprüft.")
             }
         }
         .formStyle(.grouped)
         .navigationTitle("Updates")
     }
 
-    private func run() async {
-        guard let b = model.bridge else { return }
-        loading = true
-        defer { loading = false }
-        do {
-            check = try await b.call("/api/update-check", timeout: 60)
-        } catch {
-            model.errorText = error.localizedDescription
-        }
-    }
-}
-
-/// Selbst-Update der nativen App: prüfen, laden, ersetzen, neu starten.
-struct DesktopUpdateSection: View {
-    @Environment(AppModel.self) private var model
-    @State private var info: JSONValue?
-    @State private var loading = false
-    @State private var installing = false
-
-    var body: some View {
-        Section("Steckwerk Desktop") {
-            HStack {
-                Button("Nach App-Update suchen") { Task { await check() } }
-                if loading { ProgressView().controlSize(.small) }
-            }
-            if case .laeuft(_, _, false) = model.engineState {
-                Text("Die App nutzt gerade die Engine der Browser-App mit. Für App-Updates einmal "
-                     + "„Modell → Engine neu starten“ wählen, nachdem die Browser-App beendet ist.")
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            if let d = info {
-                if d["neu"]?.boolValue == true {
-                    Text("Neue Version \(d["version"]?.stringValue ?? "") vom \(d["datum"]?.stringValue ?? "")")
-                        .font(.headline)
-                    ForEach((d["hinweise"]?.arrayValue ?? []).compactMap(\.stringValue), id: \.self) { h in
-                        Label(h, systemImage: "sparkle").font(.callout)
-                    }
-                    if d["kann_installieren"]?.boolValue == true {
+    @ViewBuilder
+    private func programm(_ p: DesktopCheck) -> some View {
+        if p.neu {
+            VStack(alignment: .leading, spacing: 6) {
+                Label("Steckwerk Desktop \(p.version) ist verfügbar (installiert: \(p.installiert))", systemImage: "sparkles")
+                    .foregroundStyle(Theme.accent)
+                    .font(.headline)
+                ForEach(Array(p.hinweise.enumerated()), id: \.offset) { _, hinweis in
+                    Text("• " + hinweis).font(.callout)
+                }
+                if p.kannInstallieren {
+                    HStack {
                         Button {
-                            Task { await install() }
+                            Task { await installApp() }
                         } label: {
-                            Label(installing ? "Wird installiert …" : "Installieren und neu starten",
-                                  systemImage: "arrow.down.circle.fill")
+                            Label("Installieren und neu starten", systemImage: "arrow.triangle.2.circlepath")
                         }
                         .buttonStyle(.borderedProminent)
-                        .disabled(installing)
-                    } else if let g = d["grund"]?.stringValue, !g.isEmpty {
-                        Text(g).font(.caption).foregroundStyle(Theme.warnung)
+                        .disabled(busy)
+                        if installing {
+                            ProgressView().controlSize(.small)
+                            Text("Wird geladen und geprüft …").font(.caption).foregroundStyle(.secondary)
+                        }
                     }
+                    .padding(.top, 4)
                 } else {
-                    Label("Steckwerk Desktop \(d["installiert"]?.stringValue ?? model.appVersion) ist aktuell",
-                          systemImage: "checkmark.circle")
-                        .foregroundStyle(Theme.ok)
+                    Text(p.grund.isEmpty ? "Bitte die neue App laden und ersetzen." : p.grund)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
-        }
-        .task { if info == nil { await check() } }
-    }
-
-    private func check() async {
-        guard let b = model.bridge else { return }
-        loading = true
-        defer { loading = false }
-        do {
-            info = try await b.call("/api/desktop-check", timeout: 60)
-        } catch {
-            info = nil
-            if case .laeuft(_, _, true) = model.engineState { model.errorText = error.localizedDescription }
+        } else {
+            Label("Steckwerk Desktop \(p.installiert.isEmpty ? AppModel.appVersion : p.installiert) ist aktuell",
+                  systemImage: "checkmark.circle")
+                .foregroundStyle(Theme.ok)
         }
     }
 
-    private func install() async {
-        guard let b = model.bridge else { return }
+    @ViewBuilder
+    private func pakete(_ check: UpdateCheck) -> some View {
+        let paketUpdates = check.pakete.filter { $0.installiert != nil && $0.installable }
+        if paketUpdates.isEmpty {
+            Text("Alle installierten Pakete sind aktuell.")
+                .foregroundStyle(.secondary)
+        } else {
+            Text("Paket-Updates: " + paketUpdates.map { "\($0.name) \($0.version)" }.joined(separator: ", "))
+            Button("Alle Pakete aktualisieren") {
+                Task { await updatePakete() }
+            }
+            .disabled(busy)
+        }
+    }
+
+    private func runCheck() async {
+        busy = true
+        message = nil
+        defer { busy = false }
+        await model.checkForUpdates()
+    }
+
+    private func installApp() async {
+        busy = true
         installing = true
-        defer { installing = false }
+        message = nil
+        defer {
+            busy = false
+            installing = false
+        }
         do {
-            let r = try await b.call("/api/desktop-install", timeout: 600)
-            let ziel = r["ziel"]?.stringValue ?? Bundle.main.bundlePath
-            try Engine.relaunch(ziel)
-            model.shutdown()
-            NSApp.terminate(nil)
+            message = try await model.installDesktopUpdate()
         } catch {
-            model.errorText = "App-Update fehlgeschlagen: \(error.localizedDescription)"
+            message = error.localizedDescription
+        }
+    }
+
+    private func updatePakete() async {
+        guard let client = model.client else { return }
+        busy = true
+        defer { busy = false }
+        do {
+            let response = try await client.alleKanalPaketeInstallieren()
+            if let schema = response.schema { model.apply(schema: schema) }
+            message = response.message
+            await model.checkForUpdates(quiet: true)
+        } catch {
+            message = error.localizedDescription
         }
     }
 }

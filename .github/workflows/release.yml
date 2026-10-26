@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04      # ubuntu-latest (26.04) hat kein Python 3.9 mehr
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
     steps:
@@ -69,7 +69,7 @@ jobs:
   kanal:
     name: Update-Kanal
     needs: [release, desktop]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04      # ubuntu-latest (26.04) hat kein Python 3.9 mehr
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -79,6 +79,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
+      - name: Pakete mit neuer Version packen
+        env:
+          STECKWERK_PAKETE: ${{ runner.temp }}/inst
+          STECKWERK_DATEN: ${{ runner.temp }}/daten
+        run: |
+          # Pakete, deren Version im Kanal fehlt, neu packen (Abhängigkeiten aus den Quellen installieren)
+          mkdir -p rel
+          python cli.py --paket-installieren paketquellen/verzierungen
+          for d in paketquellen/*/; do
+            [ -f "$d/paket.json" ] || continue
+            id="$(python -c 'import json,sys; m=json.load(open(sys.argv[1])); print(m["id"]+"-"+m["version"])' "$d/paket.json")"
+            if [ ! -e "kanal/pakete/$id.swpaket" ] && ls kanal/pakete/"${id%%-*}"-*.swpaket >/dev/null 2>&1; then
+              python cli.py --paket-packen "$d" --out rel
+            fi
+          done
+          ls -la rel
       - name: Release-Dateien holen
         env:
           GH_TOKEN: ${{ github.token }}
@@ -86,7 +102,10 @@ jobs:
         run: gh release download "$TAG" --dir rel --pattern "Steckwerk-*-macOS.zip"
       - name: Kanal auffrischen und veröffentlichen
         run: |
-          python packaging/update_kanal.py kanal --mac rel/Steckwerk-[0-9]*-macOS.zip --desktop rel/Steckwerk-Desktop-*-macOS.zip
+          PAKETE=()
+          for f in rel/*.swpaket; do [ -e "$f" ] && PAKETE+=(--paket "$f"); done
+          python packaging/update_kanal.py kanal --mac rel/Steckwerk-[0-9]*-macOS.zip --desktop rel/Steckwerk-Desktop-*-macOS.zip \
+            "${PAKETE[@]}"
           cd kanal
           git config user.name "github-actions[bot]"
           git config user.email "41898+github-actions[bot]@users.noreply.github.com"

@@ -49,6 +49,7 @@ MAX_DATEI = 80 * 1024 * 1024
 MAC = sys.platform == "darwin"
 KEYCHAIN = "Steckwerk Updates"
 DESKTOP_APP = "Steckwerk Desktop"
+DESKTOP_ID = "de.steckwerk.desktop"
 GITHUB_HOSTS = {"raw.githubusercontent.com", "api.github.com", "github.com", "objects.githubusercontent.com"}
 
 
@@ -371,6 +372,8 @@ def _extract_app(data: bytes, dest: str, name: str = "Steckwerk") -> str:
         parts = name.replace("\\", "/").split("/")
         if name.startswith("/") or ".." in parts or ":" in name:
             raise UpdateFehler(f"Unzulässiger Pfad im Update: {name}")
+        if parts[0] == "__MACOSX" or parts[-1].startswith("._"):     # Zusatzdaten aus ditto: nicht nötig
+            continue
         mode = (info.external_attr >> 16) & 0o7777
         if stat.S_ISLNK(info.external_attr >> 16):
             raise UpdateFehler("Das Update enthält Verknüpfungen – nicht erlaubt")
@@ -387,6 +390,15 @@ def _extract_app(data: bytes, dest: str, name: str = "Steckwerk") -> str:
     if not app or not os.path.isfile(os.path.join(app, "Contents", "Info.plist")):
         raise UpdateFehler(f"Im Update fehlt die {bundle_name}")
     return app
+
+
+def _plist(app: str) -> Dict[str, Any]:
+    try:
+        with open(os.path.join(app, "Contents", "Info.plist"), "rb") as fh:
+            d = plistlib.load(fh)
+        return d if isinstance(d, dict) else {}
+    except (OSError, plistlib.InvalidFileException, ValueError):
+        return {}
 
 
 def app_version(app: str) -> str:
@@ -420,19 +432,28 @@ def install_program(bundle: str, feed: Optional[Dict[str, Any]] = None) -> Tuple
 
 # --- Native App „Steckwerk Desktop“ ----------------------------------------------------------------
 
+def desktop_installable(bundle: Optional[str]) -> Tuple[bool, str]:
+    """Darf die laufende „Steckwerk Desktop.app“ an ihrem Ort ersetzt werden?"""
+    if not bundle or os.path.basename(os.path.normpath(bundle)) != DESKTOP_APP + ".app":
+        return False, "Updates installiert nur die fertige App aus /Applications (nicht „swift run“)."
+    if _plist(bundle).get("CFBundleIdentifier") != DESKTOP_ID:
+        return False, "Das ist keine Steckwerk-Desktop-App."
+    if "/AppTranslocation/" in bundle or bundle.startswith("/Volumes/"):
+        return False, f"{DESKTOP_APP} läuft noch aus dem Download bzw. dem DMG. Erst in den Programme-Ordner ziehen."
+    parent = os.path.dirname(os.path.realpath(bundle))
+    if not os.access(parent, os.W_OK):
+        return False, f"Keine Schreibrechte im Ordner {parent}."
+    return True, ""
+
+
 def desktop_check(bundle: Optional[str], feed: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Gibt es eine neuere Steckwerk Desktop.app im Kanal? bundle = Pfad der laufenden App."""
     feed = feed or load_feed()
     d = feed.get("desktop") or {}
-    try:
-        installiert = app_version(bundle) if bundle else ""
-    except (OSError, ValueError):
-        installiert = ""
+    installiert = str(_plist(bundle).get("CFBundleShortVersionString", "")) if bundle else ""
     neu = bool(d.get("version")) and ver(d.get("version")) > ver(installiert or "0")
-    ok, grund = program_installable(bundle)
-    if not ok and bundle is None:
-        grund = "Updates installiert nur die fertige App aus /Applications (nicht „swift run“)."
-    if neu and not d.get("mac"):
+    ok, grund = desktop_installable(bundle)
+    if neu and ok and not d.get("mac"):
         ok, grund = False, "Für diese Version gibt es kein Mac-Paket im Kanal."
     return dict(ok=True, installiert=installiert, version=str(d.get("version", "")), neu=neu,
                 datum=str(d.get("datum", "")), hinweise=[str(h) for h in d.get("hinweise", [])][:30],
@@ -440,8 +461,9 @@ def desktop_check(bundle: Optional[str], feed: Optional[Dict[str, Any]] = None) 
 
 
 def install_desktop(bundle: str, feed: Optional[Dict[str, Any]] = None) -> Tuple[str, str]:
-    """Neue Steckwerk Desktop.app laden, prüfen und die laufende ersetzen. Liefert (Pfad, Version)."""
-    ok, grund = program_installable(bundle)
+    """Neue Steckwerk Desktop.app laden, prüfen (Prüfsumme, Kennung, Version) und die laufende ersetzen.
+    Liefert (Pfad, Version); den Neustart übernimmt die App."""
+    ok, grund = desktop_installable(bundle)
     if not ok:
         raise UpdateFehler(grund)
     feed = feed or load_feed()
@@ -453,9 +475,16 @@ def install_desktop(bundle: str, feed: Optional[Dict[str, Any]] = None) -> Tuple
     tmp = tempfile.mkdtemp(prefix="swupdate_", dir=data_dir())
     try:
         app = _extract_app(data, tmp, DESKTOP_APP)
-        got = app_version(app)
+        info = _plist(app)
+        if info.get("CFBundleIdentifier") != DESKTOP_ID:
+            raise UpdateFehler("Das Update ist keine Steckwerk-Desktop-App – nichts geändert")
+        got = str(info.get("CFBundleShortVersionString", ""))
         if got != want:
             raise UpdateFehler(f"Das Update enthält Version {got} statt {want} – nichts geändert")
+        exe = os.path.join(app, "Contents", "MacOS", str(info.get("CFBundleExecutable", "")))
+        if not os.path.isfile(exe):
+            raise UpdateFehler("Im Update fehlt das Programm selbst – nichts geändert")
+        os.chmod(exe, 0o755)
         import steckwerk_app
         target = steckwerk_app.install_bundle(app, os.path.dirname(os.path.realpath(bundle)), DESKTOP_APP)
     finally:

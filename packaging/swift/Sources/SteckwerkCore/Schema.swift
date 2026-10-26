@@ -1,62 +1,59 @@
 import Foundation
 
-/// Antwort von GET /api/schema – Modelle, Parameter, Material, Motive, Pakete.
+/// Antwort von GET /api/schema.
 public struct Schema: Decodable, Sendable {
-    public var version: String
-    public var groups: [String]
-    public var groupLabels: [String: String]
-    public var models: [String: ModelInfo]
-    public var config: [Param]
-    public var motive: [Motiv]
-    public var pakete: [Paket]
-    public var outDir: String?
-    public var app: Bool
-    public var assistent: JSONValue?
-    public var updates: JSONValue?
+    public let models: [String: ModelInfo]
+    public let groups: [String]
+    public let groupLabels: [String: String]
+    public let config: [Param]
+    public let motive: [Motiv]
+    public let pakete: [PaketInfo]
+    public let version: String?
+    public let assistent: KISettings?
 
     enum CodingKeys: String, CodingKey {
-        case version, groups, models, config, motive, pakete, app, assistent, updates
+        case models, groups, config, motive, pakete, version, assistent
         case groupLabels = "group_labels"
-        case outDir = "out_dir"
     }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        version = try c.decodeIfPresent(String.self, forKey: .version) ?? ""
+        models = try c.decode([String: ModelInfo].self, forKey: .models)
         groups = try c.decodeIfPresent([String].self, forKey: .groups) ?? []
         groupLabels = try c.decodeIfPresent([String: String].self, forKey: .groupLabels) ?? [:]
-        models = try c.decodeIfPresent([String: ModelInfo].self, forKey: .models) ?? [:]
         config = try c.decodeIfPresent([Param].self, forKey: .config) ?? []
         motive = try c.decodeIfPresent([Motiv].self, forKey: .motive) ?? []
-        pakete = try c.decodeIfPresent([Paket].self, forKey: .pakete) ?? []
-        outDir = try c.decodeIfPresent(String.self, forKey: .outDir)
-        app = try c.decodeIfPresent(Bool.self, forKey: .app) ?? false
-        assistent = try c.decodeIfPresent(JSONValue.self, forKey: .assistent)
-        updates = try c.decodeIfPresent(JSONValue.self, forKey: .updates)
+        pakete = try c.decodeIfPresent([PaketInfo].self, forKey: .pakete) ?? []
+        version = try c.decodeIfPresent(String.self, forKey: .version)
+        assistent = try? c.decodeIfPresent(KISettings.self, forKey: .assistent)
     }
 
-    public static func decode(_ data: Data) throws -> Schema {
-        try JSONDecoder().decode(Schema.self, from: data)
-    }
-
-    /// Modelle einer Gruppe, nach Namen sortiert (JSON-Objekte haben in Swift keine feste Reihenfolge).
-    public func models(in group: String) -> [(key: String, info: ModelInfo)] {
-        models.filter { $0.value.group == group }
-            .map { (key: $0.key, info: $0.value) }
-            .sorted { $0.info.label.localizedStandardCompare($1.info.label) == .orderedAscending }
-    }
-
-    /// Gruppen in der Reihenfolge der Engine, ergänzt um Gruppen, die nur in Modellen vorkommen.
-    public var orderedGroups: [String] {
-        var out = groups
-        for g in Set(models.values.map(\.group)).sorted() where !out.contains(g) {
-            out.append(g)
+    /// Modelle für die Seitenleiste: Gruppen in der Reihenfolge der Engine, darin nach Name sortiert.
+    public var sidebarGroups: [ModelGroup] {
+        var byGroup: [String: [ModelEntry]] = [:]
+        for (id, info) in models {
+            byGroup[info.group, default: []].append(ModelEntry(id: id, info: info))
         }
-        return out.filter { g in models.values.contains { $0.group == g } }
+        let known = groups.filter { byGroup[$0] != nil }
+        let extra = byGroup.keys.filter { !groups.contains($0) }.sorted()
+        return (known + extra).map { g in
+            let entries = (byGroup[g] ?? []).sorted {
+                ($0.info.label.lowercased(), $0.id) < ($1.info.label.lowercased(), $1.id)
+            }
+            return ModelGroup(id: g, label: groupLabels[g] ?? g, models: entries)
+        }
     }
 
-    public func label(forGroup group: String) -> String {
-        groupLabels[group] ?? group
+    /// Seitenleiste gefiltert: Treffer in Name, Beschreibung, Gruppe oder Kennung (ohne Groß-/Kleinschreibung).
+    public func sidebarGroups(matching query: String) -> [ModelGroup] {
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return sidebarGroups }
+        return sidebarGroups.compactMap { group in
+            let hits = group.models.filter { e in
+                [e.id, e.info.label, e.info.desc, group.label].contains { $0.lowercased().contains(q) }
+            }
+            return hits.isEmpty ? nil : ModelGroup(id: group.id, label: group.label, models: hits)
+        }
     }
 
     public func motiv(id: String) -> Motiv? {
@@ -64,178 +61,157 @@ public struct Schema: Decodable, Sendable {
     }
 }
 
-public struct ModelInfo: Decodable, Sendable, Hashable {
-    public var label: String
-    public var group: String
-    public var desc: String
-    public var params: [Param]
-    public var paketID: String?
+public struct ModelGroup: Identifiable, Hashable, Sendable {
+    public let id: String
+    public let label: String
+    public let models: [ModelEntry]
+}
 
-    enum CodingKeys: String, CodingKey { case label, group, desc, params, paket }
-    enum PaketKeys: String, CodingKey { case id }
+public struct ModelEntry: Identifiable, Hashable, Sendable {
+    public let id: String
+    public let info: ModelInfo
+}
+
+public struct ModelInfo: Decodable, Hashable, Sendable {
+    public let label: String
+    public let group: String
+    public let desc: String
+    public let params: [Param]
+
+    enum CodingKeys: String, CodingKey { case label, group, desc, params }
+
+    public init(label: String, group: String, desc: String, params: [Param]) {
+        self.label = label
+        self.group = group
+        self.desc = desc
+        self.params = params
+    }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        label = try c.decodeIfPresent(String.self, forKey: .label) ?? ""
-        group = try c.decodeIfPresent(String.self, forKey: .group) ?? "Weitere"
+        label = try c.decode(String.self, forKey: .label)
+        group = try c.decodeIfPresent(String.self, forKey: .group) ?? ""
         desc = try c.decodeIfPresent(String.self, forKey: .desc) ?? ""
         params = try c.decodeIfPresent([Param].self, forKey: .params) ?? []
-        if let p = try? c.nestedContainer(keyedBy: PaketKeys.self, forKey: .paket) {
-            paketID = try p.decodeIfPresent(String.self, forKey: .id)
-        }
-    }
-
-    /// Standardwerte aller Parameter – Ausgangspunkt für das Formular.
-    public var defaults: [String: JSONValue] {
-        Dictionary(params.map { ($0.key, $0.defaultValue) }, uniquingKeysWith: { a, _ in a })
-    }
-
-    /// Abschnitte in Reihenfolge des ersten Auftretens; Parameter ohne Abschnitt kommen unter "".
-    public var sections: [(title: String, params: [Param])] {
-        var order: [String] = []
-        var map: [String: [Param]] = [:]
-        for p in params {
-            let s = p.section ?? ""
-            if map[s] == nil { order.append(s) }
-            map[s, default: []].append(p)
-        }
-        return order.map { (title: $0, params: map[$0] ?? []) }
     }
 }
 
-public enum ParamType: String, Sendable, Hashable {
-    case number, int, select, text, bool, motiv, motive, unknown
+public enum ParamKind: String, Sendable {
+    case number, int, bool, select, text, motiv, motive, unknown
 
-    init(raw: String) {
-        switch raw {
-        case "num", "number", "float": self = .number
-        case "int", "integer": self = .int
-        case "flag", "bool", "boolean": self = .bool
-        default: self = ParamType(rawValue: raw) ?? .unknown
+    init(engineType: String) {
+        switch engineType {
+        case "number", "num": self = .number
+        case "int": self = .int
+        case "bool", "flag": self = .bool
+        case "select": self = .select
+        case "text": self = .text
+        case "motiv": self = .motiv
+        case "motive": self = .motive
+        default: self = .unknown
         }
     }
 }
 
-public struct ParamOption: Decodable, Sendable, Hashable, Identifiable {
-    public var value: JSONValue
-    public var label: String
-    public var id: String { value.stringValue ?? label }
+public struct ParamOption: Decodable, Hashable, Sendable {
+    public let value: JSONValue
+    public let label: String
+
+    public init(value: JSONValue, label: String) {
+        self.value = value
+        self.label = label
+    }
 
     enum CodingKeys: String, CodingKey { case value, label }
 
     public init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        value = try c.decodeIfPresent(JSONValue.self, forKey: .value) ?? .null
-        label = try c.decodeIfPresent(String.self, forKey: .label) ?? (value.stringValue ?? "")
+        if let c = try? decoder.container(keyedBy: CodingKeys.self) {
+            value = try c.decode(JSONValue.self, forKey: .value)
+            label = try c.decodeIfPresent(String.self, forKey: .label) ?? value.displayText
+        } else {
+            value = try decoder.singleValueContainer().decode(JSONValue.self)
+            label = value.displayText
+        }
     }
 }
 
-public struct Param: Decodable, Sendable, Hashable, Identifiable {
-    public var key: String
-    public var label: String
-    public var type: ParamType
-    public var rawType: String
-    public var defaultValue: JSONValue
-    public var options: [ParamOption]
-    public var min: Double?
-    public var max: Double?
-    public var step: Double?
-    public var unit: String
-    public var help: String
-    public var section: String?
-    public var maxlength: Int?
-    public var symbols: Bool
-    public var when: [String: [JSONValue]]
-    public var arten: [ParamOption]
-
+public struct Param: Decodable, Hashable, Sendable, Identifiable {
     public var id: String { key }
+    public let key: String
+    public let label: String
+    public let type: String
+    public let defaultValue: JSONValue
+    public let options: [ParamOption]
+    public let min: Double?
+    public let max: Double?
+    public let step: Double?
+    public let unit: String
+    public let help: String
+    public let section: String?
+    public let maxlength: Int?
+    /// Zeilen für mehrzeilige Textfelder (z. B. Preislisten in Paketen); nil = einzeilig.
+    public let rows: Int?
+    public let when: [String: [JSONValue]]
+    public let arten: [ParamOption]
+
+    public var kind: ParamKind { ParamKind(engineType: type) }
 
     enum CodingKeys: String, CodingKey {
-        case key, label, type, options, min, max, step, unit, help, section, maxlength, symbols, when, arten
+        case key, label, type, options, min, max, step, unit, help, section, maxlength, rows, when, arten
         case defaultValue = "default"
+    }
+
+    public init(key: String, label: String, type: String, defaultValue: JSONValue,
+                options: [ParamOption] = [], min: Double? = nil, max: Double? = nil, step: Double? = nil,
+                unit: String = "", help: String = "", section: String? = nil, maxlength: Int? = nil,
+                rows: Int? = nil, when: [String: [JSONValue]] = [:], arten: [ParamOption] = []) {
+        self.key = key
+        self.label = label
+        self.type = type
+        self.defaultValue = defaultValue
+        self.options = options
+        self.min = min
+        self.max = max
+        self.step = step
+        self.unit = unit
+        self.help = help
+        self.section = section
+        self.maxlength = maxlength
+        self.rows = rows
+        self.when = when
+        self.arten = arten
     }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         key = try c.decode(String.self, forKey: .key)
         label = try c.decodeIfPresent(String.self, forKey: .label) ?? key
-        rawType = try c.decodeIfPresent(String.self, forKey: .type) ?? "text"
-        type = ParamType(raw: rawType)
+        type = try c.decodeIfPresent(String.self, forKey: .type) ?? "text"
         defaultValue = try c.decodeIfPresent(JSONValue.self, forKey: .defaultValue) ?? .null
         options = try c.decodeIfPresent([ParamOption].self, forKey: .options) ?? []
-        min = try c.decodeIfPresent(JSONValue.self, forKey: .min)?.doubleValue
-        max = try c.decodeIfPresent(JSONValue.self, forKey: .max)?.doubleValue
-        step = try c.decodeIfPresent(JSONValue.self, forKey: .step)?.doubleValue
+        min = try c.decodeIfPresent(Double.self, forKey: .min)
+        max = try c.decodeIfPresent(Double.self, forKey: .max)
+        step = try c.decodeIfPresent(Double.self, forKey: .step)
         unit = try c.decodeIfPresent(String.self, forKey: .unit) ?? ""
         help = try c.decodeIfPresent(String.self, forKey: .help) ?? ""
         section = try c.decodeIfPresent(String.self, forKey: .section)
-        maxlength = try c.decodeIfPresent(JSONValue.self, forKey: .maxlength)?.doubleValue.map { Int($0) }
-        symbols = try c.decodeIfPresent(Bool.self, forKey: .symbols) ?? false
-        let w = try c.decodeIfPresent([String: JSONValue].self, forKey: .when) ?? [:]
-        when = w.mapValues { $0.arrayValue ?? [$0] }
+        maxlength = try c.decodeIfPresent(Int.self, forKey: .maxlength)
+        rows = (try? c.decodeIfPresent(Int.self, forKey: .rows)) ?? nil
+        when = (try? c.decodeIfPresent([String: [JSONValue]].self, forKey: .when)) ?? [:]
         arten = try c.decodeIfPresent([ParamOption].self, forKey: .arten) ?? []
-    }
-
-    /// Mehrzeiliges Textfeld? Die Engine nimmt „|“ als Zeilenumbruch; lange Felder bekommen einen Editor.
-    public var isMultiline: Bool {
-        type == .text && ((maxlength ?? 0) > 60 || help.contains("| = neue Zeile"))
-    }
-
-    /// Sichtbar unter den aktuellen Werten? (`when`: alle genannten Felder müssen einen der Werte haben.)
-    public func isVisible(values: [String: JSONValue]) -> Bool {
-        for (other, allowed) in when {
-            guard let v = values[other] else { return false }
-            let s = v.stringValue
-            if !allowed.contains(where: { $0 == v || ($0.stringValue != nil && $0.stringValue == s) }) {
-                return false
-            }
-        }
-        return true
-    }
-
-    /// Wert auf den erlaubten Bereich bringen (Zahlen) bzw. kürzen (Text).
-    public func clamp(_ value: JSONValue) -> JSONValue {
-        switch type {
-        case .number, .int:
-            guard var d = value.doubleValue else { return defaultValue }
-            if let lo = min { d = Swift.max(lo, d) }
-            if let hi = max { d = Swift.min(hi, d) }
-            return .number(type == .int ? d.rounded() : d)
-        case .text:
-            guard let s = value.stringValue else { return defaultValue }
-            if let n = maxlength, s.count > n { return .string(String(s.prefix(n))) }
-            return .string(s)
-        default:
-            return value
-        }
     }
 }
 
-public struct Motiv: Decodable, Sendable, Hashable, Identifiable {
-    public var id: String
-    public var name: String
-    public var quelle: String
-    public var eingebaut: Bool
-    public var w: Double
-    public var h: Double
-    /// Flächen (Außenkontur + Löcher) und Linien in normierten Koordinaten um (0, 0).
-    public var flaechen: [Flaeche]
-    public var linien: [[Pt]]
+/// Ein Motiv aus der Bibliothek; Koordinaten normiert (etwa -0.5…0.5).
+public struct Motiv: Decodable, Hashable, Sendable, Identifiable {
+    public let id: String
+    public let name: String
+    public let quelle: String
+    public let eingebaut: Bool
+    public let flaechen: [Flaeche]
+    public let linien: [[Point]]
 
-    public struct Flaeche: Decodable, Sendable, Hashable {
-        public var aussen: [Pt]
-        public var loecher: [[Pt]]
-
-        enum CodingKeys: String, CodingKey { case aussen, loecher }
-
-        public init(from decoder: Decoder) throws {
-            let c = try decoder.container(keyedBy: CodingKeys.self)
-            aussen = Pt.list(try c.decodeIfPresent([[Double]].self, forKey: .aussen) ?? [])
-            loecher = (try c.decodeIfPresent([[[Double]]].self, forKey: .loecher) ?? []).map(Pt.list)
-        }
-    }
-
-    enum CodingKeys: String, CodingKey { case id, name, quelle, eingebaut, w, h, flaechen, linien }
+    enum CodingKeys: String, CodingKey { case id, name, quelle, eingebaut, flaechen, linien }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -243,47 +219,110 @@ public struct Motiv: Decodable, Sendable, Hashable, Identifiable {
         name = try c.decodeIfPresent(String.self, forKey: .name) ?? id
         quelle = try c.decodeIfPresent(String.self, forKey: .quelle) ?? ""
         eingebaut = try c.decodeIfPresent(Bool.self, forKey: .eingebaut) ?? false
-        w = try c.decodeIfPresent(Double.self, forKey: .w) ?? 1
-        h = try c.decodeIfPresent(Double.self, forKey: .h) ?? 1
         flaechen = (try? c.decodeIfPresent([Flaeche].self, forKey: .flaechen)) ?? []
-        linien = ((try? c.decodeIfPresent([[[Double]]].self, forKey: .linien)) ?? []).map(Pt.list)
+        let raw = (try? c.decodeIfPresent([[[Double]]].self, forKey: .linien)) ?? []
+        linien = raw.map(Point.list)
     }
 }
 
-public struct Paket: Decodable, Sendable, Hashable, Identifiable {
-    public var id: String
-    public var name: String
-    public var version: String
-    public var autor: String
-    public var beschreibung: String
-    public var modelle: [String]
-    public var fehler: String?
+public struct Flaeche: Decodable, Hashable, Sendable {
+    public let aussen: [Point]
+    public let loecher: [[Point]]
 
-    enum CodingKeys: String, CodingKey { case id, name, version, autor, beschreibung, modelle, fehler }
+    enum CodingKeys: String, CodingKey { case aussen, loecher }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        id = try c.decodeIfPresent(String.self, forKey: .id) ?? ""
-        name = try c.decodeIfPresent(String.self, forKey: .name) ?? id
-        version = try c.decodeIfPresent(JSONValue.self, forKey: .version)?.stringValue ?? ""
-        autor = try c.decodeIfPresent(String.self, forKey: .autor) ?? ""
-        beschreibung = try c.decodeIfPresent(String.self, forKey: .beschreibung) ?? ""
-        modelle = try c.decodeIfPresent([String].self, forKey: .modelle) ?? []
-        fehler = try c.decodeIfPresent(JSONValue.self, forKey: .fehler)?.stringValue
+        aussen = Point.list(try c.decodeIfPresent([[Double]].self, forKey: .aussen) ?? [])
+        loecher = (try c.decodeIfPresent([[[Double]]].self, forKey: .loecher) ?? []).map(Point.list)
     }
 }
 
-/// Punkt in Millimetern (Blatt) oder normierten Einheiten (Motive).
-public struct Pt: Sendable, Hashable {
+public struct Point: Hashable, Sendable {
     public var x: Double
     public var y: Double
 
-    public init(_ x: Double, _ y: Double) {
+    public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
 
-    static func list(_ raw: [[Double]]) -> [Pt] {
-        raw.compactMap { $0.count >= 2 ? Pt($0[0], $0[1]) : nil }
+    static func list(_ raw: [[Double]]) -> [Point] {
+        raw.compactMap { $0.count >= 2 ? Point(x: $0[0], y: $0[1]) : nil }
+    }
+}
+
+/// Ein installiertes Themenpaket.
+public struct PaketInfo: Decodable, Hashable, Sendable, Identifiable {
+    public let id: String
+    public let name: String
+    public let version: String
+    public let autor: String
+    public let modelle: [String]
+    public let fehler: String?
+
+    enum CodingKeys: String, CodingKey { case id, name, version, autor, modelle, fehler }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decodeIfPresent(String.self, forKey: .name) ?? id
+        version = try c.decodeIfPresent(String.self, forKey: .version) ?? ""
+        autor = try c.decodeIfPresent(String.self, forKey: .autor) ?? ""
+        modelle = try c.decodeIfPresent([String].self, forKey: .modelle) ?? []
+        fehler = try? c.decodeIfPresent(String.self, forKey: .fehler)
+    }
+}
+
+/// Assistent- und Bild-Einstellungen aus dem Schema (Schlüssel selbst liefert die Engine nie).
+public struct KISettings: Decodable, Sendable {
+    public let an: Bool
+    public let url: String
+    public let modell: String
+    public let bilder: BildSettings?
+
+    enum CodingKeys: String, CodingKey { case an, url, modell, bilder }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        an = (try? c.decodeIfPresent(Bool.self, forKey: .an)) ?? false
+        url = (try? c.decodeIfPresent(String.self, forKey: .url)) ?? ""
+        modell = (try? c.decodeIfPresent(String.self, forKey: .modell)) ?? ""
+        bilder = try? c.decodeIfPresent(BildSettings.self, forKey: .bilder)
+    }
+}
+
+public struct BildSettings: Decodable, Sendable {
+    public let quelle: String
+    public let ollamaModell: String
+    public let openrouterModell: String
+    public let chatgptModell: String
+    public let keyGesetzt: Bool
+    /// Ob je Anbieter ein Schlüssel hinterlegt ist (z. B. ["openrouter": true]); nie der Schlüssel selbst.
+    public let keys: [String: Bool]
+    public let limit: Double
+    public let stile: [ParamOption]
+
+    enum CodingKeys: String, CodingKey {
+        case quelle, limit, stile, keys
+        case ollamaModell = "ollama_modell"
+        case openrouterModell = "openrouter_modell"
+        case chatgptModell = "chatgpt_modell"
+        case keyGesetzt = "key_gesetzt"
+        case chatgptKeyGesetzt = "chatgpt_key_gesetzt"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        quelle = (try? c.decodeIfPresent(String.self, forKey: .quelle)) ?? "ollama"
+        ollamaModell = (try? c.decodeIfPresent(String.self, forKey: .ollamaModell)) ?? ""
+        openrouterModell = (try? c.decodeIfPresent(String.self, forKey: .openrouterModell)) ?? ""
+        chatgptModell = (try? c.decodeIfPresent(String.self, forKey: .chatgptModell)) ?? ""
+        keyGesetzt = (try? c.decodeIfPresent(Bool.self, forKey: .keyGesetzt)) ?? false
+        let chatgpt = (try? c.decodeIfPresent(Bool.self, forKey: .chatgptKeyGesetzt)) ?? false
+        keys = (try? c.decodeIfPresent([String: Bool].self, forKey: .keys))
+            ?? ["openrouter": keyGesetzt, "chatgpt": chatgpt]
+        limit = (try? c.decodeIfPresent(Double.self, forKey: .limit)) ?? 0
+        stile = (try? c.decodeIfPresent([ParamOption].self, forKey: .stile)) ?? []
     }
 }

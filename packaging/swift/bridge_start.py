@@ -2,110 +2,109 @@
 """
 bridge_start.py – startet die Steckwerk-Engine für die native App „Steckwerk Desktop“.
 
-  python3 bridge_start.py --engine <Ordner mit webui.py> [--port 0] [--out ~/Steckwerk] [--parent PID]
-                          [--bundle "/Applications/Steckwerk Desktop.app"]
+  python3 bridge_start.py --root <Ordner mit webui.py> [--port 0] [--out <Speicherordner>]
 
-Nutzt webui.make_server unverändert und ergänzt nur zwei Endpunkte für die native App:
-  POST /api/desktop-check     → gibt es eine neuere Steckwerk Desktop.app im Update-Kanal?
-  POST /api/desktop-install   → laden, Prüfsumme und Version prüfen, die App in ihrem Ordner ersetzen
- Mit --port 0 sucht sich das System einen freien Port; der
-gewählte Port steht als erste Zeile „STECKWERK_PORT=12345“ auf stdout. Mit --parent beendet sich
-die Engine selbst, sobald die App nicht mehr läuft (kein Waisenprozess nach einem Absturz).
-Nur Standardbibliothek, Python 3.8+.
+Schreibt genau eine Zeile „STECKWERK_PORT=<port>“ auf stdout, sobald der Server bereit ist.
+Läuft schon eine Steckwerk-Instanz derselben Version, lautet die Zeile „STECKWERK_PORT=<port> REUSED“
+und dieses Skript endet sofort – die App nutzt dann die laufende Instanz mit.
+
+Die eigene Engine endet von selbst, wenn
+  * stdin geschlossen wird (App beendet oder abgestürzt – so bleiben keine Waisenprozesse),
+  * die App sich mit /api/bye abmeldet oder /api/quit schickt, oder
+  * sie längere Zeit gar nichts gehört hat (--idle).
+
+Nur Python-Standardbibliothek, ab Python 3.9.
 """
 from __future__ import annotations
 
 import argparse
+import faulthandler
 import os
 import signal
 import sys
 import threading
 import time
+from typing import List, Optional
 
 
-def parent_alive(pid: int) -> bool:
-    if pid <= 0:
-        return True
+def _lifeline(session) -> None:
+    """Liest stdin bis zum Ende; das Ende heißt: die App gibt es nicht mehr.
+
+    Ungepuffert über den Dateideskriptor – ein gepuffertes stdin hält eine Sperre, an der Python beim
+    Beenden sonst abbricht (Fatal Python error: _enter_buffered_busy)."""
     try:
-        os.kill(pid, 0)
-    except ProcessLookupError:
-        return False
-    except PermissionError:
-        return True
-    return os.getppid() != 1
+        fd = sys.stdin.fileno()
+        while os.read(fd, 4096):
+            pass
+    except (OSError, ValueError):
+        pass
+    session.request_quit()
 
 
-def watch_parent(pid: int, srv, interval: float = 2.0) -> None:
-    while parent_alive(pid):
-        time.sleep(interval)
-    threading.Thread(target=srv.shutdown, daemon=True).start()
-    time.sleep(3)
-    os._exit(0)
+def _running_port(steckwerk_app, version: str) -> Optional[int]:
+    """Port einer laufenden Steckwerk-Instanz derselben Version, sonst None (andere werden nicht angefasst)."""
+    info = steckwerk_app._read_json(steckwerk_app.running_path())
+    port = info.get("port")
+    if not isinstance(port, int):
+        return None
+    answer = steckwerk_app.probe(port)
+    if answer and answer.get("version") == version and answer.get("files") is not False:
+        return port
+    return None
 
 
-def desktop_handler(base, bundle):
-    """Handler der Engine plus die Update-Endpunkte für Steckwerk Desktop."""
-
-    class DesktopHandler(base):
-        def do_POST(self):
-            path = self.path.split("?", 1)[0]
-            if path not in ("/api/desktop-check", "/api/desktop-install"):
-                return base.do_POST(self)
-            if not self._host_ok() or not self.headers.get("X-Steckwerk"):
-                return self._json({"ok": False, "error": "Zugriff verweigert"}, 403)
-            import updater
-            try:
-                self._body()
-                self._touch()
-                if path == "/api/desktop-check":
-                    return self._json(updater.desktop_check(bundle))
-                target, version = updater.install_desktop(bundle or "")
-                self._json({"ok": True, "version": version, "ziel": target,
-                            "message": f"Steckwerk Desktop {version} ist installiert und startet gleich neu"})
-            except (updater.UpdateFehler, ValueError, OSError) as e:
-                self._json({"ok": False, "error": str(e)}, 400)
-
-    return DesktopHandler
-
-
-def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="bridge_start", description="Engine für Steckwerk Desktop")
-    ap.add_argument("--engine", default=os.environ.get("STECKWERK_ENGINE", ""), help="Ordner mit webui.py")
-    ap.add_argument("--port", type=int, default=0)
-    ap.add_argument("--out", default=os.path.join("~", "Steckwerk"), help="Ordner für „In Ordner speichern“")
-    ap.add_argument("--parent", type=int, default=0, help="PID der App; Engine endet mit ihr")
-    ap.add_argument("--bundle", default="", help="Pfad der laufenden Steckwerk Desktop.app (für Updates)")
+def main(argv: Optional[List[str]] = None) -> int:
+    ap = argparse.ArgumentParser(prog="bridge_start", description="Steckwerk-Engine für Steckwerk Desktop starten")
+    ap.add_argument("--root", required=True, help="Ordner mit webui.py")
+    ap.add_argument("--port", type=int, default=0, help="0 = freien Port wählen")
+    ap.add_argument("--out", help="Speicherordner (Default: Dokumente/Steckwerk)")
+    ap.add_argument("--idle", type=float, default=20, help="Minuten ohne Anfrage bis zum Beenden")
+    ap.add_argument("--no-reuse", action="store_true", help="eine laufende Steckwerk-Instanz nicht mitbenutzen")
     a = ap.parse_args(argv)
+    if hasattr(signal, "SIGUSR1"):
+        faulthandler.register(signal.SIGUSR1, all_threads=True)       # Diagnose: wo hängt die Engine?
+    print(f"bridge_start: Python {sys.version.split()[0]}", file=sys.stderr, flush=True)
 
-    engine = os.path.abspath(os.path.expanduser(a.engine or os.path.dirname(os.path.abspath(__file__))))
-    if not os.path.exists(os.path.join(engine, "webui.py")):
-        print(f"webui.py nicht gefunden in {engine}", file=sys.stderr)
+    root = os.path.abspath(a.root)
+    if not os.path.isfile(os.path.join(root, "webui.py")):
+        print(f"webui.py nicht gefunden in {root}", file=sys.stderr)
         return 2
-    sys.path.insert(0, engine)
-    os.chdir(engine)
-    os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
+    sys.path.insert(0, root)
+    os.chdir(root)
 
+    import steckwerk_app
     import webui
-    from steckwerk import migrate_legacy
+    from steckwerk import __version__, migrate_legacy
+
     migrate_legacy()
+    if not a.no_reuse:
+        port = _running_port(steckwerk_app, __version__)
+        if port:
+            print(f"STECKWERK_PORT={port} REUSED", flush=True)
+            return 0
+
+    session = webui.Session(idle_limit=a.idle * 60, grace=10.0)
+    out = a.out or steckwerk_app.default_out_dir()
     try:
-        srv = webui.make_server("127.0.0.1", a.port, os.path.expanduser(a.out), quiet=True)
+        srv = webui.make_server("127.0.0.1", a.port, out, quiet=True, app=True, session=session,
+                                open_folder=steckwerk_app.open_folder)
     except OSError as e:
-        print(f"Port {a.port} ist belegt ({e})", file=sys.stderr)
+        print(f"Server ließ sich nicht starten: {e}", file=sys.stderr)
         return 1
-    srv.RequestHandlerClass = desktop_handler(srv.RequestHandlerClass, a.bundle or None)
     port = srv.server_address[1]
+
+    def watchdog() -> None:
+        while True:
+            time.sleep(0.25)
+            if session.should_quit():
+                srv.shutdown()
+                return
+
+    threading.Thread(target=_lifeline, args=(session,), daemon=True).start()
+    threading.Thread(target=watchdog, daemon=True).start()
     print(f"STECKWERK_PORT={port}", flush=True)
-
-    def stop(*_):
-        threading.Thread(target=srv.shutdown, daemon=True).start()
-
-    signal.signal(signal.SIGTERM, stop)
-    signal.signal(signal.SIGINT, stop)
-    if a.parent:
-        threading.Thread(target=watch_parent, args=(a.parent, srv), daemon=True).start()
     try:
-        srv.serve_forever()
+        srv.serve_forever(poll_interval=0.25)
     finally:
         srv.server_close()
     return 0

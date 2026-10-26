@@ -23,6 +23,9 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/update-check        → was es Neues gibt (Programm und Pakete aus dem Update-Kanal)
   POST /api/update-paket        {id} oder {alle: true} → Paket(e) aus dem Kanal installieren
   POST /api/update-programm     Mac-App durch die neue Version ersetzen und neu starten (nur App)
+  POST /api/desktop-check       {bundle} → gibt es eine neuere Steckwerk Desktop.app im Update-Kanal?
+  POST /api/desktop-install     {bundle} → Steckwerk Desktop laden, prüfen und an ihrem Ort ersetzen
+                                (den Neustart macht die App)
   POST /api/update-einstellungen {kanal, token, auto} → Einstellungen ändern (Schlüssel wird nie zurückgegeben)
   POST /api/assistent    {model, beschreibung, params} → Werte-Vorschlag vom lokalen Sprachmodell (Ollama)
   POST /api/assistent-status         {url?} → Ollama erreichbar? installierte Modelle
@@ -41,6 +44,7 @@ import argparse
 import json
 import os
 import socket
+import socketserver
 import sys
 import threading
 import time
@@ -316,7 +320,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"ok": False, "error": str(e)}, 400)
                 service.reload_pakete()
                 self._json({"ok": True, "message": msg, "schema": self._schema()})
-            elif path.startswith("/api/update-"):
+            elif path.startswith(("/api/update-", "/api/desktop-")):
                 self._touch()
                 self._update(path, req)
             elif path in ("/api/motiv-import", "/api/motiv-entfernen"):
@@ -405,6 +409,12 @@ class Handler(BaseHTTPRequestHandler):
                     threading.Timer(0.5, self.session.request_quit).start()
                 return self._json({"ok": True, "version": version,
                                    "message": f"Steckwerk {version} ist installiert und startet gleich neu"})
+            if path == "/api/desktop-check":
+                return self._json(updater.desktop_check(str(req.get("bundle") or "") or None))
+            if path == "/api/desktop-install":
+                target, version = updater.install_desktop(str(req.get("bundle") or ""))
+                return self._json({"ok": True, "version": version, "pfad": target,
+                                   "message": f"Steckwerk Desktop {version} ist installiert und startet gleich neu"})
             self._json({"error": "nicht gefunden"}, 404)
         except (updater.UpdateFehler, pakete.PaketFehler) as e:
             err = {"ok": False, "error": str(e)}
@@ -424,6 +434,17 @@ def lan_ip() -> str:
         return "127.0.0.1"
 
 
+class Server(ThreadingHTTPServer):
+    """Wie ThreadingHTTPServer, aber ohne socket.getfqdn() beim Start – diese Namensauflösung hängt auf macOS
+    teils viele Sekunden, und der Name wird hier nicht gebraucht."""
+
+    def server_bind(self) -> None:
+        socketserver.TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name = str(host)
+        self.server_port = port
+
+
 def make_server(host: str = "127.0.0.1", port: int = 8765, out_dir: str = "out", quiet: bool = False,
                 app: bool = False, session: Optional[Session] = None,
                 open_folder: Optional[Callable[[str], None]] = None, bundle: Optional[str] = None):
@@ -431,7 +452,7 @@ def make_server(host: str = "127.0.0.1", port: int = 8765, out_dir: str = "out",
              "app": app, "session": session,
              "open_folder": staticmethod(open_folder) if open_folder else None}
     handler = type("SteckwerkHandler", (Handler,), attrs)
-    return ThreadingHTTPServer((host, port), handler)
+    return Server((host, port), handler)
 
 
 def main(argv=None) -> int:

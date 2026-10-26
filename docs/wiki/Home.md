@@ -26,24 +26,35 @@ fertige SVG werden kontrolliert. Gibt es auch nur einen Fehler, wird nichts gesc
 
 | | |
 |---|---|
-| Programm | Steckwerk **2.6.0** (16.10.2026) |
-| Pakete im Update-Kanal | Grundlagen 2.0.0 · Wohnen 1.0.0 · Weihnachten 2.0.0 · Halloween 1.3.0 · Mehrlagig 1.2.0 · Wichtel 1.0.1 |
-| Tests | 1157 grün (Python 3.13; CI zusätzlich 3.9) |
+| Programm | Steckwerk **2.10.0** (26.10.2026) mit Steckwerk Desktop 2.10.0 · im Update-Kanal noch 2.9.0, bis das Release 2.10.0 läuft · Mac-App-Zip im Download-Ordner noch 2.6.0 |
+| Pakete im Update-Kanal | Grundlagen 2.0.0 · Wohnen 1.0.0 · Weihnachten 2.0.1 · Halloween 1.4.0 · Mehrlagig 1.2.0 · Wichtel 1.0.1 |
+| Tests | 1321 Python-Tests grün · 59 Swift-Tests (Desktop-App) grün |
 | Repo | `chr-braun/laserforge` (umbenannt in `chr-braun/steckwerk`), Lizenz MIT |
 
 ## Seiten
 
-- [Downloads](Downloads.md) – Mac-App und alle Pakete zum Herunterladen
+**Erste Schritte**
 
+- [Downloads](Downloads.md) – Mac-App, Desktop-App und alle Pakete zum Herunterladen
+- [Steckwerk Desktop](Steckwerk-Desktop.md) – die native Mac-App ohne Browser, mit Live-Vorschau
 - [Installation](Installation.md) – Mac-App, Weboberfläche, Python
 - [Bedienung](Bedienung.md) – Oberfläche, Export, Tastenkürzel, Kommandozeile
-- [Material und Laser](Material-und-Laser.md) – xTool M2, Materialprofile, Kerf, Montage
+
+**Gestalten**
+
 - [Modelle](Modelle.md) – alle eingebauten Vorlagen
+- [Material und Laser](Material-und-Laser.md) – xTool M2, Materialprofile, Kerf, Montage
 - [Gestaltung und Beschriftung](Gestaltung-und-Beschriftung.md) – Fenster, Gravuren, Schriften
-- [Eigene Motive](Eigene-Motive.md) – SVG/PNG importieren und platzieren
+- [Eigene Motive](Eigene-Motive.md) – eingebaute und eigene Motive, importieren und platzieren
 - [Pakete](Pakete.md) – Erweiterungspakete, alle bisherigen Pakete, eigene bauen
-- [KI-Funktionen](KI-Funktionen.md) – Assistent und „Motiv zeichnen“ mit Ollama oder OpenRouter
+- [KI-Funktionen](KI-Funktionen.md) – Assistent, „Motiv zeichnen“ mit Ollama, OpenRouter oder ChatGPT
+
+**Betrieb**
+
 - [Updates](Updates.md) – Updater und Update-Kanal
+- [Offene Punkte](Offene-Punkte.md) – was ansteht und was auf deine Entscheidung wartet
+
+**Entwicklung**
+
 - [Entwicklung](Entwicklung.md) – Aufbau des Codes, Tests, Veröffentlichen
 - [Versionsverlauf](Versionsverlauf.md) – was wann dazukam
-- [Offene Punkte](Offene-Punkte.md) – was noch ansteht

@@ -1,99 +1,125 @@
 import SteckwerkCore
 import SwiftUI
 
-/// Native Blattvorschau: Schnitt schwarz, Gravur blau, Blattrahmen; Zoom per Pinch/Scroll, Ziehen verschiebt.
+/// Native Vorschau eines Blattplans: Schnitt schwarz, Gravur blau, Blattrahmen; Zoom (Pinch/Scroll) und Verschieben.
+@MainActor
 struct PreviewCanvas: View {
-    let drawing: SheetDrawing
-    var cutColor = "#000000"
-    var checked = true
+    let geometry: SheetGeometry
+    let checked: Bool
 
-    @State private var zoom: CGFloat = 1
-    @State private var baseZoom: CGFloat = 1
-    @State private var offset: CGSize = .zero
-    @State private var baseOffset: CGSize = .zero
+    @State var zoom: CGFloat = 1
+    @State var committedZoom: CGFloat = 1
+    @State var offset: CGSize = .zero
+    @State var committedOffset: CGSize = .zero
 
     var body: some View {
-        GeometryReader { geo in
-            Canvas { ctx, size in
-                draw(in: &ctx, size: size)
+        ZStack(alignment: .topLeading) {
+            Canvas { context, size in
+                draw(in: &context, size: size)
             }
+            .background(Theme.card)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cornerRadius))
+            .overlay(RoundedRectangle(cornerRadius: Theme.cornerRadius).stroke(Color.primary.opacity(0.1)))
             .contentShape(Rectangle())
             .gesture(
-                MagnifyGesture()
-                    .onChanged { zoom = max(0.2, min(20, baseZoom * $0.magnification)) }
-                    .onEnded { _ in baseZoom = zoom }
+                MagnificationGesture()
+                    .onChanged { zoom = clampZoom(committedZoom * $0) }
+                    .onEnded { _ in committedZoom = zoom }
                     .simultaneously(with: DragGesture()
-                        .onChanged { v in
-                            offset = CGSize(width: baseOffset.width + v.translation.width,
-                                            height: baseOffset.height + v.translation.height)
+                        .onChanged { drag in
+                            offset = CGSize(width: committedOffset.width + drag.translation.width,
+                                            height: committedOffset.height + drag.translation.height)
                         }
-                        .onEnded { _ in baseOffset = offset })
+                        .onEnded { _ in committedOffset = offset })
             )
             .onTapGesture(count: 2) { reset() }
-            .overlay(alignment: .bottomTrailing) { controls }
-            .overlay(alignment: .topLeading) {
+
+            HStack(spacing: 8) {
+                legend(color: Theme.cut, text: "Schnitt \(geometry.cutCount)")
+                legend(color: Theme.engrave, text: "Gravur \(geometry.engraveCount)")
                 if !checked {
                     Text("Vorschau – nicht geprüft")
-                        .font(.caption.weight(.semibold))
-                        .padding(6)
-                        .background(Theme.fehler.opacity(0.15), in: RoundedRectangle(cornerRadius: 6))
-                        .padding(10)
+                        .foregroundStyle(Theme.error)
+                }
+                Text("\(Int(geometry.width)) × \(Int(geometry.height)) mm")
+                    .foregroundStyle(.secondary)
+            }
+            .font(.caption)
+            .padding(6)
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 6))
+            .padding(8)
+
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Button { setZoom(zoom / 1.25) } label: { Image(systemName: "minus.magnifyingglass") }
+                        Button { reset() } label: { Text("\(Int((zoom * 100).rounded())) %").monospacedDigit() }
+                        Button { setZoom(zoom * 1.25) } label: { Image(systemName: "plus.magnifyingglass") }
+                    }
+                    .buttonStyle(.borderless)
+                    .padding(6)
+                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                    .padding(8)
                 }
             }
-            .frame(width: geo.size.width, height: geo.size.height)
         }
     }
 
-    private var controls: some View {
+    private func draw(in context: inout GraphicsContext, size: CGSize) {
+        guard geometry.width > 0, geometry.height > 0 else { return }
+        let margin: CGFloat = 16
+        let fit = min((size.width - 2 * margin) / geometry.width, (size.height - 2 * margin) / geometry.height)
+        let scale = max(fit, 0.01) * zoom
+        let origin = CGPoint(x: (size.width - geometry.width * scale) / 2 + offset.width,
+                             y: (size.height - geometry.height * scale) / 2 + offset.height)
+        func map(_ p: SteckwerkCore.Point) -> CGPoint {
+            CGPoint(x: origin.x + p.x * scale, y: origin.y + p.y * scale)
+        }
+
+        let frame = CGRect(x: origin.x, y: origin.y, width: geometry.width * scale, height: geometry.height * scale)
+        context.fill(Path(frame), with: .color(Theme.accent.opacity(0.05)))
+        context.stroke(Path(frame), with: .color(Theme.accent.opacity(0.6)), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+
+        var cut = Path()
+        var engrave = Path()
+        for line in geometry.lines {
+            guard let first = line.points.first else { continue }
+            var path = Path()
+            path.move(to: map(first))
+            for p in line.points.dropFirst() { path.addLine(to: map(p)) }
+            if line.closed { path.closeSubpath() }
+            if line.kind == .engrave {
+                engrave.addPath(path)
+            } else {
+                cut.addPath(path)
+            }
+        }
+        context.stroke(engrave, with: .color(Theme.engrave), lineWidth: 0.8)
+        context.stroke(cut, with: .color(Theme.cut), lineWidth: 1)
+    }
+
+    private func legend(color: Color, text: String) -> some View {
         HStack(spacing: 4) {
-            Button { setZoom(zoom / 1.25) } label: { Image(systemName: "minus.magnifyingglass") }
-            Text("\(Int(zoom * 100)) %").font(.caption.monospacedDigit()).frame(width: 46)
-            Button { setZoom(zoom * 1.25) } label: { Image(systemName: "plus.magnifyingglass") }
-            Button { reset() } label: { Image(systemName: "arrow.up.left.and.down.right.magnifyingglass") }
-                .help("Einpassen (Doppelklick)")
+            RoundedRectangle(cornerRadius: 1).fill(color).frame(width: 14, height: 3)
+            Text(text)
         }
-        .buttonStyle(.borderless)
-        .padding(6)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .padding(10)
     }
 
-    private func setZoom(_ z: CGFloat) {
-        zoom = max(0.2, min(20, z))
-        baseZoom = zoom
+    private func clampZoom(_ value: CGFloat) -> CGFloat {
+        min(max(value, 0.2), 20)
+    }
+
+    private func setZoom(_ value: CGFloat) {
+        zoom = clampZoom(value)
+        committedZoom = zoom
     }
 
     private func reset() {
-        zoom = 1; baseZoom = 1
-        offset = .zero; baseOffset = .zero
-    }
-
-    private func draw(in ctx: inout GraphicsContext, size: CGSize) {
-        let w = drawing.width > 0 ? drawing.width : 400
-        let h = drawing.height > 0 ? drawing.height : 300
-        let margin: CGFloat = 24
-        let fit = min((size.width - 2 * margin) / w, (size.height - 2 * margin) / h)
-        let s = max(fit, 0.01) * zoom
-        let ox = (size.width - w * s) / 2 + offset.width
-        let oy = (size.height - h * s) / 2 + offset.height
-        func pt(_ p: Pt) -> CGPoint { CGPoint(x: ox + p.x * s, y: oy + p.y * s) }
-
-        let sheetRect = CGRect(x: ox, y: oy, width: w * s, height: h * s)
-        ctx.fill(Path(sheetRect), with: .color(Theme.sheet))
-        ctx.stroke(Path(sheetRect), with: .color(.secondary.opacity(0.6)), style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
-
-        let line = max(0.8, min(2, s * 0.25))
-        for p in drawing.paths {
-            var path = Path()
-            for (i, sub) in p.subpaths.enumerated() {
-                path.addLines(sub.map(pt))
-                if p.closed.indices.contains(i), p.closed[i] { path.closeSubpath() }
-            }
-            let cut = SheetDrawing.isCut(p.stroke, cutColor: cutColor)
-            if let fill = p.fill, !fill.isEmpty {
-                ctx.fill(path, with: .color(Theme.engrave.opacity(0.35)), style: FillStyle(eoFill: true))
-            }
-            ctx.stroke(path, with: .color(cut ? Theme.cut : Theme.engrave), lineWidth: cut ? line : line * 0.7)
-        }
+        zoom = 1
+        committedZoom = 1
+        offset = .zero
+        committedOffset = .zero
     }
 }

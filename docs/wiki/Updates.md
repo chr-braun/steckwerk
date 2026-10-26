@@ -30,17 +30,28 @@ Schlüsselbund. Ist das Repo öffentlich, geht es ohne Schlüssel.
 
 ## Für dich als Herausgeber
 
-Der Update-Kanal ist der Branch **`updates`** im Repo: `feed.json`, die neueste Mac-App und die Pakete.
+Der Update-Kanal ist der Branch **`updates`** im Repo: `feed.json`, die neueste Mac-App, Steckwerk Desktop und
+die Pakete.
 
 ```bash
 python3 packaging/build_macos.py --out dist
 git worktree add ../kanal updates
-python3 packaging/update_kanal.py ../kanal --mac dist/Steckwerk-<version>-macOS.zip --paket meinpaket-1.0.0.swpaket
+python3 packaging/update_kanal.py ../kanal --mac dist/Steckwerk-<version>-macOS.zip \
+    --desktop dist/Steckwerk-Desktop-<version>-macOS.zip --paket meinpaket-1.0.0.swpaket
 cd ../kanal && git add -A && git commit -m "Kanal: <version>" && git push origin updates
 ```
+
+`Steckwerk-Desktop-<version>-macOS.zip` baut `packaging/swift/build_app.sh` auf einem Mac (oder der Release-Workflow).
+Es steht im Kanal unter dem eigenen Eintrag `desktop` mit eigener Versionsnummer; daran erkennt Steckwerk Desktop
+ein Update und ersetzt sich selbst.
 
 Die Update-Hinweise kommen aus `CHANGELOG.md` (deutsch) und `CHANGELOG.en.md` (englisch).
 **Wichtig:** Jede neue Version und jedes Paket-Update muss in den Kanal, sonst sieht die App es nicht.
 
-Aktueller Inhalt: Steckwerk 2.6.0, Grundlagen 2.0.0, Wohnen 1.0.0, Weihnachten 2.0.0,
-Halloween 1.3.0, Mehrlagig 1.2.0, Wichtel 1.0.1.
+Aktueller Inhalt: Steckwerk 2.9.0 (Mac-App und Steckwerk Desktop), Grundlagen 2.0.0, Wohnen 1.0.0,
+Weihnachten 2.0.0, Halloween 1.3.0, Mehrlagig 1.2.0, Wichtel 1.0.1, Formen 1.0.0, Schmuck 1.0.0, Verkauf 1.0.0,
+Bewegung 1.0.0. Mit dem Release 2.10.0 kommen Halloween 1.4.0 und Weihnachten 2.0.1 dazu.
+
+Am einfachsten veröffentlicht der Workflow **Release**: unter Actions → Release → „Run workflow“ auf `main`.
+Er setzt das Tag aus `steckwerk.py`, legt das GitHub-Release an, baut Steckwerk Desktop auf einem Mac-Runner,
+packt alle Pakete neu, deren Version im Kanal fehlt, und frischt den Kanal auf.

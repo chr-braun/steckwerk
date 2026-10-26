@@ -1,6 +1,6 @@
 # Versionsverlauf
 
-Alles ist zwischen dem 9. und 16. Oktober 2026 entstanden. Die Details stehen im
+Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
 [CHANGELOG](https://github.com/chr-braun/steckwerk/blob/main/CHANGELOG.md).
 
 | Version | Datum | Was dazukam |
@@ -22,6 +22,10 @@ Alles ist zwischen dem 9. und 16. Oktober 2026 entstanden. Die Details stehen im
 | 2.5.0 | 16.10. | Ein Paket je Thema: Pakete können alte Pakete ablösen (`ersetzt`); alle Wichtel im Paket „Wichtel“ |
 | 2.5.1 | 16.10. | Fehler behoben: Pakete wurden bei gleichzeitigen Anfragen manchmal halb geladen („has no attribute Figur“) |
 | 2.6.0 | 16.10. | Pakete aufgeräumt: sechs Themenpakete; Paketkatalog mit Beschreibung, Modellen und Installieren-Knopf |
+| 2.7.0 | 16.10. | Themenpaket Formen 1.0.0 (Steckkörper, Wellenfläche, Stapelvase); alte Einzelpakete werden durch Themenpakete ersetzt |
+| 2.8.0 | 17.10. | Themenpaket Verkauf 1.0.0 mit Flaschenschild und Preisliste; mehrzeilige Textfelder in Paketen; €, % und · in der Schrift |
+| 2.9.0 | 21.10. | Steckwerk Desktop: native Mac-App mit eingebauter Engine, aktualisiert sich selbst; ChatGPT als Bildquelle |
+| 2.10.0 | 26.10. | Steckwerk Desktop überarbeitet (Live-Vorschau, größere Motive, Update-Prüfung beim Start, Suche); 19 Motive neu gezeichnet; Halloween 1.4.0 mit Anhängern aus der Motiv-Bibliothek; Weihnachten 2.0.1 (Zuckerstange); Silhouetten gravieren Motivdetails; schnellerer Start auf dem Mac |
 
 ## Pakete
 

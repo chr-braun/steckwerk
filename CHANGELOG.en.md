@@ -2,6 +2,16 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## 2.10.0 – 2026-10-26
+
+- Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to "Updates"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.
+- All 19 built-in motifs are redrawn with much more detail, with fine inner shapes and engraved lines.
+- Silhouettes made from motifs engrave the motif lines too.
+- Halloween 1.4.0: the tags take their figures from the motif library and leave room for the name.
+- Christmas 2.0.1: the candy cane no longer carries holly, just the bow.
+- Starting is faster on the Mac (no more name lookup when the server starts).
+- Steckwerk Desktop: models in the sidebar can be searched again.
+
 ## 2.9.0 – 2026-10-21
 
 - New native Mac app **Steckwerk Desktop** (SwiftUI, macOS 14+, same version number as Steckwerk): the same engine without a browser – model list, form, sheet preview, check report, export, packages, AI, material and updates in a real Mac window. It updates itself from the update channel ("Updates → Install and restart"). The existing app stays.

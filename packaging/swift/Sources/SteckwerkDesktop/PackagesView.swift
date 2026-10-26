@@ -1,137 +1,184 @@
-import AppKit
 import SteckwerkCore
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Pakete: Kanal-Liste mit Installieren/Aktualisieren, installierte Pakete, lokale .swpaket-Datei.
+/// Themenpakete: installierte Pakete, Pakete aus dem Update-Kanal und lokale .swpaket-Dateien.
+@MainActor
 struct PackagesView: View {
-    @Environment(AppModel.self) private var model
-    @State private var feed: JSONValue?
-    @State private var loading = false
-
-    private var kanal: [[String: JSONValue]] {
-        (feed?["pakete"]?.arrayValue ?? []).compactMap(\.objectValue)
-    }
+    @EnvironmentObject var model: AppModel
+    @State var kanal: UpdateCheck?
+    @State var busy = false
+    @State var message: String?
+    @State var importing = false
+    @State var removing: PaketInfo?
 
     var body: some View {
         Form {
-            Section {
-                HStack {
-                    Button("Kanal prüfen") { Task { await check() } }
-                    Button("Alle aktualisieren") { Task { await install(["alle": true]) } }
-                        .disabled(feed == nil)
-                    Spacer()
-                    Button("Paketdatei installieren …") { pickFile() }
-                    if loading { ProgressView().controlSize(.small) }
-                }
-                if let msg = model.message { Text(msg).font(.callout).foregroundStyle(.secondary) }
-            }
-            Section("Im Kanal") {
-                if feed == nil {
-                    Text("Noch nicht geprüft").foregroundStyle(.secondary)
-                } else if kanal.isEmpty {
-                    Text("Der Kanal enthält keine Pakete").foregroundStyle(.secondary)
-                }
-                ForEach(kanal.indices, id: \.self) { i in
-                    let p = kanal[i]
-                    let status = p["status"]?.stringValue ?? ""
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(p["name"]?.stringValue ?? "") \(p["version"]?.stringValue ?? "")").font(.headline)
-                            Text(p["beschreibung"]?.stringValue ?? "").font(.callout).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        switch status {
-                        case "neu":
-                            Button("Installieren") { Task { await install(["id": p["id"] ?? .null]) } }
-                        case "update":
-                            Button("Aktualisieren") { Task { await install(["id": p["id"] ?? .null]) } }
-                                .buttonStyle(.borderedProminent)
-                        case "zu_neu":
-                            Text("braucht Steckwerk \(p["steckwerk"]?.stringValue ?? "")")
-                                .font(.caption).foregroundStyle(.secondary)
-                        default:
-                            Label("aktuell", systemImage: "checkmark").foregroundStyle(Theme.ok)
-                        }
-                    }
-                }
-            }
             Section("Installiert") {
                 let installed = model.schema?.pakete ?? []
-                if installed.isEmpty { Text("Keine Pakete installiert").foregroundStyle(.secondary) }
-                ForEach(installed) { p in
+                if installed.isEmpty {
+                    Text("Noch keine Themenpakete installiert.")
+                        .foregroundStyle(.secondary)
+                }
+                ForEach(installed) { paket in
                     HStack {
-                        VStack(alignment: .leading) {
-                            Text("\(p.name) \(p.version)")
-                            if let f = p.fehler, !f.isEmpty {
-                                Text(f).font(.caption).foregroundStyle(Theme.fehler)
-                            } else {
-                                Text(p.modelle.joined(separator: ", ")).font(.caption).foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(paket.name).fontWeight(.medium)
+                            Text("\(paket.version) · \(paket.modelle.joined(separator: ", "))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if let fehler = paket.fehler, !fehler.isEmpty {
+                                Text(fehler).font(.caption).foregroundStyle(Theme.error)
                             }
                         }
                         Spacer()
-                        Button("Entfernen", role: .destructive) { Task { await remove(p.id) } }
+                        Button(role: .destructive) {
+                            removing = paket
+                        } label: {
+                            Image(systemName: "trash")
+                        }
+                        .buttonStyle(.borderless)
+                        .help("Paket entfernen")
+                        .disabled(busy)
+                    }
+                }
+                Button {
+                    importing = true
+                } label: {
+                    Label("Paketdatei (.swpaket) installieren …", systemImage: "doc.badge.plus")
+                }
+                .disabled(busy)
+            }
+
+            Section {
+                if let kanal {
+                    if kanal.pakete.isEmpty {
+                        Text("Der Kanal bietet keine Pakete an.").foregroundStyle(.secondary)
+                    }
+                    ForEach(kanal.pakete) { paket in
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(paket.name).fontWeight(.medium)
+                                Text(paket.beschreibung)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(3)
+                                Text(versionText(paket))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            if paket.installable {
+                                Button(paket.installiert == nil ? "Installieren" : "Aktualisieren") {
+                                    run { try await $0.kanalPaketInstallieren(id: paket.id) }
+                                }
+                                .disabled(busy)
+                            } else {
+                                Label("aktuell", systemImage: "checkmark")
+                                    .foregroundStyle(Theme.ok)
+                                    .font(.caption)
+                            }
+                        }
+                    }
+                    if kanal.pakete.contains(where: \.installable) {
+                        Button("Alle installieren und aktualisieren") {
+                            run { try await $0.alleKanalPaketeInstallieren() }
+                        }
+                        .disabled(busy)
+                    }
+                } else {
+                    Text("Pakete aus dem Steckwerk-Kanal laden – dafür braucht es eine Internetverbindung.")
+                        .foregroundStyle(.secondary)
+                }
+                Button {
+                    Task { await loadKanal() }
+                } label: {
+                    Label(kanal == nil ? "Kanal laden" : "Neu laden", systemImage: "arrow.clockwise")
+                }
+                .disabled(busy)
+            } header: {
+                Text("Aus dem Kanal")
+            }
+
+            if busy || message != nil {
+                Section {
+                    HStack {
+                        if busy { ProgressView().controlSize(.small) }
+                        if let message { Text(message).textSelection(.enabled) }
                     }
                 }
             }
         }
         .formStyle(.grouped)
         .navigationTitle("Pakete")
-        .task { if feed == nil { await check() } }
-    }
-
-    private func check() async {
-        guard let b = model.bridge else { return }
-        loading = true
-        defer { loading = false }
-        do {
-            feed = try await b.call("/api/update-check", timeout: 60)
-        } catch {
-            model.errorText = error.localizedDescription
+        .fileImporter(isPresented: $importing,
+                      allowedContentTypes: [UTType(filenameExtension: "swpaket") ?? .data],
+                      allowsMultipleSelection: false) { result in
+            guard case .success(let urls) = result, let url = urls.first else { return }
+            installFile(url)
+        }
+        .confirmationDialog("Paket „\(removing?.name ?? "")“ entfernen?",
+                            isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } }),
+                            titleVisibility: .visible) {
+            Button("Entfernen", role: .destructive) {
+                if let paket = removing {
+                    run { try await $0.paketEntfernen(id: paket.id) }
+                }
+                removing = nil
+            }
         }
     }
 
-    private func install(_ body: [String: JSONValue]) async {
-        guard let b = model.bridge else { return }
-        loading = true
-        defer { loading = false }
+    private func versionText(_ paket: KanalPaket) -> String {
+        var text = "Version \(paket.version)"
+        if let installiert = paket.installiert, !installiert.isEmpty { text += " · installiert \(installiert)" }
+        if !paket.benoetigt.isEmpty { text += " · braucht \(paket.benoetigt.joined(separator: ", "))" }
+        return text
+    }
+
+    private func installFile(_ url: URL) {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         do {
-            let r = try await b.call("/api/update-paket", body, timeout: 300)
-            model.message = r["message"]?.stringValue
-            try await model.reloadSchema()
-            await check()
+            let data = try Data(contentsOf: url)
+            run { try await $0.paketInstallieren(data: data) }
         } catch {
-            model.errorText = error.localizedDescription
+            message = "Datei ließ sich nicht lesen: \(error.localizedDescription)"
         }
     }
 
-    private func remove(_ id: String) async {
-        guard let b = model.bridge else { return }
+    private func loadKanal() async {
+        guard let client = model.client else { return }
+        busy = true
+        message = nil
+        defer { busy = false }
         do {
-            let r = try await b.call("/api/paket-entfernen", ["id": .string(id)])
-            model.message = r["message"]?.stringValue
-            try await model.reloadSchema()
+            kanal = try await client.updateCheck()
         } catch {
-            model.errorText = error.localizedDescription
+            message = error.localizedDescription
         }
     }
 
-    private func pickFile() {
-        let panel = NSOpenPanel()
-        panel.allowedContentTypes = ["swpaket", "lfpaket", "zip"].compactMap { UTType(filenameExtension: $0) }
-        panel.allowsOtherFileTypes = true
-        panel.message = "Steckwerk-Paket (.swpaket) wählen"
-        guard panel.runModal() == .OK, let url = panel.url else { return }
+    /// Führt eine Paketaktion aus und übernimmt das neue Schema der Engine.
+    private func run(_ action: @escaping (EngineClient) async throws -> MessageResponse) {
+        guard let client = model.client else { return }
+        busy = true
+        message = nil
         Task {
-            guard let b = model.bridge else { return }
+            defer { busy = false }
             do {
-                let data = try Data(contentsOf: url)
-                let r = try await b.call("/api/paket-installieren", ["data": .string(data.base64EncodedString())],
-                                         timeout: 120)
-                model.message = r["message"]?.stringValue
-                try await model.reloadSchema()
+                let response = try await action(client)
+                if let schema = response.schema {
+                    model.apply(schema: schema)
+                } else {
+                    await model.reloadSchema()
+                }
+                message = response.message
+                if kanal != nil {
+                    kanal = try? await client.updateCheck()
+                }
             } catch {
-                model.errorText = error.localizedDescription
+                message = error.localizedDescription
             }
         }
     }

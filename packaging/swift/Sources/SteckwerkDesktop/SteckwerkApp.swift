@@ -2,79 +2,102 @@ import AppKit
 import SteckwerkCore
 import SwiftUI
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    var model: AppModel?
+    let model = AppModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Ohne Bundle (swift run) erscheint sonst kein Dock-Symbol und kein Menü.
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
+    }
 
     func applicationWillTerminate(_ notification: Notification) {
-        MainActor.assumeIsolated { model?.shutdown() }
+        model.shutdown()
     }
 }
 
 @main
+@MainActor
+enum Launcher {
+    static func main() {
+        if CommandLine.arguments.contains("--self-test") {
+            SelfTest.runAndExit()
+        }
+        SteckwerkApp.main()
+    }
+}
+
 struct SteckwerkApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @State private var model = AppModel()
 
     var body: some Scene {
-        WindowGroup("Steckwerk Desktop") {
+        Window("Steckwerk Desktop", id: "main") {
             ContentView()
-                .environment(model)
-                .frame(minWidth: 980, minHeight: 620)
-                .task {
-                    delegate.model = model
-                    await model.startEngine()
-                }
+                .environmentObject(delegate.model)
+                .frame(minWidth: 1000, minHeight: 680)
+                .task { await delegate.model.startEngine() }
         }
-        .windowToolbarStyle(.unified)
-        .commands {
-            CommandGroup(replacing: .newItem) {
-                Button("Exportieren …") { model.exportWithPanel() }
-                    .keyboardShortcut("e")
-                    .disabled(!model.canExport)
-                Button("Ausgabeordner öffnen") { model.openOutFolder() }
-                    .keyboardShortcut("o")
-            }
-            CommandMenu("Modell") {
-                Button("Bauen & prüfen") { Task { await model.build() } }
-                    .keyboardShortcut("b")
-                    .disabled(model.selectedModelKey == nil)
-                Button("Standardwerte") { model.resetModel() }
-                    .disabled(model.selectedModelKey == nil)
-                Divider()
-                Button("Engine neu starten") { Task { await model.restartEngine() } }
-            }
-            CommandGroup(replacing: .help) {
-                Button("Steckwerk auf GitHub") {
-                    if let u = URL(string: "https://github.com/chr-braun/steckwerk") { NSWorkspace.shared.open(u) }
-                }
-            }
-        }
+        .defaultSize(width: 1280, height: 820)
+        .commands { AppCommands(model: delegate.model) }
 
         Settings {
             SettingsView()
-                .environment(model)
+                .environmentObject(delegate.model)
         }
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        TabView {
-            MaterialView()
-                .tabItem { Label("Material", systemImage: "square.stack.3d.up") }
-            KIView()
-                .tabItem { Label("KI-Anbieter", systemImage: "sparkles") }
-            AppUpdateView()
-                .tabItem { Label("Updates", systemImage: "arrow.down.circle") }
+@MainActor
+struct AppCommands: Commands {
+    @ObservedObject var model: AppModel
+
+    var body: some Commands {
+        CommandGroup(replacing: .newItem) {
+            Button("Exportieren …") {
+                Task { await model.exportToChosenFolder() }
+            }
+            .keyboardShortcut("e", modifiers: .command)
+            .disabled(model.selectedModelID == nil || model.engineState != .running)
+
+            Button("Ordner öffnen") {
+                Task { await model.openFolder() }
+            }
+            .keyboardShortcut("o", modifiers: .command)
+            .disabled(model.engineState != .running)
         }
-        .frame(width: 560, height: 520)
+
+        CommandMenu("Modell") {
+            Button("Bauen & prüfen") {
+                Task { await model.build() }
+            }
+            .keyboardShortcut("b", modifiers: .command)
+            .disabled(model.selectedModelID == nil || model.engineState != .running || model.isBuilding)
+
+            Button("Auf Standardwerte zurücksetzen") {
+                if let id = model.selectedModelID { model.resetValues(for: id) }
+            }
+            .disabled(model.selectedModelID == nil)
+
+            Divider()
+
+            Button("Engine neu starten") {
+                model.restartEngine()
+            }
+        }
+
+        CommandGroup(replacing: .help) {
+            Button("Steckwerk Desktop – Hilfe") {
+                model.alert = AppAlert(
+                    title: "Steckwerk Desktop \(AppModel.appVersion)",
+                    message: "Modell links wählen, Werte einstellen, mit ⌘B bauen und prüfen. Exportiert wird mit ⌘E – "
+                        + "aber nur, wenn der Validator alles als CUT-READY bestätigt. Material und KI-Anbieter stellst du "
+                        + "unter Einstellungen (⌘,) ein."
+                )
+            }
+        }
     }
 }

@@ -331,7 +331,6 @@ def _zuckerstange(S: float, wm: float):
         ex, ey = tail[-1]
         f.cut([(ex - 0.02 * u, ey - 0.01 * u), (ex + 0.02 * u, ey - 0.01 * u), (ex, ey + 0.025 * u)])
     f.add(K.ellipse(bx, by + 0.01 * u, 0.04 * u, 0.045 * u, 0.0, 18))
-    _stechpalme(f, 0.04 * u, 0.30 * u, 0.19 * u, 0.35)
     oese = None
 
     def gravur(cv, dk):
