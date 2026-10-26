@@ -9,7 +9,9 @@ Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
   `claude/implement-swift-app-spec-a43ysx` nach `main`) wartet auf dich. Nach dem Merge unter Actions → Release →
   „Run workflow“ auf `main` starten; dann kommen Mac-App, Steckwerk Desktop, Halloween 1.4.0 und Weihnachten 2.0.1
   in den Update-Kanal.
-- **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind in Ordnung.
+- **Wichtel neu gezeichnet, noch nicht veröffentlicht:** Der eingebaute Wichtel (Zubehör) ist überarbeitet und
+  kommt mit der nächsten Programmversion. Die Figuren im Paket „Wichtel“ (Schichtwichtel, Möbel-Ausschnitte)
+  waren schon in Ordnung.
 - **Mac-Zip im Download-Ordner** ist noch 2.6.0. Die neue Desktop-App gibt es als Artefakt aus dem CI.
 - **Steckwerk Desktop von Hand ersetzen, falls du noch die DMG 2.8.0 aus dem CI hast:** Die kennt das
   Selbst-Update noch nicht. Die Desktop-App 2.9.0 aus `main` aktualisiert sich dagegen von selbst auf 2.10.0.

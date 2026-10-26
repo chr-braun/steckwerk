@@ -2,6 +2,10 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## Unreleased
+
+- The gnome (accessories) is redrawn: folded pointy hat with stars and a brim, bulbous nose, long beard with strands, flared coat with mittens, and boots. It stays ready to cut at every size and scale.
+
 ## 2.10.0 – 2026-10-26
 
 - Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to "Updates"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.

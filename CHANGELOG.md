@@ -2,6 +2,10 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Unveröffentlicht
+
+- Der Wichtel (Zubehör) ist neu gezeichnet: umgeknickte Zipfelmütze mit Sternen und Krempe, Knollennase, langer Bart mit Strähnen, ausgestellter Mantel mit Fäustlingen und Stiefel. Er bleibt in allen Größen und Maßstäben schneidfertig.
+
 ## 2.10.0 – 2026-10-26
 
 - Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.
