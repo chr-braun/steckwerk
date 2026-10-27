@@ -1,6 +1,6 @@
 # Versionsverlauf
 
-Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
+Alles ist zwischen dem 9. und 27. Oktober 2026 entstanden. Die Details stehen im
 [CHANGELOG](https://github.com/chr-braun/steckwerk/blob/main/CHANGELOG.md).
 
 | Version | Datum | Was dazukam |
@@ -26,6 +26,7 @@ Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
 | 2.8.0 | 17.10. | Themenpaket Verkauf 1.0.0 mit Flaschenschild und Preisliste; mehrzeilige Textfelder in Paketen; €, % und · in der Schrift |
 | 2.9.0 | 21.10. | Steckwerk Desktop: native Mac-App mit eingebauter Engine, aktualisiert sich selbst; ChatGPT als Bildquelle |
 | 2.10.0 | 26.10. | Steckwerk Desktop überarbeitet (Live-Vorschau, größere Motive, Update-Prüfung beim Start, Suche); 19 Motive neu gezeichnet; Halloween 1.4.0 mit Anhängern aus der Motiv-Bibliothek; Weihnachten 2.0.1 (Zuckerstange); Silhouetten gravieren Motivdetails; schnellerer Start auf dem Mac |
+| 2.10.1 | 27.10. | Wichtel (Zubehör) neu gezeichnet: Zipfelmütze mit Sternen, Knollennase, Bart mit Strähnen, Mantel mit Fäustlingen, Stiefel |
 
 ## Pakete
 

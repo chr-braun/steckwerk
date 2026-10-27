@@ -2,7 +2,7 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
-## Unveröffentlicht
+## 2.10.1 – 2026-10-27
 
 - Der Wichtel (Zubehör) ist neu gezeichnet: umgeknickte Zipfelmütze mit Sternen und Krempe, Knollennase, langer Bart mit Strähnen, ausgestellter Mantel mit Fäustlingen und Stiefel. Er bleibt in allen Größen und Maßstäben schneidfertig.
 

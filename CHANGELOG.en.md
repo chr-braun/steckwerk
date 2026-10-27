@@ -2,7 +2,7 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
-## Unreleased
+## 2.10.1 – 2026-10-27
 
 - The gnome (accessories) is redrawn: folded pointy hat with stars and a brim, bulbous nose, long beard with strands, flared coat with mittens, and boots. It stays ready to cut at every size and scale.
 
