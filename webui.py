@@ -14,7 +14,8 @@ gibt es nur, wenn der Validator alles als CUT-READY bestätigt hat.
 
 API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nichts auslösen):
   GET  /api/schema       Modelle, Parameter, Material-Einstellungen
-  POST /api/generate     {model, params, config} → Prüfbericht + SVGs
+  POST /api/generate     {model, params, config, vorschau?} → Prüfbericht + SVGs
+                         (vorschau: schneller Blattplan ohne Prüfung, für die Live-Vorschau)
   POST /api/zip          gleiche Anfrage → ZIP (SVGs + Prüfberichte)
   POST /api/save         gleiche Anfrage → schreibt in den Ausgabeordner
   POST /api/motiv-import    {name, filename, data (base64), invert} → Motiv in die Bibliothek
@@ -355,13 +356,13 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(service.generate(req))
             elif path == "/api/zip":
                 self._touch()
-                results, cfg = service.run_request(req, preview_on_error=False)
+                results, cfg = service.run_request(dict(req, vorschau=False), preview_on_error=False)
                 data = service.zip_results(results, cfg)
                 name = "steckwerk_" + "".join(c for c in str(req.get("model", "modell")) if c.isalnum()) + ".zip"
                 self._send(200, data, "application/zip", {"Content-Disposition": f'attachment; filename="{name}"'})
             elif path == "/api/save":
                 self._touch()
-                results, cfg = service.run_request(req, preview_on_error=False)
+                results, cfg = service.run_request(dict(req, vorschau=False), preview_on_error=False)
                 written, _ = service.write_results(results, cfg, out, bool(req.get("preview")))
                 self._json({"ok": True, "out_dir": os.path.abspath(out), "files": written})
             else:

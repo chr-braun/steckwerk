@@ -2,6 +2,12 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## 2.11.0 – 2026-10-27
+
+- Much faster: the geometry checks (distances, crossings, kerf, engraving margins) only compare neighbouring edges instead of every edge with every other. All models together take 44 % less time, the heaviest up to 60 % less (spider web 20 s → 8 s, layered picture 21 s → 8 s). The results are bit-for-bit the same.
+- Steckwerk Desktop: the live preview shows the sheet layout without the full check ("Preview · not checked yet") and is about twice as fast again. Only one preview runs at a time; changes made meanwhile no longer pile up. "Build & check" (⌘B), saving and export check everything as before.
+- The gnome (accessories) is redrawn: folded pointy hat with stars and a brim, bulbous nose, long beard with strands, flared coat with mittens, and boots. It stays ready to cut at every size and scale.
+
 ## 2.10.0 – 2026-10-26
 
 - Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to "Updates"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.

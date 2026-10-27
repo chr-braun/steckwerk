@@ -20,14 +20,17 @@ public struct GenerateResponse: Decodable, Sendable {
     public let ok: Bool
     public let error: String?
     public let assemblies: [Assembly]
+    /// Schnelle Vorschau ohne Prüfung: zeigt den Blattplan, ist aber nie exportierbar.
+    public let vorschau: Bool
 
-    enum CodingKeys: String, CodingKey { case ok, error, assemblies }
+    enum CodingKeys: String, CodingKey { case ok, error, assemblies, vorschau }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         ok = try c.decodeIfPresent(Bool.self, forKey: .ok) ?? false
         error = try c.decodeIfPresent(String.self, forKey: .error)
         assemblies = try c.decodeIfPresent([Assembly].self, forKey: .assemblies) ?? []
+        vorschau = (try? c.decodeIfPresent(Bool.self, forKey: .vorschau)) ?? false
     }
 
     public var errorCount: Int {
@@ -36,7 +39,7 @@ public struct GenerateResponse: Decodable, Sendable {
 
     /// Exportieren ist nur erlaubt, wenn der Validator alles als CUT-READY bestätigt hat.
     public var canExport: Bool {
-        ok && !assemblies.isEmpty && assemblies.allSatisfy { $0.ok && !$0.sheets.isEmpty }
+        ok && !vorschau && !assemblies.isEmpty && assemblies.allSatisfy { $0.ok && !$0.sheets.isEmpty }
     }
 }
 

@@ -1,18 +1,13 @@
 # Offene Punkte
 
-Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
+Stand 27.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Entscheidungen für dich
 
 - **Repo-Sichtbarkeit:** Das Repo `chr-braun/steckwerk` ist derzeit öffentlich. Ob es so bleibt, entscheidest du.
-- **Steckwerk 2.10.0 nach `main` bringen und veröffentlichen:** Der Pull Request mit 2.10.0 (Branch
-  `claude/implement-swift-app-spec-a43ysx` nach `main`) wartet auf dich. Nach dem Merge unter Actions → Release →
-  „Run workflow“ auf `main` starten; dann kommen Mac-App, Steckwerk Desktop, Halloween 1.4.0 und Weihnachten 2.0.1
-  in den Update-Kanal.
-- **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind in Ordnung.
 - **Mac-Zip im Download-Ordner** ist noch 2.6.0. Die neue Desktop-App gibt es als Artefakt aus dem CI.
 - **Steckwerk Desktop von Hand ersetzen, falls du noch die DMG 2.8.0 aus dem CI hast:** Die kennt das
-  Selbst-Update noch nicht. Die Desktop-App 2.9.0 aus `main` aktualisiert sich dagegen von selbst auf 2.10.0.
+  Selbst-Update noch nicht. Die Desktop-App 2.9.0 aus `main` aktualisiert sich dagegen von selbst auf die neueste Version.
 
 ## Zum Ausprobieren bei dir
 

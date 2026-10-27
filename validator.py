@@ -24,8 +24,8 @@ import math
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from steckwerk import (Assembly, Config, JointFeature, Part, Point, Sheet, bbox, dist,
-                        dist_to_boundary, edges, min_distance, perimeter, point_in_polygon,
+from steckwerk import (GRID_MIN, Assembly, BoundaryDistance, Config, JointFeature, Part, Point, Sheet, _SegGrid,
+                        bbox, dist, dist_to_boundary, edges, min_distance, perimeter, point_in_polygon,
                         point_seg_dist, segments_cross, signed_area)
 
 GEO_EPS = 1e-4      # Toleranz für Geometrievergleiche (mm)
@@ -120,10 +120,13 @@ def check_path(pts: Sequence[Point], closed: bool, cfg: Config) -> List[str]:
     boxes = [(min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1])) for a, b in es]
     m = len(es)
     found = 0
+    grid = _SegGrid([((u0 - GEO_EPS, v0 - GEO_EPS), (u1 + GEO_EPS, v1 + GEO_EPS)) for u0, u1, v0, v1 in boxes]) \
+        if m >= GRID_MIN else None
     for i in range(m):
         x0, x1, y0, y1 = boxes[i]
         a, b = es[i]
-        for j in range(i + 2, m):
+        js = range(i + 2, m) if grid is None else [j for j in grid.near(x0, y0, x1, y1) if j >= i + 2]
+        for j in js:
             if i == 0 and j == m - 1:
                 continue
             u0, u1, v0, v1 = boxes[j]
@@ -204,9 +207,10 @@ def check_kerf(nominal: Part, comp: Part, cfg: Config) -> List[str]:
         if not outer and not a_cmp < a_nom:
             errs.append(f"Kerf: {label} wurde nicht nach innen versetzt")
         bad = 0
+        abstand = BoundaryDistance(cmp_, hint=max(4 * d, 0.5))
         for a, b in edges(nom, True):
             mid = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-            dd = dist_to_boundary(mid, cmp_)
+            dd = abstand(mid)
             inside = point_in_polygon(mid, cmp_)
             # Nie näher als kerf/2; bei Kanten, die deutlich länger als der Versatz sind, exakt kerf/2.
             # (Sehr kurze Kanten neben Innenecken liegen geometrisch bedingt etwas weiter weg.)

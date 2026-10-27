@@ -113,8 +113,9 @@ private struct StatusPill: View {
 
     var body: some View {
         let good = result.canExport
+        let farbe = result.vorschau ? Color.secondary : (good ? Theme.ok : Theme.error)
         HStack(spacing: 6) {
-            Image(systemName: good ? "checkmark.circle.fill" : "xmark.octagon.fill")
+            Image(systemName: result.vorschau ? "eye" : (good ? "checkmark.circle.fill" : "xmark.octagon.fill"))
             Text(ReportFormatter.statusText(result))
                 .lineLimit(1)
             if stale {
@@ -123,10 +124,10 @@ private struct StatusPill: View {
             }
         }
         .font(.callout.weight(.medium))
-        .foregroundStyle(good ? Theme.ok : Theme.error)
+        .foregroundStyle(farbe)
         .padding(.horizontal, 10)
         .padding(.vertical, 4)
-        .background(Capsule().fill((good ? Theme.ok : Theme.error).opacity(0.12)))
+        .background(Capsule().fill(farbe.opacity(0.12)))
     }
 }
 

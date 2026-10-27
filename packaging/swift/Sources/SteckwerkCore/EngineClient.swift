@@ -125,8 +125,11 @@ public struct EngineClient: Sendable {
         try await call("api/schema", nil, as: Schema.self)
     }
 
-    public func generate(model: String, params: [String: JSONValue], config: [String: JSONValue]) async throws -> GenerateResponse {
-        let body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+    /// `vorschau`: schneller Blattplan ohne Prüfung (Live-Vorschau); nie exportierbar.
+    public func generate(model: String, params: [String: JSONValue], config: [String: JSONValue],
+                         vorschau: Bool = false) async throws -> GenerateResponse {
+        var body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+        if vorschau { body["vorschau"] = .bool(true) }
         let request = try makeRequest("api/generate", body: body)
         let (data, status) = try await transport.send(request)
         // Ein ungültiges Modell ist kein Netzfehler: die Antwort trägt ok=false und eine Meldung.

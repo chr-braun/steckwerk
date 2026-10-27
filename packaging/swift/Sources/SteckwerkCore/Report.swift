@@ -44,6 +44,9 @@ public enum ReportFormatter {
         }
         let parts = response.assemblies.reduce(0) { $0 + $1.parts }
         let sheets = response.assemblies.reduce(0) { $0 + $1.sheets.count }
+        if response.vorschau {
+            return "Vorschau · \(parts) Teile · \(sheets) Blatt · noch nicht geprüft (⌘B)"
+        }
         let errors = response.errorCount
         let verdict = response.canExport ? "CUT-READY" : "nicht schneidbereit"
         return "\(errors) FEHLER · \(parts) Teile · \(sheets) Blatt · \(verdict)"

@@ -59,6 +59,11 @@ final class IntegrationTests: XCTestCase {
         XCTAssertTrue(ReportFormatter.statusText(result).hasPrefix("0 FEHLER"))
         XCTAssertTrue(result.canExport)
 
+        let vorschau = try await client.generate(model: "wichtelhaus", params: params, config: config, vorschau: true)
+        XCTAssertTrue(vorschau.vorschau)
+        XCTAssertFalse(vorschau.canExport)
+        XCTAssertEqual(vorschau.assemblies.first?.sheets.count, result.assemblies.first?.sheets.count)
+
         let sheet = try XCTUnwrap(result.assemblies.first?.sheets.first)
         let geo = SheetGeometry.parse(svg: sheet.svg)
         XCTAssertGreaterThan(geo.cutCount, 0)

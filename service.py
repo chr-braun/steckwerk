@@ -528,17 +528,25 @@ class Result:
         return self.report.passed
 
 
-def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = False) -> Tuple[List[Result], bool]:
-    """Geometrie, Verbindungen, Layout und das fertige SVG prüfen. Dateien entstehen hier keine."""
+def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = False,
+            pruefen: bool = True) -> Tuple[List[Result], bool]:
+    """Geometrie, Verbindungen, Layout und das fertige SVG prüfen. Dateien entstehen hier keine.
+
+    pruefen=False ist die schnelle Vorschau: nur Blattplan, ohne Prüfung; das Ergebnis gilt als nicht
+    bestanden (kein Export) und kommt als ungeprüfte Vorschau zurück."""
     results = []
     all_ok = True
     for asm in assemblies:
         rep = Report(asm.name)
-        validate_assembly(asm, cfg, rep)
+        if pruefen:
+            validate_assembly(asm, cfg, rep)
+        else:
+            rep.error("Vorschau", "noch nicht geprüft – „Bauen & prüfen“ prüft alles")
         res = Result(asm, rep)
         try:
             res.sheets = layout([p.compensated(cfg.kerf_offset) for p in asm.parts], cfg)
-            validate_sheets(res.sheets, cfg, rep)
+            if pruefen:
+                validate_sheets(res.sheets, cfg, rep)
         except LayoutError as e:
             rep.error("Layout", str(e))
         for sh in res.sheets:
@@ -550,8 +558,9 @@ def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = Fa
                 text = sheet_to_svg(sh, cfg, f"Steckwerk – {asm.name}{suffix}", meta)
                 validate_svg_text(text, cfg, fname, rep)
                 res.svgs.append((sh, fname, text))
-            elif preview_on_error:
-                res.preview.append((sh, fname, sheet_to_svg(sh, cfg, f"UNGEPRÜFT – {asm.name}{suffix}")))
+            elif preview_on_error or not pruefen:
+                titel = "VORSCHAU" if not pruefen else "UNGEPRÜFT"
+                res.preview.append((sh, fname, sheet_to_svg(sh, cfg, f"{titel} – {asm.name}{suffix}")))
         if not rep.passed:
             res.svgs = []
         all_ok &= rep.passed
@@ -624,12 +633,13 @@ def schema() -> Dict[str, Any]:
 def run_request(req: Dict[str, Any], preview_on_error: bool = True) -> Tuple[List[Result], Config]:
     cfg = make_config(req.get("config"))
     assemblies = build_assemblies(str(req.get("model", "wichtelhaus")), req.get("params"), cfg)
-    results, _ = process(assemblies, cfg, preview_on_error=preview_on_error)
+    results, _ = process(assemblies, cfg, preview_on_error=preview_on_error, pruefen=not req.get("vorschau"))
     return results, cfg
 
 
 def generate(req: Dict[str, Any]) -> Dict[str, Any]:
-    """Anfrage {model, params, config} → Ergebnis mit Prüfbericht und SVGs (nur wenn OK)."""
+    """Anfrage {model, params, config, vorschau?} → Ergebnis mit Prüfbericht und SVGs (nur wenn OK).
+    vorschau=true: schneller Blattplan ohne Prüfung (für die Live-Vorschau), nie exportierbar."""
     t0 = time.time()
     try:
         results, cfg = run_request(req)
@@ -646,7 +656,7 @@ def generate(req: Dict[str, Any]) -> Dict[str, Any]:
             sheets=[dict(file=f, svg=t, width=sh.width, height=sh.height, parts=len(sh.parts), checked=res.ok)
                     for sh, f, t in sheets]))
     return dict(ok=all(r.ok for r in results), assemblies=out, elapsed=round(time.time() - t0, 2),
-                config=cfg.to_dict())
+                config=cfg.to_dict(), vorschau=bool(req.get("vorschau")))
 
 
 # --- Erweiterungspakete ---------------------------------------------------------------------------

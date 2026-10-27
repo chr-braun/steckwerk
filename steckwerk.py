@@ -26,7 +26,7 @@ import re
 from dataclasses import dataclass, field, fields
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
-__version__ = "2.10.0"
+__version__ = "2.11.0"
 
 
 def migrate_legacy(home: Optional[str] = None) -> List[str]:
@@ -372,10 +372,85 @@ def point_in_polygon(p: Point, poly: Sequence[Point]) -> bool:
     return inside
 
 
+# Räumliches Raster für Strecken: Statt jede Strecke mit jeder zu vergleichen (quadratischer Aufwand), werden
+# nur Strecken in benachbarten Zellen geprüft. Die Ergebnisse sind dieselben wie beim vollständigen Vergleich.
+GRID_MIN = 64                       # darunter lohnt sich das Raster nicht
+
+
+class _SegGrid:
+    """Strecken (a, b) nach Zellen einsortiert; near() liefert alle Strecken, deren Rechteck ein gegebenes
+    Rechteck berühren könnte (Obermenge – den genauen Test macht der Aufrufer). Sehr lange Strecken stehen in
+    keiner Zelle, sondern in einer eigenen Liste, die jede Abfrage mitliefert."""
+
+    MAX_ZELLEN = 64                 # mehr Zellen je Strecke → in die Liste der langen Strecken
+
+    def __init__(self, segs: Sequence[Tuple[Point, Point]], cell: Optional[float] = None):
+        self.n = len(segs)
+        if cell is None:
+            total = sum(abs(b[0] - a[0]) + abs(b[1] - a[1]) for a, b in segs)
+            cell = 2.0 * total / max(self.n, 1)
+        self.cell = max(cell, 1e-6)
+        self.cells: Dict[Tuple[int, int], List[int]] = {}
+        self.lang: List[int] = []
+        for k, (a, b) in enumerate(segs):
+            i0, j0, i1, j1 = self._range(min(a[0], b[0]), min(a[1], b[1]), max(a[0], b[0]), max(a[1], b[1]))
+            if (i1 - i0 + 1) * (j1 - j0 + 1) > self.MAX_ZELLEN:
+                self.lang.append(k)
+                continue
+            for i in range(i0, i1 + 1):
+                for j in range(j0, j1 + 1):
+                    self.cells.setdefault((i, j), []).append(k)
+
+    def _range(self, x0: float, y0: float, x1: float, y1: float) -> Tuple[int, int, int, int]:
+        c = self.cell
+        return (int(math.floor(x0 / c)), int(math.floor(y0 / c)), int(math.floor(x1 / c)), int(math.floor(y1 / c)))
+
+    def near(self, x0: float, y0: float, x1: float, y1: float) -> List[int]:
+        i0, j0, i1, j1 = self._range(x0, y0, x1, y1)
+        if (i1 - i0 + 1) * (j1 - j0 + 1) > len(self.cells):
+            return list(range(self.n))
+        found = set(self.lang)
+        cells = self.cells
+        for i in range(i0, i1 + 1):
+            for j in range(j0, j1 + 1):
+                ks = cells.get((i, j))
+                if ks:
+                    found.update(ks)
+        return sorted(found)
+
+
 def dist_to_boundary(p: Point, poly: Sequence[Point], closed: bool = True) -> float:
     n = len(poly)
     m = n if closed else n - 1
     return min(point_seg_dist(p, poly[i], poly[(i + 1) % n]) for i in range(m))
+
+
+class BoundaryDistance:
+    """Viele Abstandsabfragen gegen dieselbe Kontur (z. B. Kerf-Prüfung jeder Kante): gleiches Ergebnis wie
+    dist_to_boundary, aber über ein Raster. Gesucht wird zuerst im Umkreis 'hint'; nur wenn dort keine
+    Kante liegt, über alle Kanten."""
+
+    def __init__(self, poly: Sequence[Point], closed: bool = True, hint: float = 1.0):
+        self.poly = list(poly)
+        self.closed = closed
+        self.segs = edges(self.poly, closed)
+        self.hint = hint
+        self.grid = _SegGrid(self.segs, max(hint, 1e-3) * 2) if len(self.segs) >= GRID_MIN else None
+
+    def __call__(self, p: Point) -> float:
+        if self.grid is None:
+            return dist_to_boundary(p, self.poly, self.closed)
+        r = self.hint
+        segs = self.segs
+        best = math.inf
+        for k in self.grid.near(p[0] - r, p[1] - r, p[0] + r, p[1] + r):
+            a, b = segs[k]
+            dd = point_seg_dist(p, a, b)
+            if dd < best:
+                best = dd
+        if best <= r:                     # jede Kante näher als r liegt in den abgefragten Zellen
+            return best
+        return dist_to_boundary(p, self.poly, self.closed)
 
 
 def edges(pts: Sequence[Point], closed: bool = True) -> List[Tuple[Point, Point]]:
@@ -387,13 +462,21 @@ def edges(pts: Sequence[Point], closed: bool = True) -> List[Tuple[Point, Point]
 def min_distance(p1: Sequence[Point], p2: Sequence[Point], limit: float = math.inf,
                  closed1: bool = True, closed2: bool = True) -> float:
     """Kleinster Abstand zweier Polylinien; Segmentpaare weiter als 'limit' werden übersprungen."""
+    if limit < math.inf and p1 and p2:                    # ganze Formen weiter als limit auseinander
+        ax0, ay0, ax1, ay1 = bbox(p1)
+        bx0, by0, bx1, by1 = bbox(p2)
+        if ax1 < bx0 - limit or bx1 < ax0 - limit or ay1 < by0 - limit or by1 < ay0 - limit:
+            return math.inf
     e2 = [(a, b, min(a[0], b[0]) - limit, max(a[0], b[0]) + limit,
            min(a[1], b[1]) - limit, max(a[1], b[1]) + limit) for a, b in edges(p2, closed2)]
     best = math.inf
+    grid = None
+    if limit < math.inf and len(e2) >= GRID_MIN and len(p1) * len(e2) >= 4 * GRID_MIN * GRID_MIN // 16:
+        grid = _SegGrid([((c[2], c[4]), (c[3], c[5])) for c in e2])     # nach den erweiterten Rechtecken
     for a, b in edges(p1, closed1):
         x0, x1 = min(a[0], b[0]), max(a[0], b[0])
         y0, y1 = min(a[1], b[1]), max(a[1], b[1])
-        for c, d, ex0, ex1, ey0, ey1 in e2:
+        for c, d, ex0, ex1, ey0, ey1 in (e2 if grid is None else [e2[k] for k in grid.near(x0, y0, x1, y1)]):
             if x1 < ex0 or x0 > ex1 or y1 < ey0 or y0 > ey1:
                 continue
             dd = seg_seg_dist(a, b, c, d)
@@ -451,9 +534,15 @@ def remove_loops(pts: Sequence[Point], max_iter: int = 500) -> List[Point]:
         if n < 4:
             return pts
         found = False
+        grid = _SegGrid([(pts[m], pts[(m + 1) % n]) for m in range(n)]) if n >= GRID_MIN else None
         for i in range(n):
             a, b = pts[i], pts[(i + 1) % n]
-            for k in range(2, n // 2 + 1):
+            if grid is None:
+                ks = range(2, n // 2 + 1)
+            else:
+                cand = grid.near(min(a[0], b[0]), min(a[1], b[1]), max(a[0], b[0]), max(a[1], b[1]))
+                ks = sorted(k for k in ((m - i) % n for m in cand) if 2 <= k <= n // 2)
+            for k in ks:
                 j = (i + k) % n
                 c, d = pts[j], pts[(j + 1) % n]
                 if segments_cross(a, b, c, d):
@@ -495,11 +584,18 @@ def polygon_ok(pts: Sequence[Point]) -> bool:
         return False
     es = edges(pts, True)
     m = len(es)
+    grid = _SegGrid(es) if m >= GRID_MIN else None
     for i in range(m):
-        for j in range(i + 2, m):
+        a, b = es[i]
+        if grid is None:
+            js = range(i + 2, m)
+        else:
+            js = [j for j in grid.near(min(a[0], b[0]), min(a[1], b[1]), max(a[0], b[0]), max(a[1], b[1]))
+                  if j >= i + 2]
+        for j in js:
             if i == 0 and j == m - 1:
                 continue
-            if segments_cross(es[i][0], es[i][1], es[j][0], es[j][1]):
+            if segments_cross(a, b, es[j][0], es[j][1]):
                 return False
     return True
 
