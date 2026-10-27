@@ -69,6 +69,19 @@ final class EngineClientTests: XCTestCase {
         XCTAssertEqual(body["model"], .string("wichtelhaus"))
         XCTAssertEqual(body["params"]?.objectValue?["width"]?.doubleValue, 80)
         XCTAssertEqual(body["config"]?.objectValue?["kerf"]?.doubleValue, 0.2)
+        XCTAssertNil(body["vorschau"])
+    }
+
+    func testVorschauIstNieExportierbar() async throws {
+        let fake = FakeTransport()
+        fake.respond("/api/generate", json: #"{"ok": false, "vorschau": true, "assemblies": [{"name": "haus", "ok": false, "parts": 3, "sheets": [{"file": "haus.svg", "svg": "<svg/>", "checked": false}], "errors": ["[Vorschau] noch nicht geprüft"]}]}"#)
+        let client = EngineClient(baseURL: base, transport: fake)
+        let result = try await client.generate(model: "haus", params: [:], config: [:], vorschau: true)
+        XCTAssertEqual(try fake.body(of: 0)["vorschau"], .bool(true))
+        XCTAssertTrue(result.vorschau)
+        XCTAssertFalse(result.canExport)
+        XCTAssertTrue(ReportFormatter.statusText(result).hasPrefix("Vorschau · 3 Teile · 1 Blatt"))
+        XCTAssertTrue(ReportFormatter.exportFiles(result).isEmpty)
     }
 
     func testGenerateWithUnknownModelReturnsMessageInsteadOfThrowing() async throws {

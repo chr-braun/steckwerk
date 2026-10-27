@@ -2,8 +2,10 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
-## 2.10.1 – 2026-10-27
+## 2.11.0 – 2026-10-27
 
+- Deutlich schneller: Die Geometrie-Prüfungen (Abstände, Überschneidungen, Kerf, Gravurränder) vergleichen nur noch benachbarte Kanten statt jede mit jeder. Alle Modelle zusammen brauchen 44 % weniger Zeit, die aufwendigsten bis zu 60 % (Spinnennetz 20 s → 8 s, Ebenenbild 21 s → 8 s). Die Ergebnisse sind bitgenau dieselben.
+- Steckwerk Desktop: Die Live-Vorschau zeigt den Blattplan ohne die volle Prüfung („Vorschau · noch nicht geprüft“) und ist so noch einmal etwa doppelt so schnell. Es rechnet immer nur eine Vorschau; Änderungen währenddessen stauen sich nicht mehr. „Bauen & prüfen“ (⌘B), Speichern und Export prüfen wie bisher vollständig.
 - Der Wichtel (Zubehör) ist neu gezeichnet: umgeknickte Zipfelmütze mit Sternen und Krempe, Knollennase, langer Bart mit Strähnen, ausgestellter Mantel mit Fäustlingen und Stiefel. Er bleibt in allen Größen und Maßstäben schneidfertig.
 
 ## 2.10.0 – 2026-10-26

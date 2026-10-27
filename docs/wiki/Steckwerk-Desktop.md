@@ -36,7 +36,9 @@ App einen Hinweis mit dem Weg zur Installation.
 - **Bauen & prüfen (⌘B):** Die Engine baut das Modell und prüft es. Oben steht zum Beispiel
   „0 FEHLER · 8 Teile · 1 Blatt · CUT-READY“.
 - **Live-Vorschau:** Jede Änderung baut das Blatt nach einer kurzen Pause neu. Du siehst Schnitt und Gravur,
-  bevor du etwas auslöst. Schnitt schwarz, Gravur blau, Blattrahmen. Zoomen mit der Pinch-Geste oder den Lupen,
+  bevor du etwas auslöst. Schnitt schwarz, Gravur blau, Blattrahmen. Die Vorschau lässt die volle Prüfung weg
+  und ist dadurch schnell („Vorschau · noch nicht geprüft“); es rechnet immer nur eine. Geprüft wird mit
+  „Bauen & prüfen“ (⌘B), beim Speichern und vor jedem Export. Zoomen mit der Pinch-Geste oder den Lupen,
   verschieben durch Ziehen, Doppelklick setzt zurück.
 - **Prüfbericht:** Fehler stehen rot darüber. Montagehinweise und alle Prüfzeilen lassen sich aufklappen.
 - **Exportieren (⌘E):** Schreibt je Baugruppe die Blatt-SVGs und `pruefbericht.txt` in einen Ordner deiner

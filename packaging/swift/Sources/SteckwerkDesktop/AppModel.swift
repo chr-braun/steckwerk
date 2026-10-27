@@ -52,6 +52,7 @@ final class AppModel: ObservableObject {
     private var engine: EngineProcess?
     private var pingTask: Task<Void, Never>?
     private var previewTask: Task<Void, Never>?
+    private var previewPending = false                       // Änderung während eine Vorschau rechnet
     private var buildSerial = 0
     private static let materialDefaultsKey = "material"
     static let autoUpdateKey = "updatesBeimStart"
@@ -322,14 +323,20 @@ final class AppModel: ObservableObject {
 
     // MARK: Bauen und Exportieren
 
-    /// Vorschau nach kurzer Pause neu bauen, damit jede Änderung sofort im Blatt sichtbar wird.
+    /// Vorschau nach kurzer Pause neu bauen, damit jede Änderung sofort im Blatt sichtbar wird. Die Vorschau
+    /// lässt die Prüfung weg (schnell); es rechnet immer nur eine – Änderungen währenddessen ergeben danach genau
+    /// einen weiteren Durchlauf, statt dass sich Aufträge in der Engine stauen.
     func schedulePreview() {
         previewTask?.cancel()
         guard engineState == .running, selectedModelID != nil else { return }
         previewTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 450_000_000)
-            guard !Task.isCancelled else { return }
-            await self?.build(quiet: true)
+            guard let self, !Task.isCancelled else { return }
+            if self.isPreviewing || self.isBuilding {
+                self.previewPending = true
+                return
+            }
+            await self.build(quiet: true)
         }
     }
 
@@ -338,6 +345,7 @@ final class AppModel: ObservableObject {
         guard let client, let id = selectedModelID, let body = requestBody(for: id) else { return }
         if !quiet {
             previewTask?.cancel()
+            previewPending = false
             guard !isBuilding else { return }
             isBuilding = true
             statusMessage = nil
@@ -351,9 +359,13 @@ final class AppModel: ObservableObject {
             } else {
                 isBuilding = false
             }
+            if previewPending && !isPreviewing && !isBuilding {
+                previewPending = false
+                schedulePreview()
+            }
         }
         do {
-            let response = try await client.generate(model: id, params: body.params, config: body.config)
+            let response = try await client.generate(model: id, params: body.params, config: body.config, vorschau: quiet)
             guard serial == buildSerial else { return }
             let engraveColor = body.config["engrave_color"]?.stringValue ?? "#0000FF"
             let sheets = response.assemblies.flatMap(\.sheets)

@@ -52,6 +52,18 @@ def test_generate_reports_errors_without_files():
     assert not d["ok"] and "Schrifthöhe" in d["error"]
 
 
+def test_vorschau_ohne_pruefung():
+    voll = service.generate({"model": "wichtelhaus"})
+    d = service.generate({"model": "wichtelhaus", "vorschau": True})
+    assert d["vorschau"] and not d["ok"] and voll["ok"] and not voll["vorschau"]
+    a, av = d["assemblies"][0], voll["assemblies"][0]
+    assert len(a["sheets"]) == len(av["sheets"]) and all(not sh["checked"] for sh in a["sheets"])
+    assert "VORSCHAU" in a["sheets"][0]["svg"] and "noch nicht geprüft" in a["errors"][0]
+    res, cfg = service.run_request({"model": "zaun", "vorschau": True})
+    with pytest.raises(RuntimeError):                                  # Vorschau ist nie exportierbar
+        service.zip_results(res, cfg)
+
+
 def test_zip_contains_svgs_and_reports(cfg):
     res, _ = service.process(service.build_assemblies("zubehoer", {}, cfg), cfg)
     names = zipfile.ZipFile(io.BytesIO(service.zip_results(res, cfg))).namelist()
@@ -100,7 +112,7 @@ def test_webui_endpoints(server):
     r = _post(base + "/api/zip", {"model": "fahrzeug", "params": {"vehicle": "schlitten"}})
     assert r.headers["Content-Type"] == "application/zip"
     assert "schlitten/schlitten.svg" in zipfile.ZipFile(io.BytesIO(r.read())).namelist()
-    d = json.load(_post(base + "/api/save", {"model": "zaun"}))
+    d = json.load(_post(base + "/api/save", {"model": "zaun", "vorschau": True}))     # Speichern prüft immer
     assert d["ok"] and (out / "zaun" / "zaun.svg").exists()
 
 
