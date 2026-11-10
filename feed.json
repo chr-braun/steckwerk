@@ -1,31 +1,23 @@
 {
   "standard": 1,
-  "erstellt": "2026-10-26",
+  "erstellt": "2026-11-10",
   "programm": {
-    "version": "2.10.0",
-    "datum": "2026-10-26",
+    "version": "2.10.1",
+    "datum": "2026-11-10",
     "hinweise": [
-      "Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.",
-      "Alle 19 eingebauten Motive sind neu und deutlich detaillierter gezeichnet, mit feinen Innenformen und Gravurlinien.",
-      "Silhouetten aus Motiven gravieren die Motivlinien mit.",
-      "Halloween 1.4.0: Die Anhänger nehmen ihre Figuren aus der Motiv-Bibliothek und haben Platz für den Namen.",
-      "Weihnachten 2.0.1: Die Zuckerstange trägt keine Stechpalme mehr, nur noch die Schleife.",
-      "Der Start geht auf dem Mac schneller (keine Namensauflösung mehr beim Serverstart).",
-      "Steckwerk Desktop: Modelle in der Seitenleiste lassen sich wieder durchsuchen."
+      "Steckwerk rechnet deutlich schneller und läuft damit auch auf älteren Macs flüssig. Die Schnittdateien bleiben dabei bitgenau gleich, nur der Weg dorthin ist kürzer: - Die Prüfung (Kerf-Versatz, Selbstüberschneidung, Stege, Gravur in der Kontur) vergleicht nicht mehr jede Kante mit jeder, sondern nur noch Kanten in der Nähe. Große Motive prüft Steckwerk dadurch 3- bis 20-mal schneller. - Konturen aufräumen und Schleifen beim Nach-innen-Versetzen entfernen geht auf großen Konturen viel schneller. - Ein großes Ebenenbild (300 × 360 mm, 6 Ebenen) braucht statt rund 90 Sekunden nur noch etwa 9. Über alle Modelle zusammen sinkt die Rechenzeit auf weniger als die Hälfte.",
+      "Live-Vorschau: Tippst du schneller, als der Rechner rechnet, verwirft Steckwerk überholte Vorschauen, statt sie parallel weiterzurechnen. Auf langsamen Rechnern wartet die Vorschau etwas länger, bis du mit dem Tippen fertig bist.",
+      "Speichern und ZIP direkt nach der Vorschau rechnen nicht noch einmal alles, sondern nehmen das gerade geprüfte Ergebnis."
     ],
     "hinweise_en": [
-      "Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to \"Updates\"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.",
-      "All 19 built-in motifs are redrawn with much more detail, with fine inner shapes and engraved lines.",
-      "Silhouettes made from motifs engrave the motif lines too.",
-      "Halloween 1.4.0: the tags take their figures from the motif library and leave room for the name.",
-      "Christmas 2.0.1: the candy cane no longer carries holly, just the bow.",
-      "Starting is faster on the Mac (no more name lookup when the server starts).",
-      "Steckwerk Desktop: models in the sidebar can be searched again."
+      "Steckwerk computes much faster, so it runs smoothly on older Macs too. The cut files stay bit-for-bit identical; only the way there is shorter: - The checks (kerf offset, self-intersection, webs, engraving inside the outline) no longer compare every edge with every other edge, only nearby ones. Large motifs are checked 3 to 20 times faster. - Cleaning up outlines and removing loops after insetting is much faster on large outlines. - A large layered picture (300 × 360 mm, 6 layers) takes about 9 seconds instead of roughly 90. Across all models, total computing time drops to less than half.",
+      "Live preview: if you type faster than the computer computes, Steckwerk drops outdated previews instead of computing them in parallel. On slow computers the preview waits a little longer until you have finished typing.",
+      "Saving and ZIP right after the preview reuse the result that was just checked instead of computing everything again."
     ],
     "mac": {
-      "datei": "Steckwerk-2.10.0-macOS.zip",
-      "sha256": "6f9341adea8652b2dc70e621b70a6ec6ec718ca84998b2bff180c234c3def045",
-      "groesse": 492840
+      "datei": "Steckwerk-2.10.1-macOS.zip",
+      "sha256": "662b52099b5ecdfde01579cfd6ee28e5c2316de152ecf28a6caf49af8bf681c3",
+      "groesse": 497083
     }
   },
   "pakete": [
@@ -338,21 +330,17 @@
     }
   ],
   "desktop": {
-    "version": "2.10.0",
-    "datum": "2026-10-26",
+    "version": "2.10.1",
+    "datum": "2026-11-10",
     "hinweise": [
-      "Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.",
-      "Alle 19 eingebauten Motive sind neu und deutlich detaillierter gezeichnet, mit feinen Innenformen und Gravurlinien.",
-      "Silhouetten aus Motiven gravieren die Motivlinien mit.",
-      "Halloween 1.4.0: Die Anhänger nehmen ihre Figuren aus der Motiv-Bibliothek und haben Platz für den Namen.",
-      "Weihnachten 2.0.1: Die Zuckerstange trägt keine Stechpalme mehr, nur noch die Schleife.",
-      "Der Start geht auf dem Mac schneller (keine Namensauflösung mehr beim Serverstart).",
-      "Steckwerk Desktop: Modelle in der Seitenleiste lassen sich wieder durchsuchen."
+      "Steckwerk rechnet deutlich schneller und läuft damit auch auf älteren Macs flüssig. Die Schnittdateien bleiben dabei bitgenau gleich, nur der Weg dorthin ist kürzer: - Die Prüfung (Kerf-Versatz, Selbstüberschneidung, Stege, Gravur in der Kontur) vergleicht nicht mehr jede Kante mit jeder, sondern nur noch Kanten in der Nähe. Große Motive prüft Steckwerk dadurch 3- bis 20-mal schneller. - Konturen aufräumen und Schleifen beim Nach-innen-Versetzen entfernen geht auf großen Konturen viel schneller. - Ein großes Ebenenbild (300 × 360 mm, 6 Ebenen) braucht statt rund 90 Sekunden nur noch etwa 9. Über alle Modelle zusammen sinkt die Rechenzeit auf weniger als die Hälfte.",
+      "Live-Vorschau: Tippst du schneller, als der Rechner rechnet, verwirft Steckwerk überholte Vorschauen, statt sie parallel weiterzurechnen. Auf langsamen Rechnern wartet die Vorschau etwas länger, bis du mit dem Tippen fertig bist.",
+      "Speichern und ZIP direkt nach der Vorschau rechnen nicht noch einmal alles, sondern nehmen das gerade geprüfte Ergebnis."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.10.0-macOS.zip",
-      "sha256": "392e851de7fd8c1e1ce026a2862d8b1b05b2dbcce4a3321215673ee33bac26d9",
-      "groesse": 1832849
+      "datei": "Steckwerk-Desktop-2.10.1-macOS.zip",
+      "sha256": "021281a750ddd52a060e3dbc4945c434f2b3d00e16e36afbeaf95230a1c98b34",
+      "groesse": 1837096
     }
   }
 }
