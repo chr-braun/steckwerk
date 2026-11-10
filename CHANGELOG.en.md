@@ -2,6 +2,15 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## 2.10.1 – 2026-11-10
+
+- Steckwerk computes much faster, so it runs smoothly on older Macs too. The cut files stay bit-for-bit identical; only the way there is shorter:
+  - The checks (kerf offset, self-intersection, webs, engraving inside the outline) no longer compare every edge with every other edge, only nearby ones. Large motifs are checked 3 to 20 times faster.
+  - Cleaning up outlines and removing loops after insetting is much faster on large outlines.
+  - A large layered picture (300 × 360 mm, 6 layers) takes about 9 seconds instead of roughly 90. Across all models, total computing time drops to less than half.
+- Live preview: if you type faster than the computer computes, Steckwerk drops outdated previews instead of computing them in parallel. On slow computers the preview waits a little longer until you have finished typing.
+- Saving and ZIP right after the preview reuse the result that was just checked instead of computing everything again.
+
 ## 2.10.0 – 2026-10-26
 
 - Steckwerk Desktop reworked: the preview rebuilds by itself whenever you change a value, motifs are shown larger in the picker, and at launch the app looks for updates by itself (can be switched off; the count shows next to "Updates"). Before replacing the app, the update now also checks that the package really contains Steckwerk Desktop.

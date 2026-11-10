@@ -1490,6 +1490,7 @@ details.dis .in { padding: 0 0 6px 16px; }
 
   // ------------------------------------------------------------------ Server
   const HEADERS = { "Content-Type": "application/json", "X-Steckwerk": "1" };
+  const CLIENT = Math.random().toString(36).slice(2) + Date.now().toString(36);   // dieses Fenster
   const post = (path, body, extra) =>
     fetch(path, Object.assign({ method: "POST", headers: HEADERS, body: JSON.stringify(Object.assign({ lang: LANG }, body || {})) }, extra || {}));
   const isApp = () => !!(S.schema && S.schema.app);
@@ -1499,7 +1500,8 @@ details.dis .in { padding: 0 0 6px 16px; }
   function schedule(delay) {
     if (!$("live").checked && delay !== 0) return;
     clearTimeout(S.timer);
-    S.timer = setTimeout(generate, delay ?? 450);
+    // Auf langsamen Rechnern länger warten, bis die Eingabe ruht: sonst startet jede Ziffer eine neue Berechnung.
+    S.timer = setTimeout(generate, delay ?? Math.min(1500, Math.max(450, (S.lastMs || 0) / 2)));
   }
 
   async function generate() {
@@ -1510,9 +1512,11 @@ details.dis .in { padding: 0 0 6px 16px; }
     const seq = ++S.seq, model = S.model;
     setPill("busy", "Prüfe …");
     try {
-      const r = await post("/api/generate", request(), { signal: S.ctrl.signal });
+      const t0 = performance.now();
+      const r = await post("/api/generate", Object.assign({ client: CLIENT }, request()), { signal: S.ctrl.signal });
       const data = await r.json();
-      if (seq !== S.seq) return;
+      if (seq !== S.seq || data.cancelled) return;
+      S.lastMs = performance.now() - t0;
       data.model = model;
       S.result = data;
       const bad = /^Motiv (\d+)/.exec(data.error || "");            // Problem-Motiv im Editor rot zeigen
@@ -1863,7 +1867,7 @@ details.dis .in { padding: 0 0 6px 16px; }
   function startApp() {
     $("app-actions").hidden = false;
     $("open-folder").title = S.schema.out_dir;
-    const client = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const client = CLIENT;
     const ping = async () => {
       if (S.ended) return;
       try { const r = await post("/api/ping", { client }); if (!r.ok) throw new Error(r.status); }

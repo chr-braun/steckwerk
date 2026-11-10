@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## 2.10.1 – 2026-11-10
+
+- Steckwerk rechnet deutlich schneller und läuft damit auch auf älteren Macs flüssig. Die Schnittdateien bleiben dabei bitgenau gleich, nur der Weg dorthin ist kürzer:
+  - Die Prüfung (Kerf-Versatz, Selbstüberschneidung, Stege, Gravur in der Kontur) vergleicht nicht mehr jede Kante mit jeder, sondern nur noch Kanten in der Nähe. Große Motive prüft Steckwerk dadurch 3- bis 20-mal schneller.
+  - Konturen aufräumen und Schleifen beim Nach-innen-Versetzen entfernen geht auf großen Konturen viel schneller.
+  - Ein großes Ebenenbild (300 × 360 mm, 6 Ebenen) braucht statt rund 90 Sekunden nur noch etwa 9. Über alle Modelle zusammen sinkt die Rechenzeit auf weniger als die Hälfte.
+- Live-Vorschau: Tippst du schneller, als der Rechner rechnet, verwirft Steckwerk überholte Vorschauen, statt sie parallel weiterzurechnen. Auf langsamen Rechnern wartet die Vorschau etwas länger, bis du mit dem Tippen fertig bist.
+- Speichern und ZIP direkt nach der Vorschau rechnen nicht noch einmal alles, sondern nehmen das gerade geprüfte Ergebnis.
+
 ## 2.10.0 – 2026-10-26
 
 - Steckwerk Desktop überarbeitet: Die Vorschau baut sich beim Ändern jedes Werts von selbst neu, Motive sind in der Auswahl größer zu sehen, und beim Start sucht die App von selbst nach Updates (abschaltbar, die Anzahl steht neben „Updates“). Vor dem Ersetzen prüft das Update jetzt auch, dass wirklich eine Steckwerk-Desktop-App im Paket steckt.
