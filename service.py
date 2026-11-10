@@ -13,11 +13,14 @@ from __future__ import annotations
 
 import inspect
 import io
+import json
 import os
+import threading
 import time
 import zipfile
+from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from steckwerk import (Assembly, Config, ConfigError, LayoutError, Sheet, __version__, layout,
                         sheet_to_svg, write_text)
@@ -528,11 +531,19 @@ class Result:
         return self.report.passed
 
 
-def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = False) -> Tuple[List[Result], bool]:
-    """Geometrie, Verbindungen, Layout und das fertige SVG prüfen. Dateien entstehen hier keine."""
+class Abgeloest(Exception):
+    """Eine neuere Anfrage desselben Fensters ist da – diese Berechnung braucht niemand mehr."""
+
+
+def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = False,
+            stop: Optional[Callable[[], bool]] = None) -> Tuple[List[Result], bool]:
+    """Geometrie, Verbindungen, Layout und das fertige SVG prüfen. Dateien entstehen hier keine.
+    `stop()` wird zwischen den Schritten gefragt; liefert es True, bricht die Prüfung ab (Abgeloest)."""
     results = []
     all_ok = True
     for asm in assemblies:
+        if stop and stop():
+            raise Abgeloest()
         rep = Report(asm.name)
         validate_assembly(asm, cfg, rep)
         res = Result(asm, rep)
@@ -621,18 +632,59 @@ def schema() -> Dict[str, Any]:
                 vehicle_defaults=VEHICLE_DEFAULTS, pakete=paks, pakete_ordner=pakete.install_dir())
 
 
-def run_request(req: Dict[str, Any], preview_on_error: bool = True) -> Tuple[List[Result], Config]:
+# Zuletzt berechnete Modelle merken: „Speichern“ und „ZIP“ kommen fast immer direkt nach der Vorschau
+# mit genau denselben Werten – dann muss ein langsamer Rechner nicht alles ein zweites Mal rechnen.
+# Ebenso beim Zurückspringen auf vorherige Werte. Wenige Einträge, damit der Speicher klein bleibt.
+_ERGEBNISSE: "OrderedDict[str, Tuple[List[Result], Config]]" = OrderedDict()
+_ERGEBNISSE_MAX = 4
+_ERGEBNISSE_LOCK = threading.Lock()
+
+
+def _cache_key(req: Dict[str, Any]) -> Optional[str]:
+    if (req.get("params") or {}).get("seed", 0) in (None, ""):
+        return None                                       # Zufall ohne Startwert: jedes Mal neu würfeln
+    try:
+        return json.dumps([req.get("model", "wichtelhaus"), req.get("params") or {}, req.get("config") or {}],
+                          sort_keys=True, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return None
+
+
+def clear_cache() -> None:
+    """Gemerkte Ergebnisse verwerfen (nach Änderungen an Paketen oder Motiven)."""
+    with _ERGEBNISSE_LOCK:
+        _ERGEBNISSE.clear()
+
+
+def run_request(req: Dict[str, Any], preview_on_error: bool = True,
+                stop: Optional[Callable[[], bool]] = None) -> Tuple[List[Result], Config]:
+    key = _cache_key(req)
+    if key is not None:
+        with _ERGEBNISSE_LOCK:
+            hit = _ERGEBNISSE.get(key)
+            if hit is not None:
+                _ERGEBNISSE.move_to_end(key)
+                return hit
     cfg = make_config(req.get("config"))
     assemblies = build_assemblies(str(req.get("model", "wichtelhaus")), req.get("params"), cfg)
-    results, _ = process(assemblies, cfg, preview_on_error=preview_on_error)
+    results, _ = process(assemblies, cfg, preview_on_error=preview_on_error, stop=stop)
+    if key is not None and preview_on_error:
+        with _ERGEBNISSE_LOCK:
+            _ERGEBNISSE[key] = (results, cfg)
+            while len(_ERGEBNISSE) > _ERGEBNISSE_MAX:
+                _ERGEBNISSE.popitem(last=False)
     return results, cfg
 
 
-def generate(req: Dict[str, Any]) -> Dict[str, Any]:
-    """Anfrage {model, params, config} → Ergebnis mit Prüfbericht und SVGs (nur wenn OK)."""
+def generate(req: Dict[str, Any], stop: Optional[Callable[[], bool]] = None) -> Dict[str, Any]:
+    """Anfrage {model, params, config} → Ergebnis mit Prüfbericht und SVGs (nur wenn OK).
+    Mit `stop` lässt sich eine überholte Live-Vorschau vorzeitig beenden (Antwort: cancelled=True)."""
     t0 = time.time()
     try:
-        results, cfg = run_request(req)
+        results, cfg = run_request(req, stop=stop)
+    except Abgeloest:
+        return dict(ok=False, cancelled=True, error="durch eine neuere Anfrage ersetzt", assemblies=[],
+                    elapsed=round(time.time() - t0, 2))
     except (ConfigError, ValueError) as e:
         return dict(ok=False, error=str(e), assemblies=[], elapsed=round(time.time() - t0, 2))
     out = []
@@ -658,5 +710,6 @@ PAKETE = pakete.register(MODEL_INFO, MODELS)
 def reload_pakete():
     """Pakete neu einlesen (nach Installieren/Entfernen)."""
     global PAKETE
+    clear_cache()
     PAKETE = pakete.register(MODEL_INFO, MODELS)
     return PAKETE

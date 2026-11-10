@@ -26,7 +26,7 @@ import re
 from dataclasses import dataclass, field, fields
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
-__version__ = "2.10.0"
+__version__ = "2.10.1"
 
 
 def migrate_legacy(home: Optional[str] = None) -> List[str]:
@@ -261,21 +261,23 @@ def clean(pts: Sequence[Point], closed: bool = True, eps: float = 1e-9) -> List[
             out.append((float(p[0]), float(p[1])))
     if closed and len(out) > 1 and dist(out[0], out[-1]) <= eps:
         out.pop()
-    changed = True
-    while changed and len(out) > 3:
-        changed = False
+    # Nach dem Entfernen eines Punktes ändern sich nur die Nachbar-Dreiergruppen; davor bleibt alles
+    # gleich. Deshalb wird dort weitergesucht statt wieder von vorn (gleiches Ergebnis, aber linear
+    # statt quadratisch – wichtig für Motive mit tausenden Punkten).
+    lo = 0 if closed else 1
+    i = lo
+    while len(out) > 3:
         n = len(out)
-        rng = range(n) if closed else range(1, n - 1)
-        for i in rng:
-            a, b, c = out[i - 1], out[i], out[(i + 1) % n]
-            ab, bc = dist(a, b), dist(b, c)
-            if ab < eps or bc < eps:
-                continue
-            if abs(cross(a, b, c)) <= eps * max(ab, bc) and \
-                    ((b[0] - a[0]) * (c[0] - b[0]) + (b[1] - a[1]) * (c[1] - b[1])) > 0:
-                del out[i]
-                changed = True
-                break
+        if i >= (n if closed else n - 1):
+            break
+        a, b, c = out[i - 1], out[i], out[(i + 1) % n]
+        ab, bc = dist(a, b), dist(b, c)
+        if ab >= eps and bc >= eps and abs(cross(a, b, c)) <= eps * max(ab, bc) and \
+                ((b[0] - a[0]) * (c[0] - b[0]) + (b[1] - a[1]) * (c[1] - b[1])) > 0:
+            del out[i]
+            i = 0 if closed and (i == 0 or i == n - 1) else max(i - 1, lo)
+            continue
+        i += 1
     return out
 
 
@@ -372,10 +374,109 @@ def point_in_polygon(p: Point, poly: Sequence[Point]) -> bool:
     return inside
 
 
+class PolygonIndex:
+    """Punkt-in-Polygon für viele Abfragen an dieselbe Kontur: die Kanten liegen in waagrechten
+    Bändern, ein Strahl prüft nur die Kanten seines Bandes. Ergebnis wie point_in_polygon."""
+
+    def __init__(self, poly: Sequence[Point], bands: int = 0):
+        self.poly = poly
+        n = len(poly)
+        ys = [p[1] for p in poly] or [0.0]
+        self.y0 = min(ys)
+        span = max(ys) - self.y0
+        nb = bands or max(1, min(n // 4, 512))
+        self.h = span / nb if span > 0 else 1.0
+        self.nb = nb
+        self.bands: List[List[Tuple[float, float, float, float]]] = [[] for _ in range(nb)]
+        j = n - 1
+        for i in range(n):
+            xi, yi = poly[i]
+            xj, yj = poly[j]
+            lo, hi = (yi, yj) if yi < yj else (yj, yi)
+            if lo != hi:
+                b0, b1 = self._band(lo), self._band(hi)
+                for b in range(b0, b1 + 1):
+                    self.bands[b].append((xi, yi, xj, yj))
+            j = i
+
+    def _band(self, y: float) -> int:
+        b = int((y - self.y0) / self.h)
+        return 0 if b < 0 else self.nb - 1 if b >= self.nb else b
+
+    def contains(self, p: Point) -> bool:
+        x, y = p
+        inside = False
+        for xi, yi, xj, yj in self.bands[self._band(y)]:
+            if (yi > y) != (yj > y):
+                xint = xi + (y - yi) * (xj - xi) / (yj - yi)
+                if x < xint:
+                    inside = not inside
+        return inside
+
+
 def dist_to_boundary(p: Point, poly: Sequence[Point], closed: bool = True) -> float:
     n = len(poly)
     m = n if closed else n - 1
     return min(point_seg_dist(p, poly[i], poly[(i + 1) % n]) for i in range(m))
+
+
+class SegmentGrid:
+    """Raster über die Kanten einer Kontur für schnelle Abstandsfragen in der Nähe.
+
+    `near_dist(p, r)` liefert den exakten Abstand von p zur Kontur, wenn er höchstens r beträgt,
+    sonst math.inf. Statt alle Kanten zu prüfen, werden nur die Rasterzellen um p durchsucht –
+    das macht die Prüfung großer Konturen (Ebenenbilder, Filigran) auf langsamen Rechnern
+    um ein Vielfaches schneller."""
+
+    def __init__(self, pts: Sequence[Point], closed: bool = True, cell: float = 0.0):
+        segs = edges(pts, closed)
+        self.segs = segs
+        if not segs:
+            self.cell = 1.0
+            self.cells: Dict[Tuple[int, int], List[int]] = {}
+            return
+        if cell <= 0:
+            tot = sum(abs(b[0] - a[0]) + abs(b[1] - a[1]) for a, b in segs)
+            cell = max(tot / len(segs), 0.05)        # etwa eine mittlere Kantenlänge
+        self.cell = cell
+        inv = 1.0 / cell
+        cells: Dict[Tuple[int, int], List[int]] = {}
+        for k, (a, b) in enumerate(segs):
+            i0, i1 = int(math.floor(min(a[0], b[0]) * inv)), int(math.floor(max(a[0], b[0]) * inv))
+            j0, j1 = int(math.floor(min(a[1], b[1]) * inv)), int(math.floor(max(a[1], b[1]) * inv))
+            if (i1 - i0 + 1) * (j1 - j0 + 1) > 4096:        # sehr lange Kante: grob in eigener Liste
+                cells.setdefault(("lang",), []).append(k)  # type: ignore[arg-type]
+                continue
+            for i in range(i0, i1 + 1):
+                for j in range(j0, j1 + 1):
+                    cells.setdefault((i, j), []).append(k)
+        self.cells = cells
+
+    def near_dist(self, p: Point, r: float) -> float:
+        inv = 1.0 / self.cell
+        i0, i1 = int(math.floor((p[0] - r) * inv)), int(math.floor((p[0] + r) * inv))
+        j0, j1 = int(math.floor((p[1] - r) * inv)), int(math.floor((p[1] + r) * inv))
+        segs, cells = self.segs, self.cells
+        best = math.inf
+        seen = set()
+        cand = list(cells.get(("lang",), ()))  # type: ignore[call-overload]
+        if (i1 - i0 + 1) * (j1 - j0 + 1) > 4 * len(cells) + 16:
+            cand = range(len(segs))                      # Radius größer als die Kontur selbst
+        else:
+            for i in range(i0, i1 + 1):
+                for j in range(j0, j1 + 1):
+                    lst = cells.get((i, j))
+                    if lst:
+                        cand.extend(lst)
+        for k in cand:
+            if k in seen:
+                continue
+            seen.add(k)
+            a, b = segs[k]
+            d = point_seg_dist(p, a, b)
+            if d < best:
+                best = d
+        return best if best <= r else math.inf
 
 
 def edges(pts: Sequence[Point], closed: bool = True) -> List[Tuple[Point, Point]]:
@@ -387,13 +488,64 @@ def edges(pts: Sequence[Point], closed: bool = True) -> List[Tuple[Point, Point]
 def min_distance(p1: Sequence[Point], p2: Sequence[Point], limit: float = math.inf,
                  closed1: bool = True, closed2: bool = True) -> float:
     """Kleinster Abstand zweier Polylinien; Segmentpaare weiter als 'limit' werden übersprungen."""
+    if limit < math.inf and p1 and p2:
+        ax0, ay0, ax1, ay1 = bbox(p1)
+        bx0, by0, bx1, by1 = bbox(p2)
+        if ax1 < bx0 - limit or bx1 < ax0 - limit or ay1 < by0 - limit or by1 < ay0 - limit:
+            return math.inf                    # weit auseinander: kein Segmentpaar käme in Frage
     e2 = [(a, b, min(a[0], b[0]) - limit, max(a[0], b[0]) + limit,
            min(a[1], b[1]) - limit, max(a[1], b[1]) + limit) for a, b in edges(p2, closed2)]
     best = math.inf
-    for a, b in edges(p1, closed1):
+    e1 = edges(p1, closed1)
+    if limit < math.inf and len(e1) * len(e2) > 2000:
+        return _min_distance_grid(e1, e2)
+    for a, b in e1:
         x0, x1 = min(a[0], b[0]), max(a[0], b[0])
         y0, y1 = min(a[1], b[1]), max(a[1], b[1])
         for c, d, ex0, ex1, ey0, ey1 in e2:
+            if x1 < ex0 or x0 > ex1 or y1 < ey0 or y0 > ey1:
+                continue
+            dd = seg_seg_dist(a, b, c, d)
+            if dd < best:
+                best = dd
+                if best == 0.0:
+                    return 0.0
+    return best
+
+
+def _min_distance_grid(e1, e2) -> float:
+    """Wie min_distance, aber die Kanten von p2 liegen in einem Raster: jede Kante von p1 wird nur
+    mit den Kanten in ihrer Nähe verglichen. Dieselben Paare, dasselbe Ergebnis – nur schneller."""
+    tot = sum((ex1 - ex0) + (ey1 - ey0) for _, _, ex0, ex1, ey0, ey1 in e2)
+    cell = max(tot / (2 * len(e2)), 1e-3)
+    inv = 1.0 / cell
+    flr = math.floor
+    cells: Dict[Tuple[int, int], List[int]] = {}
+    wide: List[int] = []
+    for k, (_, _, ex0, ex1, ey0, ey1) in enumerate(e2):
+        i0, i1, j0, j1 = int(flr(ex0 * inv)), int(flr(ex1 * inv)), int(flr(ey0 * inv)), int(flr(ey1 * inv))
+        if (i1 - i0 + 1) * (j1 - j0 + 1) > 256:
+            wide.append(k)
+            continue
+        for i in range(i0, i1 + 1):
+            for j in range(j0, j1 + 1):
+                cells.setdefault((i, j), []).append(k)
+    best = math.inf
+    for a, b in e1:
+        x0, x1 = min(a[0], b[0]), max(a[0], b[0])
+        y0, y1 = min(a[1], b[1]), max(a[1], b[1])
+        i0, i1, j0, j1 = int(flr(x0 * inv)), int(flr(x1 * inv)), int(flr(y0 * inv)), int(flr(y1 * inv))
+        if (i1 - i0 + 1) * (j1 - j0 + 1) > 256:
+            cand = set(range(len(e2)))
+        else:
+            cand = set(wide)
+            for i in range(i0, i1 + 1):
+                for j in range(j0, j1 + 1):
+                    lst = cells.get((i, j))
+                    if lst:
+                        cand.update(lst)
+        for k in cand:
+            c, d, ex0, ex1, ey0, ey1 = e2[k]
             if x1 < ex0 or x0 > ex1 or y1 < ey0 or y0 > ey1:
                 continue
             dd = seg_seg_dist(a, b, c, d)
@@ -442,6 +594,29 @@ def _seg_intersection(a: Point, b: Point, c: Point, d: Point) -> Optional[Point]
     return (a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]))
 
 
+def _crossing_pairs(pts: Sequence[Point]) -> List[Tuple[int, int]]:
+    """Alle Paare (p, q) von Kanten einer geschlossenen Kontur, die sich echt kreuzen.
+    Sweep über x: nur Kanten mit überlappendem x-Bereich werden genau geprüft."""
+    n = len(pts)
+    es = [(pts[i], pts[(i + 1) % n]) for i in range(n)]
+    boxes = [(min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1])) for a, b in es]
+    order = sorted(range(n), key=lambda k: boxes[k][0])
+    out = []
+    for pos, p in enumerate(order):
+        x0, x1, y0, y1 = boxes[p]
+        a, b = es[p]
+        for q in order[pos + 1:]:
+            u0, u1, v0, v1 = boxes[q]
+            if u0 > x1:
+                break
+            if v0 > y1 or v1 < y0:
+                continue
+            c, d = es[q]
+            if segments_cross(a, b, c, d):
+                out.append((p, q) if p < q else (q, p))
+    return out
+
+
 def remove_loops(pts: Sequence[Point], max_iter: int = 500) -> List[Point]:
     """Entfernt lokale Schleifen, die beim Nach-innen-Versetzen an engen Rundungen und
     spitzen Ecken entstehen (die kürzere Schleife wird durch den Schnittpunkt ersetzt)."""
@@ -451,32 +626,36 @@ def remove_loops(pts: Sequence[Point], max_iter: int = 500) -> List[Point]:
         if n < 4:
             return pts
         found = False
-        for i in range(n):
+        # Erste Kreuzung in der Reihenfolge (i, k) wie bei der Suche „jede Kante mit jeder“ –
+        # die Kandidaten liefert aber ein Sweep, das spart auf großen Konturen viel Rechenzeit.
+        cand = []
+        for p_, q_ in _crossing_pairs(pts):
+            for i, j in ((p_, q_), (q_, p_)):
+                k = (j - i) % n
+                if 2 <= k <= n // 2:
+                    cand.append((i, k))
+        for i, k in sorted(cand):
             a, b = pts[i], pts[(i + 1) % n]
-            for k in range(2, n // 2 + 1):
-                j = (i + k) % n
-                c, d = pts[j], pts[(j + 1) % n]
-                if segments_cross(a, b, c, d):
-                    p = _seg_intersection(a, b, c, d)
-                    if p is None:
-                        continue
-                    # Schleife = Punkte i+1 … j  →  durch p ersetzen. Entfernt wird die Schleife mit
-                    # der kleineren Fläche (nicht die mit weniger Knoten: eine Öse aus vielen
-                    # Bogenpunkten darf nicht den ganzen Stern verdrängen).
-                    loop_a = [p] + [pts[(i + 1 + m) % n] for m in range(k)]
-                    loop_b = [p] + [pts[(j + 1 + m) % n] for m in range(n - k)]
-                    if abs(signed_area(loop_a)) <= abs(signed_area(loop_b)):
-                        idx = {(i + 1 + m) % n for m in range(k)}
-                        keep = [pts[m] for m in range(n) if m not in idx]
-                        ins = keep.index(pts[i]) + 1 if pts[i] in keep else 0
-                        keep.insert(ins, p)
-                    else:
-                        keep = loop_a[:]                   # p, i+1 … j
-                    pts = keep
-                    found = True
-                    break
-            if found:
-                break
+            j = (i + k) % n
+            c, d = pts[j], pts[(j + 1) % n]
+            p = _seg_intersection(a, b, c, d)
+            if p is None:
+                continue
+            # Schleife = Punkte i+1 … j  →  durch p ersetzen. Entfernt wird die Schleife mit
+            # der kleineren Fläche (nicht die mit weniger Knoten: eine Öse aus vielen
+            # Bogenpunkten darf nicht den ganzen Stern verdrängen).
+            loop_a = [p] + [pts[(i + 1 + m) % n] for m in range(k)]
+            loop_b = [p] + [pts[(j + 1 + m) % n] for m in range(n - k)]
+            if abs(signed_area(loop_a)) <= abs(signed_area(loop_b)):
+                idx = {(i + 1 + m) % n for m in range(k)}
+                keep = [pts[m] for m in range(n) if m not in idx]
+                ins = keep.index(pts[i]) + 1 if pts[i] in keep else 0
+                keep.insert(ins, p)
+            else:
+                keep = loop_a[:]                   # p, i+1 … j
+            pts = keep
+            found = True
+            break
         if not found:
             return clean(pts)
     return clean(pts)

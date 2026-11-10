@@ -24,7 +24,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from steckwerk import (Assembly, Config, JointFeature, Part, Point, Sheet, bbox, dist,
+from steckwerk import (Assembly, Config, JointFeature, Part, Point, PolygonIndex, SegmentGrid, Sheet, bbox, dist,
                         dist_to_boundary, edges, min_distance, perimeter, point_in_polygon,
                         point_seg_dist, segments_cross, signed_area)
 
@@ -119,23 +119,33 @@ def check_path(pts: Sequence[Point], closed: bool, cfg: Config) -> List[str]:
     es = edges(pts, True)
     boxes = [(min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1])) for a, b in es]
     m = len(es)
-    found = 0
-    for i in range(m):
-        x0, x1, y0, y1 = boxes[i]
-        a, b = es[i]
-        for j in range(i + 2, m):
-            if i == 0 and j == m - 1:
+    # Sweep über x: nur Kanten, deren x-Bereiche sich überlappen, werden genauer verglichen
+    # (früher jede mit jeder – bei Konturen mit tausenden Knoten sehr langsam).
+    order = sorted(range(m), key=lambda k: boxes[k][0])
+    hits: List[Tuple[int, int]] = []
+    for pos, ii in enumerate(order):
+        x0, x1, y0, y1 = boxes[ii]
+        lim = x1 + GEO_EPS
+        for jj in order[pos + 1:]:
+            u0, u1, v0, v1 = boxes[jj]
+            if u0 > lim:
+                break
+            i, j = (ii, jj) if ii < jj else (jj, ii)
+            if j < i + 2 or (i == 0 and j == m - 1):
                 continue
-            u0, u1, v0, v1 = boxes[j]
-            if x1 < u0 - GEO_EPS or u1 < x0 - GEO_EPS or y1 < v0 - GEO_EPS or v1 < y0 - GEO_EPS:
+            if y1 < v0 - GEO_EPS or v1 < y0 - GEO_EPS or u1 < x0 - GEO_EPS:
                 continue
+            a, b = es[i]
             c, d = es[j]
             if segments_cross(a, b, c, d) or min(point_seg_dist(a, c, d), point_seg_dist(b, c, d),
                                                  point_seg_dist(c, a, b), point_seg_dist(d, a, b)) < GEO_EPS:
-                found += 1
-                if found <= 3:
-                    errs.append(f"Selbstüberschneidung zwischen Kante {i} und {j} "
-                                f"bei ({a[0]:.2f}, {a[1]:.2f})")
+                hits.append((i, j))
+    hits.sort()
+    found = len(hits)
+    for i, j in hits[:3]:
+        a = es[i][0]
+        errs.append(f"Selbstüberschneidung zwischen Kante {i} und {j} "
+                    f"bei ({a[0]:.2f}, {a[1]:.2f})")
     if found > 3:
         errs.append(f"… insgesamt {found} Selbstüberschneidungen")
     return errs
@@ -157,12 +167,19 @@ def check_part(part: Part, cfg: Config, label: str = "") -> List[str]:
         return errs
     # Löcher innerhalb der Außenkontur, Stege, keine Überlappung
     paths = [part.outline] + list(part.holes)
+    outline_ix = PolygonIndex(part.outline)
     for k, h in enumerate(part.holes):
-        if not all(point_in_polygon(p, part.outline) for p in h):
+        if not all(outline_ix.contains(p) for p in h):
             errs.append(pre + f"Innenschnitt {k} liegt (teilweise) außerhalb der Außenkontur")
+    lim = cfg.min_web
+    bbs = [bbox(q) for q in paths]
     for i in range(len(paths)):
+        ax0, ay0, ax1, ay1 = bbs[i]
         for j in range(i + 1, len(paths)):
-            d = min_distance(paths[i], paths[j], limit=cfg.min_web)
+            bx0, by0, bx1, by1 = bbs[j]
+            if ax1 < bx0 - lim or bx1 < ax0 - lim or ay1 < by0 - lim or by1 < ay0 - lim:
+                continue                       # weiter als ein Steg auseinander: nichts zu prüfen
+            d = min_distance(paths[i], paths[j], limit=lim)
             ni = "Außenkontur" if i == 0 else f"Innenschnitt {i - 1}"
             nj = f"Innenschnitt {j - 1}"
             if d < GEO_EPS:
@@ -178,8 +195,10 @@ def check_part(part: Part, cfg: Config, label: str = "") -> List[str]:
         if len(s.points) < 2:
             errs.append(pre + f"Gravur {k} hat weniger als 2 Punkte")
             continue
-        outside = [p for p in s.points
-                   if not point_in_polygon(p, part.outline) and dist_to_boundary(p, part.outline) > GEO_EPS]
+        outside = [p for p in s.points if not outline_ix.contains(p)]
+        if outside:
+            og = SegmentGrid(part.outline, True)
+            outside = [p for p in outside if og.near_dist(p, 2 * GEO_EPS) > GEO_EPS]
         if outside:
             errs.append(pre + f"Gravur {k} ragt über die Außenkontur ({outside[0][0]:.2f}, {outside[0][1]:.2f})")
         for h in part.holes:
@@ -204,10 +223,15 @@ def check_kerf(nominal: Part, comp: Part, cfg: Config) -> List[str]:
         if not outer and not a_cmp < a_nom:
             errs.append(f"Kerf: {label} wurde nicht nach innen versetzt")
         bad = 0
+        # Nur die Umgebung bis knapp über kerf/2 zählt: weiter entfernte Kanten sind ohnehin falsch,
+        # dafür reicht 'unendlich' – das Raster spart den Vergleich mit allen Kanten der Kontur.
+        grid = SegmentGrid(cmp_, True)
+        reach = d + 2 * KERF_EPS
+        cmp_ix = PolygonIndex(cmp_)
         for a, b in edges(nom, True):
             mid = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-            dd = dist_to_boundary(mid, cmp_)
-            inside = point_in_polygon(mid, cmp_)
+            dd = grid.near_dist(mid, reach)
+            inside = cmp_ix.contains(mid)
             # Nie näher als kerf/2; bei Kanten, die deutlich länger als der Versatz sind, exakt kerf/2.
             # (Sehr kurze Kanten neben Innenecken liegen geometrisch bedingt etwas weiter weg.)
             if dd < d - KERF_EPS or inside != outer or (dist(a, b) >= 4 * d and abs(dd - d) > KERF_EPS):

@@ -41,7 +41,7 @@ Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Bekannte Grenzen
 
-- Große Ebenenbilder (Mehrlagig, ca. 300 mm) brauchen etwa eine Minute zum Rechnen.
+- Große Ebenenbilder (Mehrlagig, ca. 300 mm) brauchen seit 2.10.1 nur noch rund 10 Sekunden (vorher etwa eine Minute); auf einem älteren Mac entsprechend länger.
 - Der Engel (Mehrlagig) wirkt in kleinen Größen schwächer.
 - Große Modelle (Schwibbogen ab ca. 280 mm, Spukschloss, Kürbis) brauchen ein Blatt größer als 400 × 300 mm.
 - Die Mac-App ist nicht von Apple signiert, daher die einmalige Freigabe unter Datenschutz & Sicherheit.

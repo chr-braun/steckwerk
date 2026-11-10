@@ -339,6 +339,7 @@ class Handler(BaseHTTPRequestHandler):
                         msg, new_id = "Motiv entfernt", None
                 except (motive.MotivFehler, ValueError) as e:
                     return self._json({"ok": False, "error": str(e)}, 400)
+                service.clear_cache()
                 self._json({"ok": True, "message": msg, "id": new_id,
                             "motive": [motive.summary(x) for x in motive.library()]})
             elif path.startswith("/api/bild"):
@@ -352,7 +353,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(service.design(req))
             elif path == "/api/generate":
                 self._touch()
-                self._json(service.generate(req))
+                self._json(_generate_latest(req, client))
             elif path == "/api/zip":
                 self._touch()
                 results, cfg = service.run_request(req, preview_on_error=False)
@@ -421,6 +422,34 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/update-check":
                 err["einstellungen"] = updater.settings()
             self._json(err, 400)
+
+
+# --- Live-Vorschau: immer nur die neueste Anfrage rechnen -----------------------------------------
+# Bei jeder Eingabe schickt die Oberfläche eine neue Vorschau-Anfrage und verwirft die alte. Ohne
+# Bremse rechnete der Server alle weiter – auf einem älteren Rechner mit wenigen Kernen teilten sich
+# dann mehrere überholte Berechnungen die CPU und die gewünschte kam immer später. Jetzt rechnet
+# immer nur eine; wartende, inzwischen überholte Anfragen desselben Fensters entfallen, und eine
+# laufende hört beim nächsten Prüfschritt auf.
+_GEN_LOCK = threading.Lock()
+_GEN_STATE = threading.Lock()
+_GEN_LATEST: Dict[str, int] = {}
+_GEN_COUNT = [0]
+
+
+def _generate_latest(req: dict, client: Optional[str]) -> dict:
+    key = client or "app"
+    with _GEN_STATE:
+        _GEN_COUNT[0] += 1
+        ticket = _GEN_COUNT[0]
+        _GEN_LATEST[key] = ticket
+
+    def stale() -> bool:
+        return _GEN_LATEST.get(key) != ticket
+
+    with _GEN_LOCK:
+        if stale():
+            return dict(ok=False, cancelled=True, error="durch eine neuere Anfrage ersetzt", assemblies=[])
+        return service.generate(req, stop=stale)
 
 
 def lan_ip() -> str:
