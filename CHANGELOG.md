@@ -2,6 +2,14 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Weihnachten 2.1.0 – 2026-11-10
+
+- Neues Modell **Edler Namensanhänger**: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name.
+  - Schriftzug im Kugelring mit Szene auf dem Schneehügel: Winterdorf, Winterwald mit Hirsch, Schneemann mit Laterne, Schlittenfahrt, Adventskranz, Christbaum mit Geschenken, Plätzchen backen, Geschenke packen. Die Jahreszahl steht im Schnee.
+  - Zweilagiges Medaillon (Grundplatte mit gefüllt graviertem Namen, Spitzenrahmen obendrauf) und einlagige Spitze.
+  - Haarstriche werden laserfest verstärkt, i-Punkte, Umlaute und Namen mit Leerzeichen bleiben ein Stück.
+- Die Schriften sind als Umrisse im Paket (SIL Open Font License), Steckwerk braucht keine Schriftdateien.
+
 ## 2.10.1 – 2026-11-10
 
 - Steckwerk rechnet deutlich schneller und läuft damit auch auf älteren Macs flüssig. Die Schnittdateien bleiben dabei bitgenau gleich, nur der Weg dorthin ist kürzer:
