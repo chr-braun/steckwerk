@@ -2,6 +2,16 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Unveröffentlicht
+
+- Wichtel 1.1.0: edles Wichtelzubehör, alles im Wichtel-Maßstab und in jeder Größe prüfbar schnittfertig:
+  - **Wichtelkamin** in zwei Lagen: Korpus zum Stecken (Rückwand mit Mauerwerk, Sockel mit gefliester Herdplatte, Sims mit Zierkante) und filigrane Zierblende mit Fries, kannelierten Pilastern und Schlussstein. Dazu Feuer mit Holzscheiten, Funkengitter mit Rosette, dreiarmige Kerzenleuchter, Kaminuhr, Girlande und Strümpfe mit Namen.
+  - **Standuhr** mit Pendelfenster, Pendel und Gewichten, Zierblende mit Rosette, Uhrenkopf mit Zifferblatt und Krone (Bogen, Giebel oder Schwanenhals), auf Wunsch mit Inschrift.
+  - **Schaukelstuhl** mit geschwungenen Kufen, Sprossen, schräger Sprossenlehne (Neigung einstellbar) und Armlehnen-Schnecken, dazu Sitzkissen und Strickkorb.
+  - **Christbaum** aus zwei gekreuzten Hälften mit Etagen, Schmuck-Ausschnitten, Lichterkette und Stern, dazu Geschenke mit Schleife und Namen.
+  - **Schneemann** über Kreuz gesteckt: Gesicht und Zweigarme vorn, Möhrennase und wehender Schal im Profil, Zylinder oder Wollmütze, Besen oder Laterne.
+  - **Wichtelgarten**: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.
+
 ## 2.10.1 – 2026-11-10
 
 - Steckwerk rechnet deutlich schneller und läuft damit auch auf älteren Macs flüssig. Die Schnittdateien bleiben dabei bitgenau gleich, nur der Weg dorthin ist kürzer:
