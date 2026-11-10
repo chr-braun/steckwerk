@@ -84,13 +84,13 @@ jobs:
           STECKWERK_PAKETE: ${{ runner.temp }}/inst
           STECKWERK_DATEN: ${{ runner.temp }}/daten
         run: |
-          # Pakete, deren Version im Kanal fehlt, neu packen (Abhängigkeiten aus den Quellen installieren)
+          # Pakete, deren Version im Kanal fehlt (auch ganz neue), packen (Abhängigkeiten aus den Quellen installieren)
           mkdir -p rel
           python cli.py --paket-installieren paketquellen/verzierungen
           for d in paketquellen/*/; do
             [ -f "$d/paket.json" ] || continue
             id="$(python -c 'import json,sys; m=json.load(open(sys.argv[1])); print(m["id"]+"-"+m["version"])' "$d/paket.json")"
-            if [ ! -e "kanal/pakete/$id.swpaket" ] && ls kanal/pakete/"${id%%-*}"-*.swpaket >/dev/null 2>&1; then
+            if [ ! -e "kanal/pakete/$id.swpaket" ]; then
               python cli.py --paket-packen "$d" --out rel
             fi
           done
