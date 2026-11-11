@@ -137,6 +137,27 @@ UEBERSETZUNG = {"en": {
 Montagehinweise der Form `"{name}: Satz."` werden am Satz nach dem Doppelpunkt erkannt, du übersetzt also
 nur den Satz. Ältere Versionen ignorieren `UEBERSETZUNG`.
 
+## Gravuren, Muster und Bilder im Paket nutzen
+
+Modelle im Paket können dieselben Bausteine verwenden wie „Eigene Gravur“ in der Oberfläche:
+
+```python
+from models import _deko as dk, _muster as mu
+import gravur, bilder
+from steckwerk import RasterImage
+
+cv = dk.Canvas(teil, margin=1.5)                       # Leinwand: schneidet an Kontur und Durchbrüchen ab
+mu.muster(cv, "mandala", teil.bbox(), abstand=5)       # eines der 18 Muster (mu.MUSTER)
+
+gravur.anwenden([asm], [{"quelle": "muster", "muster": "spitze", "teil": "deckel"}])
+
+# Fertige Bild-Gravur (PNG) mit drei Ecken in Bauteil-Koordinaten: oben links, oben rechts, unten links
+teil.images.append(RasterImage(png_bytes, ((0, 40), (40, 40), (0, 0)), "Foto"))
+w, h, png = bilder.aufbereiten(bild_id, 40, 40, modus="fehlerstreuung", form="oval")
+```
+
+Bild-Gravuren landen in der Ebene „Bild“ des SVG; der Validator prüft, dass sie nicht über das Teil ragen.
+
 ## Pakete, die andere Pakete brauchen (ab 2.4.0)
 
 Ein Paket kann Werkzeuge und Formen eines anderen Pakets mitbenutzen. Das andere Paket bietet dafür eine

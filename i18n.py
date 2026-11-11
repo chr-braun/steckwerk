@@ -19,6 +19,18 @@ SPRACHEN = [("de", "Deutsch"), ("en", "English")]
 DEFAULT = "de"
 
 EN: Dict[str, str] = {
+    # --- Eigene Gravur (Fotos, Logos, Motive, Muster) ----------------------------------------------------
+    "Foto / Bild": "Photo / image", "Motiv / Logo": "Motif / logo", "Muster": "Pattern",
+    "Graustufen (XCS rastert)": "Greyscale (XCS dithers)", "Fotogravur (Punkte, fein)": "Photo engraving (fine dots)",
+    "Schwarzweiß (Logo)": "Black and white (logo)", "Skizze (Konturen)": "Sketch (outlines)",
+    "Rechteck": "Rectangle", "abgerundet": "rounded", "Oval": "Oval", "Kreis": "Circle", "Herz": "Heart",
+    "weicher Rand": "soft edge", "flächig, gestochen scharf (Bild)": "filled, razor-sharp (bitmap)",
+    "flächig (Schraffur)": "filled (hatching)", "nur Umriss": "outline only",
+    "Rautengitter": "Diamond lattice", "Karo (doppelt)": "Check (double)", "Waben": "Honeycomb",
+    "Schuppen": "Scales", "Fischgrät": "Herringbone", "Wellen": "Waves", "Holzmaserung": "Wood grain",
+    "Streifen schräg": "Diagonal stripes", "Punkte": "Dots", "Blume des Lebens": "Flower of life",
+    "Mandala": "Mandala", "Strahlen": "Sunburst", "Spitze": "Lace", "Ranken": "Vines",
+    "Sternenhimmel": "Starry sky", "Schneeflocken": "Snowflakes", "Herzen": "Hearts", "Tannenwald": "Fir forest",
     "Serie: n muss zwischen 1 und 50 liegen": "Series: n must be between 1 and 50",
     "Sockel-Text": "Base text", "Briefkasten-Text": "Mailbox text", "Serie": "Series",
     # --- Gruppen und Abschnitte ---------------------------------------------------------------------

@@ -1158,11 +1158,22 @@ def import_bytes(data: bytes, filename: str, name: str = "", invert: bool = Fals
     elif ext == ".png" or data[:8] == b"\x89PNG\r\n\x1a\n":
         m = png_to_motif(data, invert=invert)
         m["quelle"] = "png"
-    elif ext in (".jpg", ".jpeg"):
-        raise MotivFehler("JPG kann Steckwerk nicht lesen – bitte als PNG (dunkles Motiv auf hellem Grund) "
-                          "oder SVG speichern")
+    elif ext in (".jpg", ".jpeg", ".heic", ".heif", ".webp", ".gif", ".tif", ".tiff") or data[:3] == b"\xff\xd8\xff":
+        import bilder                                   # Fotos über Pillow bzw. macOS-sips
+        try:
+            w, h, grau, alpha = bilder.decode(data)
+        except bilder.BildFehler as e:
+            raise MotivFehler(str(e))
+        if max(w, h) > RASTER * 2:
+            k = RASTER * 2 / max(w, h)
+            W, H = max(1, round(w * k)), max(1, round(h * k))
+            grau = bilder.resize(w, h, grau, W, H)
+            alpha = bilder.resize(w, h, alpha, W, H) if alpha else None
+            w, h = W, H
+        m = png_to_motif(bilder.png_bytes(w, h, grau, alpha), invert=invert)
+        m["quelle"] = "foto"
     else:
-        raise MotivFehler("Nur SVG- und PNG-Dateien lassen sich als Motiv importieren")
+        raise MotivFehler("Nur SVG-, PNG- und JPG-Dateien lassen sich als Motiv importieren")
     name = (name or os.path.splitext(os.path.basename(filename or ""))[0] or "Motiv").strip()[:40]
     m["name"] = name
     digest = hashlib.sha1(data).hexdigest()[:6]

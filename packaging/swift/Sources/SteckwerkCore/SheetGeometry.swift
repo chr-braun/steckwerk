@@ -15,10 +15,26 @@ public struct Polyline: Sendable, Hashable {
 }
 
 /// Geometrie eines Blattplans, gelesen aus dem SVG, das die Engine erzeugt (Pfade aus M/L/Z in mm).
+/// Bild-Gravur (eingebettetes PNG) mit Größe in mm und Lage als Matrix a b c d e f wie in SVG.
+public struct SheetImage: Sendable, Hashable {
+    public let width: Double
+    public let height: Double
+    public let matrix: [Double]
+    public let png: Data
+
+    public init(width: Double, height: Double, matrix: [Double], png: Data) {
+        self.width = width
+        self.height = height
+        self.matrix = matrix.count == 6 ? matrix : [1, 0, 0, 1, 0, 0]
+        self.png = png
+    }
+}
+
 public struct SheetGeometry: Sendable {
     public let width: Double
     public let height: Double
     public let lines: [Polyline]
+    public var images: [SheetImage] = []
 
     public var cutCount: Int { lines.filter { $0.kind == .cut }.count }
     public var engraveCount: Int { lines.filter { $0.kind == .engrave }.count }
@@ -29,7 +45,8 @@ public struct SheetGeometry: Sendable {
         let parser = XMLParser(data: Data(svg.utf8))
         parser.delegate = delegate
         _ = parser.parse()
-        return SheetGeometry(width: delegate.width, height: delegate.height, lines: delegate.lines)
+        return SheetGeometry(width: delegate.width, height: delegate.height, lines: delegate.lines,
+                             images: delegate.images)
     }
 
     /// Zerlegt ein SVG-Pfadattribut in Teilpfade. Unterstützt M, L, H, V, Z (groß und klein).
@@ -96,6 +113,7 @@ private final class SVGDelegate: NSObject, XMLParserDelegate {
     var width: Double = 0
     var height: Double = 0
     var lines: [Polyline] = []
+    var images: [SheetImage] = []
     private var stack: [(stroke: String?, layer: LineKind?)] = []
 
     init(engraveColor: String) {
@@ -114,6 +132,8 @@ private final class SVGDelegate: NSObject, XMLParserDelegate {
 
         if name == "svg" {
             readSize(attributes)
+        } else if name == "image", let image = Self.image(attributes) {
+            images.append(image)
         } else if name == "path", let d = attributes["d"] {
             let kind = classify(stack.last!)
             for sub in SheetGeometry.subpaths(d) {
@@ -143,6 +163,21 @@ private final class SVGDelegate: NSObject, XMLParserDelegate {
         }
         width = Self.millimetres(attributes["width"]) ?? 0
         height = Self.millimetres(attributes["height"]) ?? 0
+    }
+
+    /// <image width height transform="matrix(…)" href="data:image/png;base64,…">
+    static func image(_ attributes: [String: String]) -> SheetImage? {
+        guard let href = attributes["href"] ?? attributes["xlink:href"],
+              let comma = href.firstIndex(of: ","), href.hasPrefix("data:image/png;base64"),
+              let data = Data(base64Encoded: String(href[href.index(after: comma)...])),
+              let w = Double(attributes["width"] ?? ""), let h = Double(attributes["height"] ?? "") else { return nil }
+        var matrix: [Double] = [1, 0, 0, 1, 0, 0]
+        if let t = attributes["transform"], let open = t.range(of: "matrix("), let close = t.range(of: ")") {
+            let inner = t[open.upperBound..<close.lowerBound]
+            let values = inner.split(whereSeparator: { $0 == " " || $0 == "," }).compactMap { Double($0) }
+            if values.count == 6 { matrix = values }
+        }
+        return SheetImage(width: w, height: h, matrix: matrix, png: data)
     }
 
     private static func millimetres(_ value: String?) -> Double? {

@@ -1,3 +1,4 @@
+import AppKit
 import SteckwerkCore
 import SwiftUI
 
@@ -82,6 +83,16 @@ struct PreviewCanvas: View {
         context.fill(Path(frame), with: .color(Theme.accent.opacity(0.05)))
         context.stroke(Path(frame), with: .color(Theme.accent.opacity(0.6)), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
 
+        // Bild-Gravuren (Fotos/Logos) unter den Linien
+        for image in geometry.images {
+            guard let nsImage = PreviewImageCache.image(for: image.png) else { continue }
+            let m = image.matrix
+            var layer = context
+            layer.concatenate(CGAffineTransform(translationX: origin.x, y: origin.y).scaledBy(x: scale, y: scale))
+            layer.concatenate(CGAffineTransform(a: m[0], b: m[1], c: m[2], d: m[3], tx: m[4], ty: m[5]))
+            layer.draw(Image(nsImage: nsImage), in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        }
+
         var cut = Path()
         var engrave = Path()
         for line in geometry.lines {
@@ -121,5 +132,20 @@ struct PreviewCanvas: View {
         committedZoom = 1
         offset = .zero
         committedOffset = .zero
+    }
+}
+
+/// Entpackte Vorschaubilder merken – sonst würde jedes Zoomen alle PNGs neu dekodieren.
+@MainActor
+enum PreviewImageCache {
+    private static var cache: [Int: NSImage] = [:]
+
+    static func image(for data: Data) -> NSImage? {
+        let key = data.hashValue
+        if let hit = cache[key] { return hit }
+        guard let image = NSImage(data: data) else { return nil }
+        if cache.count > 24 { cache.removeAll() }
+        cache[key] = image
+        return image
     }
 }

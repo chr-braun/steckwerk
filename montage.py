@@ -101,7 +101,7 @@ def nummerieren(asm: Assembly, cfg: Config) -> Assembly:
     neu: List[Part] = []
     for i, p in enumerate(asm.parts, 1):
         q = Part(p.name, list(p.outline), [list(h) for h in p.holes],
-                 [Stroke(list(s.points), s.closed) for s in p.engrave], p.features, p.note)
+                 [Stroke(list(s.points), s.closed) for s in p.engrave], p.features, p.note, list(p.images))
         pt, frei = bester_platz(q)
         if pt is not None:
             for s in _nummer_striche(str(i), pt[0], pt[1], frei, cfg):
