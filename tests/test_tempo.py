@@ -135,3 +135,29 @@ def test_ueberholte_vorschau_wird_abgebrochen(monkeypatch):
     assert out[2].get("cancelled") is True                 # die wartende entfällt ganz
     assert out[3]["ok"] and out[3]["n"] == 3
     assert calls == [1, 3]
+
+
+def test_durchbrueche_zwischenspeicher_liefert_dasselbe():
+    """Mehrlagig: unveränderte Ebenen holen ihre Durchbrüche aus dem Zwischenspeicher – mit gleichem Ergebnis."""
+    import importlib.util
+    import os
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "paketquellen", "verzierungen", "_ebenen.py")
+    spec = importlib.util.spec_from_file_location("test_ebenen_cache", path)
+    E = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(E)
+    lw = E.Leinwand((0, 0, 60, 40), 0.1)
+    bereich = lw.flaechen([K.rect(4, 4, 52, 32)])
+    material = lw.flaechen([K.circle(20, 20, 6), K.rect(34, 10, 4, 22)])
+    E._DURCH_CACHE.clear()
+    n1, n2 = [], []
+    a = E.durchbrueche(lw, bereich, material, 1.0, 0.15, n1, "Ebene 1")
+    assert len(E._DURCH_CACHE) == 1
+    a[0].append((999.0, 999.0))                     # Rückgabe verändern darf den Speicher nicht berühren
+    b = E.durchbrueche(lw, bereich, material, 1.0, 0.15, n2, "Ebene 1")
+    assert len(E._DURCH_CACHE) == 1 and n1 == n2
+    assert (999.0, 999.0) not in b[0]
+    frisch = E._durchbrueche(lw, bereich, material, 1.0, 0.15, [], "Ebene 1")
+    assert b == frisch
+    E.durchbrueche(lw, bereich, material, 1.0, 0.2, [], "Ebene 1")   # anderer Kerf → neu rechnen
+    assert len(E._DURCH_CACHE) == 2

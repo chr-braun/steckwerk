@@ -3,6 +3,16 @@
 Dein Laser ist ein **xTool M2**, geschnitten wird mit **xTool Creative Space (XCS)**. Steckwerk ist darauf
 abgestimmt; die SVGs funktionieren aber auch in LightBurn oder bei Glowforge.
 
+## Direkt in XCS
+
+Beim Export legt Steckwerk auf Wunsch neben jede SVG ein **`.xcs`-Projekt** (xTool Creative Space) und ein
+**`.xs`-Projekt** (xTool Studio ab 1.7, mit Leistung/Tempo/Durchgängen aus dem Profil). **In XCS öffnen**
+übergibt die Platte direkt an XCS. Eine eigene Funkverbindung zum M2 gibt es nicht: xTool veröffentlicht
+dafür keine Schnittstelle, und ein Laser soll nur mit dem Programm starten, das Rahmen, Kamera und
+Sicherheitsabfragen kennt. Steckwerk bringt die Datei bis in XCS, Rahmen fahren und Starten bleibt dort.
+
+Kommandozeile: `python3 cli.py -m wichtelhaus --xcs --xs --montage --laser w20`.
+
 ## Farben im SVG
 
 | Farbe | Bedeutung in XCS |
