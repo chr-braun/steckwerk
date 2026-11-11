@@ -1,6 +1,6 @@
 # Offene Punkte
 
-Stand 11.11.2026. Was noch ansteht oder auf deine Entscheidung wartet.
+Stand 11.11.2026, abends. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Entscheidungen für dich
 
@@ -33,11 +33,10 @@ Stand 11.11.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Auf GitHub
 
-- **Webseite einschalten:** einmal Settings → Pages → Source **GitHub Actions** wählen, dann veröffentlicht der
-  Workflow „Webseite“ die Seite unter <https://chr-braun.github.io/steckwerk/>.
-- **Repo-Beschreibung und Topics:** rechts oben auf der Repo-Seite beim Zahnrad neben „About“ eintragen
-  (Text steht im Thread „GitHub-Seite von Steckwerk aufräumen“). Das geht nur mit Admin-Rechten, nicht aus der Cloud.
-- **Repo-Sichtbarkeit:** siehe oben. Das Repo ist derzeit öffentlich, der Update-Kanal braucht damit keinen Lese-Schlüssel.
+- **Webseite:** Pages ist eingeschaltet (Quelle „GitHub Actions“), der Workflow „Webseite“ läuft durch. Die Seite liegt unter <https://chr-braun.github.io/steckwerk/>. Bitte einmal im Browser prüfen, ob Startseite und „Pakete bauen“ laden.
+- **Repo-Beschreibung und Topics:** eingetragen (Stand 11.11., von Christian bestätigt).
+- **Paketkanal:** Der Update-Kanal steht auf Steckwerk 2.12.0 mit den Paket-Bereichen. Alte Releases 2.9.0 bis 2.10.1 sind entfernt, die Tags bleiben.
+- **Repo-Sichtbarkeit:** Das Repo ist derzeit öffentlich, der Update-Kanal braucht damit keinen Lese-Schlüssel. Ob es so bleibt, entscheidest du.
 - **Markenrecherche:** Eine Prüfung in TMview (Klassen 9 und 42) für „Steckwerk“ stand noch aus.
 - **Wiki:** Diese Seiten liegen im Repo unter `docs/wiki/`. Wenn du das GitHub-Wiki einschaltest, lassen
   sie sich dorthin übernehmen.
