@@ -2,18 +2,19 @@
   "standard": 1,
   "id": "spiele",
   "name": "Spiele",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Holzspiele für die ganze Familie: Mühle mit Steinablage, Tic-Tac-Toe mit Tannen und Sternen, Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen und Solitär mit Kugelrinne.",
+  "beschreibung": "Holzspiele für die ganze Familie: Mühle mit Steinablage, Tic-Tac-Toe mit Tannen und Sternen, Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen und Solitär mit Kugelrinne. Neu: Bilderpuzzle mit Nasen, rechteckig oder rund, mit detailreichen Bildern oder deinem eigenen Motiv bzw. Logo.",
   "name_en": "Games",
-  "beschreibung_en": "Wooden games for the whole family: nine men's morris with piece storage, tic-tac-toe with fir trees and stars, four in a row with release slider, marble maze with traps and peg solitaire with marble gutter.",
+  "beschreibung_en": "Wooden games for the whole family: nine men's morris with piece storage, tic-tac-toe with fir trees and stars, four in a row with release slider, marble maze with traps and peg solitaire with marble gutter. New: picture jigsaw with tabs, rectangular or round, with detailed pictures or your own motif or logo.",
   "steckwerk": "2.8.0",
   "modelle": [
     "muehle",
     "tictactoe",
     "vierreihe",
     "labyrinth",
-    "solitaer"
+    "solitaer",
+    "puzzle"
   ],
   "benoetigt": {
     "verzierungen": "2.0.0"

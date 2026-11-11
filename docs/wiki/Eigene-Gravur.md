@@ -48,6 +48,13 @@ Werte noch einmal kosten keine Rechenzeit.
 Für den xTool M2: Startwert Pappel/Linde 3 mm, Bitmap gravieren, 10 W: Leistung 20 %, 200 mm/s,
 Auflösung 10 Punkte/mm. Vorher am Rest testen, Holz ist sehr unterschiedlich.
 
+### Fotopuzzle
+
+Im Paket **Spiele** beim Puzzle das Bild „Foto“ wählen und hier ein Foto hinzufügen (Teil „größtes Teil“
+oder „alle Teile“). Das Foto wird dann **einmal über das ganze Puzzle** gelegt und füllt es aus; jedes Teil
+bekommt seinen Ausschnitt, die Fotogravur-Punkte laufen sauber über die Fugen. Pakete schalten das mit
+`asm.params["verbund"] = "<Namensanfang der Teile>"` ein.
+
 ## Motive als Gravur
 
 | Gravur | Ergebnis |

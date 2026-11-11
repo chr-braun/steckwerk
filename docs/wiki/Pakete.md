@@ -32,6 +32,7 @@ selbst weg (Spalte „ersetzt“).
 | **Halloween** (`halloween`) | 1.3.0 | Spukschloss im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set, Spinnennetz, Skelett (Hampelmann), Fledermausgirlande, Süßigkeitenschale. | – |
 | **Mehrlagig** (`ebenen`) | 1.2.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
 | **Wichtel** (`wichtel`) | 1.1.0 | **Figur:** Schicht-Wichtel aus vier Lagen zum Bemalen. **Haus:** Wichteltür, Wichtelfenster. **Möbel:** Bank, Tisch mit Hockern, Bett. **Zubehör:** Leiter, Wegweiser, Wäscheleine. **Wichtelzimmer** auf Knopfdruck. **Wichtelmarkt:** Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne. **Edles Zubehör (1.1.0):** Kamin mit Zierblende, Feuer und Strümpfen mit Namen, Standuhr, Schaukelstuhl, Christbaum mit Geschenken, Schneemann, Wichtelgarten. Alles im selben Wichtel-Maßstab. | Wichtelmöbel, Wichteltür, Wichtelzubehör, Wichtelwelt, Wichtelfiguren |
+| **Spiele** (`spiele`) | 1.1.0 | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär und neu das **Puzzle**: Bilderpuzzle mit Nasen, rechteckig oder rund, 4–200 Teile, mit detailreichen Szenen oder deinem eigenen Motiv/Logo, auf Wunsch mit Rahmen. | – |
 
 Alle Paketdateien zum Herunterladen findest du unter [Downloads](Downloads.md). Jedes `.swpaket`
 enthält den kompletten Quellcode – zum Ändern einfach entpacken.
@@ -53,6 +54,10 @@ enthält den kompletten Quellcode – zum Ändern einfach entpacken.
 ![Weihnachten: Spitzenschmuck, Medaillon, Kristallflocke](medien/filigran-vorschau.png)
 
 ![Weihnachten: Muster-Rezepte und Zufallsmuster](medien/filigran-1.1-rezepte.png)
+
+### Spiele: Puzzle
+
+![Spiele 1.1 – Puzzle](medien/spiele-1.1-puzzle.png)
 
 ### Halloween
 
