@@ -287,6 +287,13 @@ def check(bundle: Optional[str] = None, feed: Optional[Dict[str, Any]] = None) -
                     kann_installieren=bool(neu and ok), grund="" if ok else grund,
                     seite=str(prog.get("seite", "")))
     have = installed_pakete()
+    bereiche, platz = [], {}                       # Bereiche aus dem Kanal (ab 2.13.0) für den gruppierten Katalog
+    for b in feed.get("bereiche") or []:
+        if not isinstance(b, dict) or not b.get("id"):
+            continue
+        bereiche.append({k: str(b.get(k, "")) for k in ("id", "name", "name_en", "text", "text_en")})
+        for i, pid in enumerate(b.get("pakete") or []):
+            platz.setdefault(str(pid), (len(bereiche) - 1, i))
     pk = []
     for p in feed.get("pakete", []):
         if not isinstance(p, dict) or not p.get("id"):
@@ -310,9 +317,15 @@ def check(bundle: Optional[str] = None, feed: Optional[Dict[str, Any]] = None) -
                        benoetigt=sorted(str(k) for k in (p.get("benoetigt") or {})), ersetzt=alte,
                        groesse=int(p.get("groesse", 0) or 0),
                        inhalt=[str(x) for x in p.get("inhalt") or []], inhalt_en=[str(x) for x in p.get("inhalt_en") or []]))
-    pk.sort(key=lambda p: (["update", "neu", "zu_neu", "aktuell"].index(p["status"]), p["name"].lower()))
+        if str(p["id"]) in platz:
+            b = bereiche[platz[str(p["id"])][0]]
+            pk[-1].update(bereich=b["id"], bereich_name=b["name"], bereich_name_en=b["name_en"])
+    if platz:                                      # nach Bereich und Reihenfolge darin, Unbekanntes zuletzt
+        pk.sort(key=lambda p: (platz.get(p["id"], (len(bereiche), 0)), p["name"].lower()))
+    else:
+        pk.sort(key=lambda p: (["update", "neu", "zu_neu", "aktuell"].index(p["status"]), p["name"].lower()))
     anzahl = int(programm["neu"]) + sum(p["status"] in ("update", "neu") for p in pk)
-    return {"ok": True, "programm": programm, "pakete": pk, "anzahl": anzahl,
+    return {"ok": True, "programm": programm, "pakete": pk, "anzahl": anzahl, "bereiche": bereiche,
             "updates": int(programm["neu"]) + sum(p["status"] == "update" for p in pk), "kanal": feed["_url"]}
 
 

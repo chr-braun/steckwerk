@@ -8,6 +8,7 @@
 - [Steckwerk Desktop](Steckwerk-Desktop.md)
 - [Installation](Installation.md)
 - [Bedienung](Bedienung.md)
+- [Kommandozeile](Kommandozeile.md)
 
 **Gestalten**
 

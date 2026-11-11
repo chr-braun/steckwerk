@@ -1,0 +1,54 @@
+name: Aufräumen
+
+# Hält die Releases-Seite schlank: nur die neuesten Releases bleiben stehen (Standard: zwei).
+# Die Git-Tags bleiben, damit jede Version im Quellcode auffindbar ist. Der Update-Kanal (Branch „updates“)
+# hängt nicht an den Releases. Läuft am Ende jedes Releases und lässt sich unter Actions → Aufräumen
+# auch von Hand starten, dann auf Wunsch zusätzlich mit alten Branches zum Löschen.
+on:
+  workflow_call:
+    inputs:
+      behalten:
+        type: number
+        default: 2
+  workflow_dispatch:
+    inputs:
+      behalten:
+        description: "So viele neueste Releases behalten"
+        type: number
+        default: 2
+      branches:
+        description: "Diese Branches löschen (durch Leerzeichen getrennt, main und updates sind geschützt)"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  aufraeumen:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      BEHALTEN: ${{ inputs.behalten }}
+      BRANCHES: ${{ inputs.branches }}
+    steps:
+      - name: Alte Releases entfernen (Tags bleiben)
+        run: |
+          test "${BEHALTEN:-0}" -ge 1 || { echo "behalten muss mindestens 1 sein"; exit 1; }
+          gh release list --exclude-drafts --exclude-pre-releases --limit 200 --json tagName,publishedAt \
+            --jq 'sort_by(.publishedAt) | reverse | .[].tagName' > releases.txt
+          echo "Neueste zuerst:"; cat releases.txt
+          tail -n +$((BEHALTEN + 1)) releases.txt | while read -r tag; do
+            [ -n "$tag" ] || continue
+            echo "Entferne Release $tag"
+            gh release delete "$tag" --yes
+          done
+      - name: Branches löschen
+        if: ${{ inputs.branches != '' }}
+        run: |
+          for b in $BRANCHES; do
+            case "$b" in main|updates|gh-pages) echo "$b bleibt"; continue;; esac
+            echo "Lösche Branch $b"
+            gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$b" || echo "$b gibt es nicht (mehr)"
+          done

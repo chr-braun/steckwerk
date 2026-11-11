@@ -312,6 +312,19 @@ public struct UpdateCheck: Decodable, Sendable {
         pakete = try c.decodeIfPresent([KanalPaket].self, forKey: .pakete) ?? []
         updates = try c.decodeIfPresent(Int.self, forKey: .updates) ?? 0
     }
+
+    /// Kanalpakete nach Bereich gruppiert, in der Reihenfolge des Kanals; ältere Kanäle ohne Bereiche geben eine Gruppe ohne Namen.
+    public var bereiche: [(name: String, pakete: [KanalPaket])] {
+        var gruppen: [(name: String, pakete: [KanalPaket])] = []
+        for paket in pakete {
+            if let i = gruppen.firstIndex(where: { $0.name == paket.bereichName }) {
+                gruppen[i].pakete.append(paket)
+            } else {
+                gruppen.append((paket.bereichName, [paket]))
+            }
+        }
+        return gruppen
+    }
 }
 
 public struct ProgrammInfo: Decodable, Sendable {
@@ -350,8 +363,14 @@ public struct KanalPaket: Decodable, Sendable, Identifiable {
     public let status: String
     public let benoetigt: [String]
     public let groesse: Int
+    /// Bereich im Paketkatalog (Kanal ab 2.13.0), z. B. „feste“; leer bei älteren Kanälen.
+    public let bereich: String
+    public let bereichName: String
 
-    enum CodingKeys: String, CodingKey { case id, name, version, beschreibung, installiert, status, benoetigt, groesse }
+    enum CodingKeys: String, CodingKey {
+        case id, name, version, beschreibung, installiert, status, benoetigt, groesse, bereich
+        case bereichName = "bereich_name"
+    }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -363,6 +382,8 @@ public struct KanalPaket: Decodable, Sendable, Identifiable {
         status = try c.decodeIfPresent(String.self, forKey: .status) ?? ""
         benoetigt = (try? c.decodeIfPresent([String].self, forKey: .benoetigt)) ?? []
         groesse = (try? c.decodeIfPresent(Int.self, forKey: .groesse)) ?? 0
+        bereich = (try? c.decodeIfPresent(String.self, forKey: .bereich)) ?? ""
+        bereichName = (try? c.decodeIfPresent(String.self, forKey: .bereichName)) ?? ""
     }
 
     /// Installierbar, wenn noch nicht installiert oder eine neuere Version im Kanal liegt.

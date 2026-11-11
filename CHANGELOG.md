@@ -2,6 +2,12 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Unveröffentlicht
+
+- **Paketkatalog nach Bereichen:** In der Browser-App und in Steckwerk Desktop stehen die Themenpakete jetzt geordnet unter *Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt* und *Basis*. Die Zuordnung steht in `paketquellen/bereiche.json` und kommt über den Update-Kanal.
+- Neue **Webseite** unter chr-braun.github.io/steckwerk mit Download, Paketen nach Bereichen und Modellbildern, die direkt aus den Paketen gerechnet werden.
+- Auf der Releases-Seite bleiben nur noch die zwei neuesten Versionen stehen; das README ist kurz und übersichtlich, die ausführliche Referenz steht im Wiki unter *Kommandozeile*.
+
 ## 2.12.0 – 2026-11-11
 
 - **Neue Oberfläche** in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf **An xTool senden**, unten eine **Statusleiste** mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.

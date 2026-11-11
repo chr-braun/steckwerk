@@ -26,19 +26,20 @@ fertige SVG werden kontrolliert. Gibt es auch nur einen Fehler, wird nichts gesc
 
 | | |
 |---|---|
-| Programm | Steckwerk **2.10.0** (26.10.2026) mit Steckwerk Desktop 2.10.0 · im Update-Kanal noch 2.9.0, bis das Release 2.10.0 läuft · Mac-App-Zip im Download-Ordner noch 2.6.0 |
-| Pakete im Update-Kanal | Grundlagen 2.0.0 · Wohnen 1.0.0 · Weihnachten 2.0.1 · Halloween 1.4.0 · Mehrlagig 1.2.0 · Wichtel 1.0.1 |
+| Programm | Steckwerk **2.12.0** (11.11.2026) mit Steckwerk Desktop 2.12.0 |
+| Pakete im Update-Kanal | 11 Themenpakete in 6 Bereichen, siehe [Pakete](Pakete.md) |
 | Tests | 1321 Python-Tests grün · 59 Swift-Tests (Desktop-App) grün |
-| Repo | `chr-braun/laserforge` (umbenannt in `chr-braun/steckwerk`), Lizenz MIT |
+| Repo | [`chr-braun/steckwerk`](https://github.com/chr-braun/steckwerk), Lizenz MIT · [Webseite](https://chr-braun.github.io/steckwerk/) |
 
 ## Seiten
 
 **Erste Schritte**
 
-- [Downloads](Downloads.md) – Mac-App, Desktop-App und alle Pakete zum Herunterladen
+- [Downloads](Downloads.md) – Steckwerk Desktop, Mac-App und Pakete
 - [Steckwerk Desktop](Steckwerk-Desktop.md) – die native Mac-App ohne Browser, mit Live-Vorschau
 - [Installation](Installation.md) – Mac-App, Weboberfläche, Python
 - [Bedienung](Bedienung.md) – Oberfläche, Export, Tastenkürzel, Kommandozeile
+- [Kommandozeile und Referenz](Kommandozeile.md) – alle Optionen, Validator, Montage, Aufbau (früher das README)
 
 **Gestalten**
 
@@ -57,5 +58,5 @@ fertige SVG werden kontrolliert. Gibt es auch nur einen Fehler, wird nichts gesc
 
 **Entwicklung**
 
-- [Entwicklung](Entwicklung.md) – Aufbau des Codes, Tests, Veröffentlichen
+- [Entwicklung](Entwicklung.md) – Aufbau des Codes, Tests, Veröffentlichen, Webseite
 - [Versionsverlauf](Versionsverlauf.md) – was wann dazukam

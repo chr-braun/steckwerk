@@ -121,6 +121,18 @@ def _desktop(kanal: str, old: Dict[str, Any], today: Optional[str]) -> Dict[str,
     return d
 
 
+def bereiche(path: str = os.path.join(ROOT, "paketquellen", "bereiche.json")) -> List[Dict[str, Any]]:
+    """Bereiche für den Paketkatalog (paketquellen/bereiche.json): id, Namen, Kurztext und Paket-ids in Reihenfolge."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            roh = json.load(fh).get("bereiche") or []
+    except (OSError, ValueError):
+        return []
+    felder = ("id", "name", "name_en", "text", "text_en")
+    return [dict({k: str(b[k]) for k in felder if b.get(k)}, pakete=[str(x) for x in b.get("pakete") or []])
+            for b in roh if isinstance(b, dict) and b.get("id") and b.get("name")]
+
+
 def build(kanal: str, mac: Optional[str] = None, pakete: List[str] = (), notes: Optional[List[str]] = None,
           seite: str = "", today: Optional[str] = None, desktop: Optional[str] = None) -> Dict[str, Any]:
     os.makedirs(os.path.join(kanal, "pakete"), exist_ok=True)
@@ -180,6 +192,9 @@ def build(kanal: str, mac: Optional[str] = None, pakete: List[str] = (), notes: 
                           "groesse": os.path.getsize(path), "inhalt": inhalt, "inhalt_en": inhalt_en})
     feed = {"standard": STANDARD, "erstellt": today or time.strftime("%Y-%m-%d"), "programm": programm,
             "pakete": eintraege}
+    b = bereiche()
+    if b:
+        feed["bereiche"] = b
     desk = _desktop(kanal, old, today)
     if desk:
         feed["desktop"] = desk

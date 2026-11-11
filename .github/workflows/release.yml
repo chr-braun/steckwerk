@@ -3,7 +3,8 @@ name: Release
 # Neue Version veröffentlichen: __version__ in steckwerk.py erhöhen, CHANGELOG ergänzen,
 # dann  git tag v1.6.0 && git push origin v1.6.0
 # oder unter Actions → Release → „Run workflow“ auf main starten: dann wird das Tag v<Version>
-# aus steckwerk.py gesetzt. Zum Schluss landen Mac-App und Desktop-App im Update-Kanal (Branch „updates“).
+# aus steckwerk.py gesetzt. Zum Schluss landen Mac-App und Desktop-App im Update-Kanal (Branch „updates“),
+# und es bleiben nur die zwei neuesten Releases stehen (Tags bleiben, siehe aufraeumen.yml).
 on:
   push:
     tags: ["v*"]
@@ -113,3 +114,10 @@ jobs:
           git diff --cached --quiet && { echo "Kanal unverändert"; exit 0; }
           git commit -m "Kanal: Steckwerk ${{ needs.release.outputs.tag }}"
           git push origin HEAD:updates
+
+  aufraeumen:
+    name: Alte Releases entfernen
+    needs: kanal
+    uses: ./.github/workflows/aufraeumen.yml
+    with:
+      behalten: 2

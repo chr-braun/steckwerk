@@ -390,3 +390,24 @@ def test_alter_schluessel_bei_oeffentlichem_repo(env, monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", fake)
     assert updater.fetch(updater.KANAL, token="abgelaufen") == b'{"standard": 1}'
     assert calls == ["token abgelaufen", None]
+
+
+def test_bereiche_im_kanal(env, tmp_path):
+    """paketquellen/bereiche.json kommt in den Feed, die Updateprüfung sortiert und beschriftet danach."""
+    feed = json.loads((env / "kanal" / "feed.json").read_text())
+    ids = [b["id"] for b in feed["bereiche"]]
+    assert ids[0] == "feste" and "basis" in ids
+    quellen = {d for d in os.listdir(os.path.join(HERE, "paketquellen")) if os.path.isfile(os.path.join(HERE, "paketquellen", d, "paket.json"))}
+    ids_quellen = {json.load(open(os.path.join(HERE, "paketquellen", d, "paket.json"), encoding="utf-8"))["id"] for d in quellen}
+    zugeordnet = [p for b in feed["bereiche"] for p in b["pakete"]]
+    assert sorted(zugeordnet) == sorted(ids_quellen), "jedes Themenpaket gehört in genau einen Bereich"
+    # eigener Feed mit Bereichen: Reihenfolge nach Bereich, Unbekanntes zuletzt
+    feed["bereiche"] = [{"id": "b", "name": "Zweiter", "name_en": "Second", "pakete": []},
+                        {"id": "a", "name": "Grusel", "name_en": "Spooky", "pakete": ["spuk"]}]
+    feed["_url"] = "test"
+    d = updater.check(feed=feed)
+    assert [p["id"] for p in d["pakete"]] == ["spuk", "zukunft"]
+    spuk = d["pakete"][0]
+    assert (spuk["bereich"], spuk["bereich_name"], spuk["bereich_name_en"]) == ("a", "Grusel", "Spooky")
+    assert "bereich" not in d["pakete"][1]
+    assert [b["id"] for b in d["bereiche"]] == ["b", "a"]
