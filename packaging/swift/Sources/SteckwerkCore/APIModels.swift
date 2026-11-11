@@ -53,8 +53,10 @@ public struct Assembly: Decodable, Sendable, Identifiable {
     public let sheets: [SheetResult]
     /// Laserzeit, Schnittlänge und Plattenbedarf (Schätzung der Engine, ab 2.11).
     public let schaetzung: Schaetzung?
+    /// Teileliste mit Nummer, Größe und Prüfergebnis (ab Oberfläche 3; ältere Engines liefern keine).
+    public let teile: [TeilInfo]
 
-    enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets, schaetzung }
+    enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets, schaetzung, teile }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -68,6 +70,90 @@ public struct Assembly: Decodable, Sendable, Identifiable {
         errors = try c.decodeIfPresent([String].self, forKey: .errors) ?? []
         sheets = try c.decodeIfPresent([SheetResult].self, forKey: .sheets) ?? []
         schaetzung = try? c.decodeIfPresent(Schaetzung.self, forKey: .schaetzung)
+        teile = (try? c.decodeIfPresent([TeilInfo].self, forKey: .teile)) ?? []
+    }
+
+    /// Montagehinweis ohne das vorangestellte „modell: “.
+    public func hinweis(_ note: String) -> String {
+        let prefix = name + ":"
+        guard note.hasPrefix(prefix) else { return note }
+        return String(note.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+    }
+}
+
+/// Ein Teil im Prüfbericht: Nummer wie bei „Teilenummern gravieren“, Name, Außenmaße, geprüft.
+public struct TeilInfo: Decodable, Sendable, Identifiable, Hashable {
+    public var id: Int { nr }
+    public let nr: Int
+    public let name: String
+    public let w: Double
+    public let h: Double
+    public let ok: Bool
+
+    enum CodingKeys: String, CodingKey { case nr, name, w, h, ok }
+
+    public init(nr: Int, name: String, w: Double, h: Double, ok: Bool) {
+        self.nr = nr; self.name = name; self.w = w; self.h = h; self.ok = ok
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        nr = try c.decodeIfPresent(Int.self, forKey: .nr) ?? 0
+        name = try c.decodeIfPresent(String.self, forKey: .name) ?? ""
+        w = try c.decodeIfPresent(Double.self, forKey: .w) ?? 0
+        h = try c.decodeIfPresent(Double.self, forKey: .h) ?? 0
+        ok = try c.decodeIfPresent(Bool.self, forKey: .ok) ?? true
+    }
+
+    /// „wichtelhaus_dach_links“ in der Baugruppe „wichtelhaus“ → „Dach links“
+    public func anzeigeName(baugruppe: String) -> String {
+        var s = name.hasPrefix(baugruppe + "_") ? String(name.dropFirst(baugruppe.count + 1)) : name
+        s = s.replacingOccurrences(of: "_", with: " ").trimmingCharacters(in: .whitespaces)
+        guard let first = s.first else { return name }
+        return first.uppercased() + s.dropFirst()
+    }
+
+    /// „79,8 × 63,4 mm“
+    public var groesse: String {
+        func de(_ v: Double) -> String { String(format: "%g", v).replacingOccurrences(of: ".", with: ",") }
+        return "\(de(w)) × \(de(h)) mm"
+    }
+}
+
+/// Ein gespeichertes Projekt (~/.steckwerk/projekte.json, gemeinsam mit der Browser-Oberfläche).
+public struct Projekt: Decodable, Sendable, Identifiable, Hashable {
+    public var id: String { name }
+    public let name: String
+    public let model: String
+    public let params: [String: JSONValue]
+    public let config: [String: JSONValue]
+    public let geaendert: Double
+
+    enum CodingKeys: String, CodingKey { case name, model, params, config, geaendert }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        name = try c.decodeIfPresent(String.self, forKey: .name) ?? ""
+        model = try c.decodeIfPresent(String.self, forKey: .model) ?? ""
+        params = (try? c.decodeIfPresent([String: JSONValue].self, forKey: .params)) ?? [:]
+        config = (try? c.decodeIfPresent([String: JSONValue].self, forKey: .config)) ?? [:]
+        geaendert = try c.decodeIfPresent(Double.self, forKey: .geaendert) ?? 0
+    }
+}
+
+/// Antwort von POST /api/projekte.
+public struct ProjekteResponse: Decodable, Sendable {
+    public let ok: Bool
+    public let error: String?
+    public let projekte: [Projekt]
+
+    enum CodingKeys: String, CodingKey { case ok, error, projekte }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        ok = try c.decodeIfPresent(Bool.self, forKey: .ok) ?? false
+        error = try c.decodeIfPresent(String.self, forKey: .error)
+        projekte = (try? c.decodeIfPresent([Projekt].self, forKey: .projekte)) ?? []
     }
 }
 

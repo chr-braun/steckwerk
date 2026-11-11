@@ -81,6 +81,26 @@ jobs:
       - name: Selbsttest des fertigen Bundles
         run: '"packaging/dist/Steckwerk Desktop.app/Contents/MacOS/SteckwerkDesktop" --self-test'
 
+      - name: Bildschirmfotos der Oberfläche (hell und dunkel)
+        continue-on-error: true
+        timeout-minutes: 6
+        env:
+          STECKWERK_HOME: ${{ runner.temp }}/snapshot-home
+          STECKWERK_PAKETE: ${{ github.workspace }}/paketquellen
+        run: |
+          mkdir -p "$STECKWERK_HOME"
+          "packaging/dist/Steckwerk Desktop.app/Contents/MacOS/SteckwerkDesktop" --snapshot "$RUNNER_TEMP/screenshots"
+          ls -la "$RUNNER_TEMP/screenshots"
+
+      - name: Bildschirmfotos hochladen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Steckwerk-Desktop-Bildschirmfotos
+          path: ${{ runner.temp }}/screenshots
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: ZIP erstellen
         working-directory: packaging/dist
         run: cp Steckwerk-Desktop-*-macOS.zip Steckwerk-Desktop-macOS.zip

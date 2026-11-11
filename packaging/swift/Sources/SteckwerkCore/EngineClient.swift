@@ -154,6 +154,19 @@ public struct EngineClient: Sendable {
         return try Self.decode(XcsOeffnenResponse.self, data: data, status: status)
     }
 
+    // MARK: Projekte
+
+    /// Liste der Projekte; mit `speichern`/`loeschen` wird vorher gespeichert bzw. gelöscht.
+    public func projekte(aktion: String = "liste", name: String? = nil,
+                         projekt: [String: JSONValue]? = nil) async throws -> [Projekt] {
+        var body: [String: JSONValue] = ["aktion": .string(aktion)]
+        if let name { body["name"] = .string(name) }
+        if let projekt { body["projekt"] = .object(projekt) }
+        let r = try await call("api/projekte", body, as: ProjekteResponse.self)
+        if !r.ok { throw EngineError.server(r.error ?? "Projekte nicht verfügbar") }
+        return r.projekte
+    }
+
     public func openFolder() async throws {
         _ = try await call("api/open-folder", [:], as: PingResponse.self)
     }
