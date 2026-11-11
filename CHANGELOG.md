@@ -16,6 +16,14 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 - Motive lassen sich jetzt auch aus JPG und HEIC importieren.
 - Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.
 
+## Weihnachten 2.2.0 – 2026-11-11
+
+- Neues Modell **Edler Christbaumschmuck**: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set.
+  - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel.
+  - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf.
+  - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz.
+  - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.
+
 ## 2.11.0 – 2026-11-11
 
 - Neues Themenpaket **Spiele** 1.0.0 (braucht Grundlagen 2.0.0): Mühle mit Steinablage und Spielernamen, rundes Tic-Tac-Toe mit ausgesägten Figuren (zum Beispiel Tanne gegen Stern), Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen (jede Nummer ein neuer Irrgarten) und Solitär mit Kugelrinne. Alle Bretter haben zwei Lagen mit Mulden, und alles rechnet in Sekundenbruchteilen.

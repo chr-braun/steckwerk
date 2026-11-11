@@ -1,5 +1,13 @@
 # Weihnachten
 
+**Edler Christbaumschmuck** (neu in 2.2.0) – Zwölf eigens gezeichnete, detailreiche Anhänger, einzeln oder als
+Set: Engel mit Federflügeln und Heiligenschein, Facettenstern mit geschliffen wirkenden Zacken, Christbaumkugel
+mit Sternenhimmel und Winterszene, Glocke mit Schleife und Stechpalme, Tannenzapfen mit Schuppen und Tannenzweigen,
+geschmückter Tannenbaum, Schneemann mit Zylinder und Schal, Herz mit Lebensbaum, schlafender Mond mit Zipfelmütze,
+Kerze im Tannengrün, Geschenk mit Schleife und Nikolausstiefel mit Pelzkrempe. Fenster, Federn und Schuppen sind
+ausgeschnitten, Gesichter, Federkiele, Nadeln, Facetten und Perlenränder fein graviert. Auf Wunsch steht ein Name in
+Schreibschrift auf dem Anhänger (auf Stern, Kugel, Glocke, Herz, Schneemann, Geschenk, Stiefel und Engel).
+
 **Edler Namensanhänger** (neu in 2.1.0) – Der Name in echter Schreibschrift (elegant, schwungvoll oder rund),
 ein Anhänger je Name (mit | trennen):
 - *Schriftzug im Kugelring*: Der Name ist als ein Stück ausgeschnitten und spannt sich von Rand zu Rand. Unten

@@ -2,11 +2,11 @@
   "standard": 1,
   "id": "weihnacht",
   "name": "Weihnachten",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Alles für Weihnachten in einem Paket: edle Namensanhänger in echter Schreibschrift mit Winter- und Adventsszenen, Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken.",
+  "beschreibung": "Alles für Weihnachten in einem Paket: edler, detailreicher Christbaumschmuck (Engel, Stern, Kugel, Glocke, Zapfen, Tannenbaum, Schneemann, Herz, Mond, Kerze, Geschenk, Stiefel), edle Namensanhänger in echter Schreibschrift mit Winter- und Adventsszenen, Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken.",
   "name_en": "Christmas",
-  "beschreibung_en": "Everything for Christmas in one package: fine name ornaments in real script lettering with winter and Advent scenes, slot-together sleigh, nativity with stable and figures, family and Christmas ornaments, filigree lace baubles, paper-cut medallions with winter scenes and crystal snowflakes.",
+  "beschreibung_en": "Everything for Christmas in one package: fine, richly detailed tree ornaments (angel, star, bauble, bell, pine cone, tree, snowman, heart, moon, candle, present, boot), fine name ornaments in real script lettering with winter and Advent scenes, slot-together sleigh, nativity with stable and figures, family and Christmas ornaments, filigree lace baubles, paper-cut medallions with winter scenes and crystal snowflakes.",
   "steckwerk": "2.6.0",
   "benoetigt": {
     "verzierungen": "2.0.0"
@@ -19,6 +19,7 @@
     "steckkrippe",
     "familienanhaenger",
     "weihnachtsanhaenger",
+    "christbaumschmuck",
     "namensanhaenger",
     "spitzenschmuck",
     "medaillon",

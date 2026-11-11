@@ -2,6 +2,12 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## Christmas 2.2.0 – 2026-11-11
+
+- New model **Fine tree ornaments**: twelve richly detailed ornaments in paper-cut quality, single or as a set: angel with feathered wings, faceted star, bauble with starry sky and winter scene, bell with bow, pine cone, decorated tree, snowman with top hat, heart with tree of life, sleeping moon, candle with fir sprigs, present and Santa boot.
+  - Cut-out windows, feathers, scales and lace edges plus fine engraving: faces, quills, needles, facets, pearl borders, folds.
+  - Optionally a name in script lettering. All motifs pass the laser check in 2, 3 and 4 mm.
+
 ## 2.11.0 – 2026-11-11
 
 - Christmas 2.1.0: new model **Fine name ornament**: names in real script lettering (elegant, flowing, round and bold), one ornament per name.
