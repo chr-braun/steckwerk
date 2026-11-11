@@ -20,6 +20,8 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/motiv-import    {name, filename, data (base64), invert} → Motiv in die Bibliothek
   POST /api/motiv-entfernen {id} → eigenes Motiv löschen
   POST /api/motiv-design    {model, params, config} → Grundform ohne Motive (Platzierungs-Editor)
+  POST /api/foto-import     {name, filename, data (base64)} → Foto/Logo für die Bild-Gravur in die Bibliothek
+  POST /api/foto-entfernen  {id} → Foto/Logo löschen
   POST /api/update-check        → was es Neues gibt (Programm und Pakete aus dem Update-Kanal)
   POST /api/update-paket        {id} oder {alle: true} → Paket(e) aus dem Kanal installieren
   POST /api/update-programm     Mac-App durch die neue Version ersetzen und neu starten (nur App)
@@ -280,7 +282,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._host_ok() or not self.headers.get("X-Steckwerk"):
             return self._json({"ok": False, "error": "Zugriff verweigert"}, 403)
         try:
-            big = path in ("/api/paket-installieren", "/api/motiv-import")
+            big = path in ("/api/paket-installieren", "/api/motiv-import", "/api/foto-import")
             req = self._body(30 * 1024 * 1024 if big else MAX_BODY)
             import i18n
             self.lang = i18n.norm(req.pop("lang", "de"))
@@ -342,6 +344,22 @@ class Handler(BaseHTTPRequestHandler):
                 service.clear_cache()
                 self._json({"ok": True, "message": msg, "id": new_id,
                             "motive": [motive.summary(x) for x in motive.library()]})
+            elif path in ("/api/foto-import", "/api/foto-entfernen"):
+                import base64
+                import bilder
+                self._touch()
+                try:
+                    if path == "/api/foto-import":
+                        b = bilder.import_bytes(base64.b64decode(str(req.get("data") or "")),
+                                                str(req.get("filename") or "bild.png"), str(req.get("name") or ""))
+                        msg, new_id = f"Bild „{b['name']}“ importiert", b["id"]
+                    else:
+                        bilder.remove(str(req.get("id") or ""))
+                        msg, new_id = "Bild entfernt", None
+                except (bilder.BildFehler, ValueError) as e:
+                    return self._json({"ok": False, "error": str(e)}, 400)
+                service.clear_cache()
+                self._json({"ok": True, "message": msg, "id": new_id, "bilder": bilder.library()})
             elif path.startswith("/api/bild"):
                 self._touch()
                 self._bild(path, req)

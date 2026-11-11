@@ -144,9 +144,19 @@ def _ziele(asm: Assembly, teil: str) -> List[Part]:
         return []
     if teil == "auto":
         return [max(parts, key=lambda p: abs(signed_area(p.outline)))]
-    if teil == "alle":
-        return parts
+    if teil == "alle":                    # Teile mit dichter Gravur (Dachziegel, Holzwand …) auslassen
+        return [p for p in parts if _dichte(p) < 0.08]
     return [p for p in parts if p.name == teil]
+
+
+def _dichte(p: Part) -> float:
+    """Gravurlänge je mm² Fläche."""
+    from steckwerk import perimeter
+    a = abs(signed_area(p.outline)) or 1.0
+    return sum(perimeter(s.points, s.closed) for s in p.engrave) / a
+
+
+_REIHENFOLGE = {"bild": 0, "motiv": 1, "muster": 2}
 
 
 def anwenden(assemblies: Sequence[Assembly], specs: Any) -> List[Assembly]:
@@ -154,7 +164,8 @@ def anwenden(assemblies: Sequence[Assembly], specs: Any) -> List[Assembly]:
     specs = pruefen(specs)
     if not specs:
         return list(assemblies)
-    for i, g in enumerate(specs, 1):
+    # Fotos und Motive zuerst setzen: Muster lassen sie dann aus (Nummern bleiben wie eingegeben)
+    for i, g in sorted(enumerate(specs, 1), key=lambda ig: _REIHENFOLGE[ig[1]["quelle"]]):
         if not g.get("aktiv", True):
             continue
         treffer = 0
@@ -164,7 +175,10 @@ def anwenden(assemblies: Sequence[Assembly], specs: Any) -> List[Assembly]:
                 note = _eine(p, g, i)
                 if note and note not in asm.notes:
                     asm.notes.append(note)
-        if not treffer:
+        if not treffer and g["teil"] == "alle":
+            if assemblies:
+                assemblies[0].notes.append(f"Gravur {i}: alle Teile sind schon dicht graviert – nichts ergänzt.")
+        elif not treffer:
             namen = ", ".join(t["name"] for t in teile(assemblies)[:12])
             raise ValueError(f"Gravur {i}: Teil {g['teil']!r} gibt es in diesem Modell nicht – vorhanden: {namen}")
     return list(assemblies)
