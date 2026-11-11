@@ -1,6 +1,6 @@
 # Bedienung
 
-## Oberfläche (seit 2.1.0 im Mac-Stil)
+## Oberfläche (Mac-Stil, überarbeitet in Oberfläche 3)
 
 ![Steckwerk hell](medien/oberflaeche-hell.png)
 
@@ -11,55 +11,60 @@
 Die Weboberfläche sieht aus wie eine Mac-App, hell oder dunkel wie dein System, und lädt nichts aus dem
 Internet.
 
-- **Seitenleiste links:** oben ein Suchfeld (⌘K oder ⌘F), darunter **Zuletzt** benutzte Modelle. Die
-  Gruppen sind in **Vorlagen** und **Aus Paketen** getrennt, zeigen ihre Anzahl und bleiben eingeklappt,
-  bis du sie öffnest. Unten: **Motiv zeichnen …**, Updates, Einstellungen, in der App auch Ordner öffnen
-  und Beenden.
-- **Werkzeugleiste oben:** Modellname mit Gruppe und Teilezahl, der **Status** (grün *Schnittfertig*,
-  rot bei Fehlern; Klick öffnet Prüfbericht und Zusammenbau), das **Material-Menü**, der **Würfel**
-  (Gestaltung würfeln) und **Exportieren…**.
-- **Mitte:** maßstäbliche Vorschau je Platte mit mm-Lineal. Holz = Material, schwarz = Schnitt,
-  blau = Gravur. Bei mehreren Platten wählst du oben im Umschalter.
-- **Inspektor rechts:** die Werte des gewählten Modells in *Größe*, *Ausstattung*, *Motive* und
-  *Gestaltung*. *Standard* setzt zurück. Bei Texten fügen die Knöpfe ♥ ★ ❄ 🎄 Symbole ein, `|` macht
-  eine neue Zeile. Seit 2.3.0 sitzt hier auch der [Assistent](KI-Funktionen.md).
+- **Seitenleiste links:** oben ein Suchfeld (⌘K oder ⌘F), darunter **Zuletzt** mit deinen Projekten.
+  Unter **Vorlagen** stehen alle Gruppen mit eigenem Symbol und ihrer Anzahl, eingebaute und aus Paketen
+  gemeinsam. *Neues Motiv zeichnen …* steckt bei den eigenen Motiven. Unten nur **Einstellungen** (mit der
+  Zahl neuer Updates), in der App auch Ordner öffnen und Beenden.
+- **Werkzeugleiste oben:** Projekt- oder Vorlagenname, das **Material-Menü** und der Hauptknopf
+  **An xTool senden** (im reinen Browser *Exportieren …*).
+- **Mitte:** maßstäbliche Vorschau je Platte mit mm-Lineal. Holz = Restplatte, hell = Teile, blau = Gravur.
+  Bei mehreren Platten wählst du oben im Umschalter.
+- **Statusleiste unten:** grün *Schnittfertig* oder rot *Fehler* (Klick öffnet den Prüfbericht), Teile und
+  Platten mit Ausnutzung, die geschätzte Laserzeit (mit Preis je Platte auch die Materialkosten) und die Datei.
+- **Inspektor rechts:** die Werte der Vorlage in *Größe*, *Ausstattung*, *Motive* und *Gestaltung*.
+  *Zurücksetzen* stellt alles auf Standard, *Überrasch mich* würfelt die Gestaltung. Bei Texten fügen die
+  Knöpfe ♥ ★ ❄ 🎄 Symbole ein, `|` macht eine neue Zeile. Hier sitzt auch der [Assistent](KI-Funktionen.md).
 - **Einstellungen (⌘,):** Material, Pakete, Motive, Updates, Assistent und Allgemein (Sprache,
   hell/dunkel, Live-Vorschau).
 
-## Exportieren (⌘E)
+## An xTool senden (⌘E)
 
-![Export-Fenster](medien/export.png)
+Das Ausgeben-Blatt bietet zwei Wege:
 
+- **In xTool Creative Space öffnen** (empfohlen): speichert die Platte als `.xcs` mit den Ebenen
+  *Schneiden* (rot) und *Ritzen* (blau) für den xTool M2 und öffnet sie direkt in XCS.
+- **Dateien sichern:** alles als ZIP, nur die gezeigte Platte als SVG oder in den Steckwerk-Ordner.
+  Auf Wunsch kommen ein **XCS-Projekt (.xcs)** und ein **xTool-Studio-Projekt (.xs)** ab Version 1.7
+  dazu (Leistung, Tempo und Durchgänge sind dort schon eingetragen).
 
-- **ZIP** mit allen SVGs und Prüfberichten,
-- nur die gezeigte **Platte als SVG**,
-- oder direkt **in den Steckwerk-Ordner** speichern.
-
-Ist ein Materialprofil aktiv, zeigt das Export-Fenster auch die Startwerte für xTool Creative Space.
-
-Unter **Dazu** kreuzt du an, was zusätzlich entstehen soll:
-
-- **XCS-Projekt (.xcs)** für xTool Creative Space: Ebenen *Schneiden* (rot) und *Ritzen* (blau), Gerät xTool M2.
-- **xTool Studio (.xs)** ab Version 1.7: dieselben Ebenen, Leistung, Tempo und Durchgänge sind schon eingetragen.
-- **Montageanleitung (PDF)** mit Blattübersicht, nummerierten Teilen, Teileliste und Zusammenbau-Schritten.
-
-**In XCS öffnen** speichert die gezeigte Platte als `.xcs` und öffnet sie direkt in xTool Creative Space.
-Darunter steht die **Schätzung**: Laserzeit, Schnitt- und Ritzlänge, Plattenbedarf und mit Preis je Platte
-(Einstellungen → Material) auch die Materialkosten. Dieselbe Zeile steht im Inspektor über den Parametern.
+Für beide Wege gibt es die Schalter **Teilenummern klein eingravieren** und **Montageanleitung als PDF**
+(Blattübersicht, nummerierte Teile, Teileliste, Zusammenbau). Darunter stehen Laserzeit, Schnitt- und
+Ritzlänge, Platten und Ausnutzung, mit Preis je Platte (Einstellungen → Material) auch die Materialkosten.
+Ist ein Materialprofil aktiv, zeigt *Laserwerte für dieses Material* die Startwerte für XCS.
 
 > Die xTool-Formate sind nicht offen dokumentiert. Beim ersten Mal kurz prüfen, ob Ebenen und Werte in XCS stimmen.
 
+## Prüfbericht
+
+Ein Klick auf den Status unten öffnet den Prüfbericht: ein Satz zum Ergebnis, die **Teiletabelle** mit
+Nummer (dieselbe wie bei den gravierten Teilenummern), Name, Größe und Prüfergebnis, dann der
+**Zusammenbau** Schritt für Schritt. Die einzelnen Prüfzeilen des Validators stehen eingeklappt unter
+*Technische Details* und gehen bei Fehlern von selbst auf.
+
 ## Projekte
 
-Der Knopf **Projekte** in der Werkzeugleiste merkt sich Modell, alle Werte und das Material unter einem Namen,
-z. B. „Wichtelhaus Oma“. *Öffnen* holt alles zurück, *Löschen* entfernt den Eintrag. Die Projekte liegen in
-`~/.steckwerk/projekte.json` und gelten für Browser-Oberfläche und Mac-App gemeinsam.
+Ein Projekt merkt sich Vorlage, alle Werte und das Material unter einem Namen, z. B. „Wichtelhaus Oma“.
+**⌘S** sichert (beim ersten Mal mit Namen), die letzten Projekte stehen oben in der Seitenleiste unter
+*Zuletzt* und öffnen sich mit einem Klick. *Verwalten* bzw. *Alle* zeigt die ganze Liste mit Löschen.
+Ändert man danach etwas, steht unter dem Titel *geändert*. Die Projekte liegen in `~/.steckwerk/projekte.json`
+und gelten für Browser-Oberfläche, Mac-App und Steckwerk Desktop gemeinsam.
 
 ## Teilenummern
 
-Einstellungen → Material → **Teilenummern gravieren** schreibt jedem Teil eine kleine Nummer auf, an die Stelle
-mit dem meisten Platz. Die Nummern passen zur Montageanleitung und werden wie alles andere geprüft. Sehr schmale
-Teile bleiben ohne Nummer, stehen aber in der Teileliste.
+**Teilenummern klein eingravieren** (im Ausgeben-Blatt oder unter Einstellungen → Material) schreibt jedem
+Teil eine kleine Nummer auf, an die Stelle mit dem meisten Platz. Die Nummern passen zu Prüfbericht und
+Montageanleitung und werden wie alles andere geprüft. Sehr schmale Teile bleiben ohne Nummer, stehen aber
+in der Teileliste.
 
 ## Tastenkürzel
 
@@ -70,7 +75,8 @@ Teile bleiben ohne Nummer, stehen aber in der Teileliste.
 | Kürzel | Wirkung |
 |---|---|
 | ⌘, | Einstellungen |
-| ⌘E | Exportieren |
+| ⌘E | An xTool senden / Exportieren |
+| ⌘S | Projekt sichern (⇧⌘S: als neues Projekt) |
 | ⌘↩ | Vorschau berechnen (wenn Live-Vorschau aus ist) |
 | ⌘K / ⌘F | Modell suchen |
 | Esc | Fenster schließen |

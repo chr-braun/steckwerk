@@ -4,6 +4,11 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Neu, noch ohne Versionsnummer
 
+- **Neue Oberfläche** in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf **An xTool senden**, unten eine **Statusleiste** mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.
+- Seitenleiste mit **Zuletzt** (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit **⌘S**, der Titel zeigt *gesichert* oder *geändert*.
+- **Ausgeben-Blatt** mit zwei klaren Wegen: *In xTool Creative Space öffnen* (empfohlen) oder *Dateien sichern*. Teilenummern und Montageanleitung sind Schalter, die Schätzung steht in Kacheln darunter.
+- **Prüfbericht** als Teiletabelle mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt. Der technische Rohbericht steht eingeklappt darunter. „Überrasch mich“ ersetzt den Würfel.
+- Steckwerk Desktop: Werte im Inspektor rechts (⌥⌘I), Platte in Holzoptik, Systemakzentfarbe, Prüfbericht mit ⌘R.
 - Neues Themenpaket **Spiele** 1.0.0 (braucht Grundlagen 2.0.0): Mühle mit Steinablage und Spielernamen, rundes Tic-Tac-Toe mit ausgesägten Figuren (zum Beispiel Tanne gegen Stern), Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen (jede Nummer ein neuer Irrgarten) und Solitär mit Kugelrinne. Alle Bretter haben zwei Lagen mit Mulden, und alles rechnet in Sekundenbruchteilen.
 - Der Release-Workflow nimmt jetzt auch ganz neue Pakete in den Update-Kanal auf, nicht nur neue Versionen bekannter Pakete.
 - **Direkt für den xTool M2:** Beim Export legt Steckwerk auf Wunsch neben jede SVG ein `.xcs`-Projekt für xTool Creative Space (Ebenen „Schneiden“ rot und „Ritzen“ blau, Gerät M2) und ein `.xs`-Projekt für xTool Studio ab 1.7, in dem Leistung, Tempo und Durchgänge aus dem Materialprofil schon eingetragen sind. Die Formate sind nicht offen dokumentiert und nach öffentlichen Beispielen geschrieben – beim ersten Mal in XCS kurz prüfen.

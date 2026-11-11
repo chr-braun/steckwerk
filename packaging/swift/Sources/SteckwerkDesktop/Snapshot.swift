@@ -25,6 +25,7 @@ enum Snapshot {
         model.showInspector = true
         let host = NSHostingController(rootView: ContentView().environmentObject(model))
         host.sceneBridgingOptions = [.all]
+        host.sizingOptions = []  // sonst schrumpft das Fenster auf die Mindestgröße des Inhalts
         let window = NSWindow(contentViewController: host)
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.toolbarStyle = .unified
@@ -48,6 +49,7 @@ enum Snapshot {
             return 1
         }
         model.statusMessage = nil
+        window.setContentSize(NSSize(width: 1280, height: 800))
 
         for (suffix, appearance) in [("hell", NSAppearance(named: .aqua)), ("dunkel", NSAppearance(named: .darkAqua))] {
             NSApp.appearance = appearance
