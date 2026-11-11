@@ -2,7 +2,7 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
-## Neu, noch ohne Versionsnummer
+## 2.12.0 – 2026-11-11
 
 - **Neue Oberfläche** in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf **An xTool senden**, unten eine **Statusleiste** mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.
 - Seitenleiste mit **Zuletzt** (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit **⌘S**, der Titel zeigt *gesichert* oder *geändert*.
@@ -16,14 +16,12 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 - Motive lassen sich jetzt auch aus JPG und HEIC importieren.
 - Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.
 - **Spiele 1.1.0** mit neuem Modell **Puzzle**: Bilderpuzzle mit Nasen (klassisch, verspielt oder gerade für Kleinkinder), rechteckig oder rund, 4 bis 200 Teile, jede Nummer ein neues Schnittmuster, auf Wunsch mit Rahmen und Boden zum Hineinlegen. Das Bild läuft über alle Teile und bleibt an jedem Schnittrand sauber frei: fünf detailreiche Szenen (Winterdorf bei Nacht, Christbaum mit Geschenken, Mandala, Sternenhimmel über dem Wald, Waldlichtung mit Eule und Igel) oder dein eigenes Motiv bzw. Logo aus der Motiv-Bibliothek, flächig oder als Umriss, mit Hintergrundmuster (Sterne, Schneeflocken, Rauten, Wellen, Punkte). Beschriftung auf einem Schriftband oder auf dem Rahmen, Zierrand, einstellbares Spiel zwischen den Teilen. Auch 200 Teile rechnen in unter einer Sekunde. **Fotopuzzle:** Bild „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen; es wird einmal über alle Teile gelegt (gleiche Fotogravur-Punkte über die Fugen hinweg), jedes Teil bekommt seinen Ausschnitt.
-
-## Weihnachten 2.2.0 – 2026-11-11
-
-- Neues Modell **Edler Christbaumschmuck**: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set.
+- **Weihnachten 2.2.0** mit neuem Modell **Edler Christbaumschmuck**: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set.
   - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel.
   - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf.
   - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz.
   - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.
+- Die Updateprüfung klappt wieder, auch wenn noch ein alter Zugangsschlüssel aus der Zeit gespeichert ist, als das Repo privat war.
 
 ## 2.11.0 – 2026-11-11
 

@@ -366,3 +366,27 @@ def test_webui_desktop(env, tmp_path):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_alter_schluessel_bei_oeffentlichem_repo(env, monkeypatch):
+    """Ein veralteter Schlüssel lässt GitHub mit 404 antworten – dann klappt es ohne Schlüssel."""
+    import io
+    import urllib.error
+    calls = []
+
+    def fake(req, **kw):
+        calls.append(req.get_header("Authorization"))
+        if req.get_header("Authorization"):
+            raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {}, io.BytesIO())
+
+        class R(io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+        return R(b'{"standard": 1}')
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake)
+    assert updater.fetch(updater.KANAL, token="abgelaufen") == b'{"standard": 1}'
+    assert calls == ["token abgelaufen", None]
