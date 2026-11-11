@@ -253,8 +253,43 @@ def probleme(h: Poly, d: float) -> Optional[List[Point]]:
     return _versatz_fehler(h, comp, d)
 
 
+# Zwischenspeicher für durchbrueche(): Ändert man in einem mehrlagigen Bild nur eine Ebene (oder Rahmen,
+# Text, Stifte), bleiben die anderen Ebenen pixelgleich – ihre Durchbrüche müssen dann nicht neu
+# gerechnet werden. Das ist der teuerste Schritt und hilft gerade auf langsamen Rechnern.
+# Schlüssel = Prüfsumme der beiden Raster + alle Werte, die das Ergebnis beeinflussen.
+_DURCH_CACHE: "Dict[bytes, Tuple[List[Poly], List[str]]]" = {}
+_DURCH_MAX = 24
+
+
+def _raster_key(h, r: mt.Raster) -> None:
+    n = (r.w + 7) // 8
+    h.update(b"%d,%d;" % (r.w, r.h))
+    for row in r.rows:
+        h.update(row.to_bytes(n, "little"))
+
+
 def durchbrueche(lw: Leinwand, bereich: mt.Raster, material: mt.Raster, web: float, kerf: float,
                  notes: List[str], label: str) -> List[Poly]:
+    import hashlib
+    h = hashlib.blake2b(digest_size=20)
+    h.update(repr((lw.px, lw.x0, lw.y0, lw.w, lw.h, lw.y_top, float(web), float(kerf), label)).encode())
+    _raster_key(h, bereich)
+    _raster_key(h, material)
+    key = h.digest()
+    hit = _DURCH_CACHE.pop(key, None)
+    if hit is None:
+        neu: List[str] = []
+        polys = _durchbrueche(lw, bereich, material, web, kerf, neu, label)
+        hit = ([list(p) for p in polys], neu)
+    _DURCH_CACHE[key] = hit                                   # zuletzt benutzt ans Ende
+    while len(_DURCH_CACHE) > _DURCH_MAX:
+        _DURCH_CACHE.pop(next(iter(_DURCH_CACHE)))
+    notes.extend(hit[1])
+    return [list(p) for p in hit[0]]
+
+
+def _durchbrueche(lw: Leinwand, bereich: mt.Raster, material: mt.Raster, web: float, kerf: float,
+                  notes: List[str], label: str) -> List[Poly]:
     """Löcher = bereich ohne material, laserfest gemacht:
     – Schlitze schmaler als der Laser bleiben Material, Materialstege unter ~2 × web verschwinden,
     – kommen sich zwei Löcher näher als web, wird an der Stelle Material ergänzt,

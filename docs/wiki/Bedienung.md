@@ -37,6 +37,30 @@ Internet.
 
 Ist ein Materialprofil aktiv, zeigt das Export-Fenster auch die Startwerte für xTool Creative Space.
 
+Unter **Dazu** kreuzt du an, was zusätzlich entstehen soll:
+
+- **XCS-Projekt (.xcs)** für xTool Creative Space: Ebenen *Schneiden* (rot) und *Ritzen* (blau), Gerät xTool M2.
+- **xTool Studio (.xs)** ab Version 1.7: dieselben Ebenen, Leistung, Tempo und Durchgänge sind schon eingetragen.
+- **Montageanleitung (PDF)** mit Blattübersicht, nummerierten Teilen, Teileliste und Zusammenbau-Schritten.
+
+**In XCS öffnen** speichert die gezeigte Platte als `.xcs` und öffnet sie direkt in xTool Creative Space.
+Darunter steht die **Schätzung**: Laserzeit, Schnitt- und Ritzlänge, Plattenbedarf und mit Preis je Platte
+(Einstellungen → Material) auch die Materialkosten. Dieselbe Zeile steht im Inspektor über den Parametern.
+
+> Die xTool-Formate sind nicht offen dokumentiert. Beim ersten Mal kurz prüfen, ob Ebenen und Werte in XCS stimmen.
+
+## Projekte
+
+Der Knopf **Projekte** in der Werkzeugleiste merkt sich Modell, alle Werte und das Material unter einem Namen,
+z. B. „Wichtelhaus Oma“. *Öffnen* holt alles zurück, *Löschen* entfernt den Eintrag. Die Projekte liegen in
+`~/.steckwerk/projekte.json` und gelten für Browser-Oberfläche und Mac-App gemeinsam.
+
+## Teilenummern
+
+Einstellungen → Material → **Teilenummern gravieren** schreibt jedem Teil eine kleine Nummer auf, an die Stelle
+mit dem meisten Platz. Die Nummern passen zur Montageanleitung und werden wie alles andere geprüft. Sehr schmale
+Teile bleiben ohne Nummer, stehen aber in der Teileliste.
+
 ## Tastenkürzel
 
 ![Prüfbericht](medien/pruefbericht.png)

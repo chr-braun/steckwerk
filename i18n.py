@@ -70,6 +70,11 @@ EN: Dict[str, str] = {
     "CO2 meist 0.1–0.2, Diode 0.15–0.3": "CO2 usually 0.1–0.2, diode 0.15–0.3",
     "Farbe Schnitt": "Cut colour", "Farbe Gravur": "Engrave colour",
     "LightBurn-Layer 00": "LightBurn layer 00", "LightBurn-Layer 01": "LightBurn layer 01",
+    "XCS: Rot #FF0000 = Schneiden (setzt das Materialprofil)": "XCS: red #FF0000 = cut (set by the material profile)",
+    "XCS: Blau #0000FF = Ritzen": "XCS: blue #0000FF = score",
+    "Teilenummern gravieren": "Engrave part numbers",
+    "Kleine Nummer auf jedes Teil – passt zur Montageanleitung (PDF)":
+        "Small number on every part – matches the assembly guide (PDF)",
     "Zufallsstartwert": "Random seed", "Gleicher Wert = gleiches Ergebnis": "Same value = same result",
     # --- Maße und Mengen -----------------------------------------------------------------------------
     "Breite": "Width", "Breite (Giebelseite)": "Width (gable side)", "Tiefe": "Depth", "Höhe": "Height",

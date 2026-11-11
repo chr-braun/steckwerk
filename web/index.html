@@ -276,7 +276,7 @@ details.dis .in { padding: 0 0 6px 16px; }
 .report .o { color: var(--ink2); }
 .report .s { color: var(--ink); font-weight: 600; }
 .notes { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
-.params { margin: 10px 0 0; font: 11px/1.5 var(--mono); color: var(--ink3); word-break: break-word; }
+.params { margin: 10px 0 0; font: 11px/1.5 var(--mono); color: var(--ink3); word-break: break-word; white-space: pre-line; }
 .form { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; align-items: center; }
 .form > .l { text-align: right; }
 .form .sub { grid-column: 2; font-size: 11px; color: var(--ink2); margin-top: -6px; }
@@ -396,6 +396,7 @@ details.dis .in { padding: 0 0 6px 16px; }
     <div class="ttl"><b id="t-name">Steckwerk</b><span id="t-sub"></span></div>
     <div class="grow"></div>
     <button class="pill" id="pill" type="button" title="Prüfbericht und Zusammenbau">Bereit</button>
+    <button class="sbtn" id="t-proj" type="button" title="Projekte speichern und öffnen" hidden>Projekte</button>
     <button class="popup" id="t-mat" type="button" title="Material und Laser"><span id="mat-sum"></span></button>
     <button class="tb" id="dice" type="button" hidden title="Alle Gestaltungsoptionen zufällig wählen"><svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3"/><circle cx="7" cy="7" r=".9" fill="currentColor"/><circle cx="13" cy="13" r=".9" fill="currentColor"/><circle cx="10" cy="10" r=".9" fill="currentColor"/><circle cx="13" cy="7" r=".9" fill="currentColor"/><circle cx="7" cy="13" r=".9" fill="currentColor"/></svg></button>
     <button class="sbtn" id="go" type="button" hidden title="⌘↩">Vorschau</button>
@@ -453,13 +454,33 @@ details.dis .in { padding: 0 0 6px 16px; }
       <option value="save">In den Steckwerk-Ordner speichern</option>
     </select>
     <span class="sub" id="exp-hint"></span>
+    <span class="l" id="exp-extra-l">Dazu</span>
+    <span class="row" id="exp-extra" style="flex-wrap:wrap; gap:4px 14px">
+      <label><input type="checkbox" id="exp-xcs"> XCS-Projekt (.xcs)</label>
+      <label title="xTool Studio ab 1.7 – mit Leistung, Tempo und Durchgängen je Ebene"><input type="checkbox" id="exp-xs"> xTool Studio (.xs)</label>
+      <label><input type="checkbox" id="exp-pdf"> Montageanleitung (PDF)</label>
+    </span>
   </div>
+  <p class="hint" id="exp-sch" style="font-size:12px; margin:8px 2px 0"></p>
   <div class="btns">
     <button class="linkish" id="exp-folder" type="button" hidden>Ordner öffnen</button>
+    <button class="sbtn" id="exp-xcsopen" type="button" hidden title="Speichert die Platte als XCS-Projekt und öffnet sie in xTool Creative Space">In XCS öffnen</button>
     <span class="grow"></span>
     <button class="sbtn" type="button" data-close>Abbrechen</button>
     <button class="pbtn" id="exp-go" type="button">Exportieren</button>
   </div>
+</div>
+
+<!-- Sheet: Projekte -->
+<div class="sheet" id="sheet-proj" role="dialog" aria-modal="true" aria-labelledby="proj-title" hidden>
+  <h3 id="proj-title">Projekte</h3>
+  <p>Ein Projekt merkt sich Modell, alle Werte und das Material. So holst du ein Lieblingsstück mit einem Klick zurück.</p>
+  <div class="row" style="gap:8px">
+    <input type="text" id="proj-name" placeholder="Name, z. B. Wichtelhaus Oma" maxlength="80" style="flex:1; min-width:0">
+    <button class="pbtn" id="proj-save" type="button">Aktuelles speichern</button>
+  </div>
+  <div id="proj-list" class="grp" style="margin-top:12px; max-height:46vh; overflow:auto"></div>
+  <div class="btns"><span class="grow"></span><button class="sbtn" type="button" data-close>Fertig</button></div>
 </div>
 
 <!-- Sheet: Motiv zeichnen -->
@@ -520,6 +541,8 @@ details.dis .in { padding: 0 0 6px 16px; }
         <span class="row" style="gap:8px"><select id="prof"></select><button class="linkish" id="prof-del" type="button" hidden>Profil löschen</button></span>
         <label class="l" for="laser">Laser</label>
         <span><select id="laser"><option value="w10">xTool M2 · 10 W</option><option value="w20">xTool M2 · 20 W</option></select></span>
+        <label class="l" for="preis">Preis je Platte</label>
+        <span class="row" style="gap:6px"><input type="number" id="preis" min="0" max="999" step="0.1" inputmode="decimal" style="width:90px"><span class="unit">€ (für die Kostenschätzung, leer = aus)</span></span>
       </div>
       <div class="grp lz" id="lz"></div>
       <p class="hint" id="lz-hint">Startwerte für xTool Creative Space: Rot schneiden, Blau ritzen. Vor dem ersten großen Auftrag an einem Rest testen – Holz und Laser streuen.</p>
@@ -1495,7 +1518,40 @@ details.dis .in { padding: 0 0 6px 16px; }
     fetch(path, Object.assign({ method: "POST", headers: HEADERS, body: JSON.stringify(Object.assign({ lang: LANG }, body || {})) }, extra || {}));
   const isApp = () => !!(S.schema && S.schema.app);
   const restartHint = () => isApp() ? "Starte die Steckwerk-App neu." : "Läuft python3 webui.py noch?";
-  function request() { return { model: S.model, params: current(), config: Object.assign(cfgDefaults(), S.config) }; }
+  function laserReq() {                                  // Laserwerte für Schätzung und XCS-Projekte
+    const p = activeProfile(), r = { leistung: laserKey(), preis_platte: +(store.get("preisPlatte") || 0) || 0 };
+    if (p) r.laser = p[laserKey()];
+    return r;
+  }
+  function request() {
+    return Object.assign({ model: S.model, params: current(), config: Object.assign(cfgDefaults(), S.config) }, laserReq());
+  }
+  function exportRequest() {
+    const formate = [["exp-xcs", "xcs"], ["exp-xs", "xs"], ["exp-pdf", "pdf"]].filter(([id]) => $(id).checked).map(([, f]) => f);
+    return Object.assign(request(), { formate });
+  }
+  function schText(sch) {                                // „ca. 15 min · 2,7 m Schnitt · 0,3 Platten · 1,46 €“
+    if (!sch) return "";
+    const de = (v) => String(v).replace(".", ",");
+    let t = `Laserzeit ca. ${sch.zeit} · ${de(sch.schnitt_m)} m Schnitt`;
+    if (sch.ritz_m) t += ` · ${de(sch.ritz_m)} m Ritzen`;
+    t += ` · ${de(sch.platten)} ${sch.platten === 1 ? "Platte" : "Platten"} (${sch.ausnutzung} % genutzt)`;
+    if (sch.kosten != null) t += ` · Material ca. ${sch.kosten.toFixed(2).replace(".", ",")} €`;
+    return t;
+  }
+  function schSumme(asms) {
+    const xs = (asms || []).map((a) => a.schaetzung).filter(Boolean);
+    if (!xs.length) return null;
+    if (xs.length === 1) return xs[0];
+    const sek = xs.reduce((n, x) => n + x.sekunden, 0), r2 = (v) => Math.round(v * 100) / 100;
+    const m = Math.round(sek / 60);
+    const out = { sekunden: sek, zeit: m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")} min`,
+      schnitt_m: r2(xs.reduce((n, x) => n + x.schnitt_m, 0)), ritz_m: r2(xs.reduce((n, x) => n + x.ritz_m, 0)),
+      platten: r2(xs.reduce((n, x) => n + x.platten, 0)),
+      ausnutzung: Math.round(xs.reduce((n, x) => n + x.ausnutzung, 0) / xs.length) };
+    if (xs.every((x) => x.kosten != null)) out.kosten = xs.reduce((n, x) => n + x.kosten, 0);
+    return out;
+  }
 
   function schedule(delay) {
     if (!$("live").checked && delay !== 0) return;
@@ -1685,7 +1741,8 @@ details.dis .in { padding: 0 0 6px 16px; }
     for (const n of (a.notes.length ? a.notes : ["Keine besonderen Hinweise."])) {
       const li = document.createElement("li"); li.textContent = n; notes.append(li);
     }
-    $("params").textContent = "Parameter: " + Object.entries(a.params).map(([k, v]) => `${k}=${typeof v === "number" ? +v.toFixed(2) : v}`).join(" · ");
+    const st = schText(a.schaetzung);
+    $("params").textContent = (st ? st + "\n" : "") + "Parameter: " + Object.entries(a.params).map(([k, v]) => `${k}=${typeof v === "number" ? +v.toFixed(2) : v}`).join(" · ");
   }
 
   // ------------------------------------------------------------------ Downloads
@@ -1705,22 +1762,73 @@ details.dis .in { padding: 0 0 6px 16px; }
   }
   async function dlZip() {
     try {
-      const r = await post("/api/zip", request());
+      const r = await post("/api/zip", exportRequest());
       if (!r.ok) { toast((await r.json()).error || "ZIP fehlgeschlagen"); return; }
-      saveBlob(await r.blob(), `steckwerk_${S.model}.zip`); toast("ZIP mit SVGs und Prüfberichten geladen");
+      saveBlob(await r.blob(), `steckwerk_${S.model}.zip`); toast("ZIP geladen");
     } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
   }
   async function saveDir() {
     try {
-      const d = await (await post("/api/save", request())).json();
+      const d = await (await post("/api/save", exportRequest())).json();
       toast(d.ok ? `${d.files.length} Dateien gespeichert in ${d.out_dir}` : d.error);
     } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
   }
 
+  async function openInXcs() {
+    try {
+      toast("Speichere XCS-Projekt …");
+      const d = await (await post("/api/xcs-oeffnen", request())).json();
+      toast(d.ok ? d.message : d.error);
+    } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
+  }
+
+  // ------------------------------------------------------------------ Projekte
+  async function projekte(body) {
+    try {
+      const d = await (await post("/api/projekte", body || { aktion: "liste" })).json();
+      if (!d.ok) { toast(d.error || "Projekte nicht verfügbar"); return; }
+      renderProjekte(d.projekte || []);
+    } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
+  }
+  function renderProjekte(list) {
+    const box = $("proj-list"); box.textContent = "";
+    if (!list.length) { box.append(mk("div", "nohit", "Noch keine Projekte gespeichert.")); return; }
+    for (const p of list) {
+      const m = S.schema.models[p.model];
+      const row = mk("div", "row"); row.style.cssText = "gap:8px; padding:6px 4px; align-items:center";
+      const t = mk("div", "", ""); t.style.cssText = "flex:1; min-width:0";
+      t.append(mk("b", "", p.name), mk("div", "sub", (m ? m.label : p.model + " (Modell fehlt)") + " · " +
+        new Date(p.geaendert * 1000).toLocaleDateString("de-DE")));
+      const open = mk("button", "sbtn", "Öffnen"); open.type = "button"; open.disabled = !m;
+      open.addEventListener("click", () => ladeProjekt(p));
+      const del = mk("button", "linkish", "Löschen"); del.type = "button";
+      del.addEventListener("click", () => projekte({ aktion: "loeschen", name: p.name }));
+      row.append(t, open, del); box.append(row);
+    }
+  }
+  function ladeProjekt(p) {
+    if (!S.schema.models[p.model]) return;
+    S.params[p.model] = Object.assign({}, p.params || {}); store.set("params", S.params);
+    S.config = Object.assign({}, p.config || {}); store.set("config", S.config);
+    if (p.profil) store.set("profil", p.profil);
+    closeOverlays();
+    if (p.model === S.model) { renderParams(); } else { S.model = null; pickModel(p.model); }
+    renderConfig(); renderProfiles(); matSummary(); schedule(0);
+    toast(`Projekt „${p.name}“ geöffnet`);
+  }
+  $("t-proj").addEventListener("click", () => { openOverlay("sheet-proj"); $("proj-name").value = ""; projekte(); });
+  $("proj-save").addEventListener("click", () => {
+    const name = $("proj-name").value.trim();
+    if (!name) { $("proj-name").focus(); return; }
+    const p = activeProfile();
+    projekte({ aktion: "speichern", name, projekt: { model: S.model, params: S.params[S.model] || {}, config: S.config, profil: p ? p.id : "" } })
+      .then(() => toast(`Projekt „${name}“ gespeichert`));
+  });
+
   // ------------------------------------------------------------------ Sheets, Einstellungen, Menüs
   let veilEl = null, lastFocus = null;
   function closeOverlays() {
-    for (const id of ["sheet-report", "sheet-export", "sheet-bild", "settings"]) $(id).hidden = true;
+    for (const id of ["sheet-report", "sheet-export", "sheet-bild", "sheet-proj", "settings"]) $(id).hidden = true;
     document.querySelectorAll(".menu").forEach((n) => n.remove());
     if (veilEl) { veilEl.remove(); veilEl = null; }
     if (lastFocus && lastFocus.isConnected) lastFocus.focus();
@@ -1750,12 +1858,14 @@ details.dis .in { padding: 0 0 6px 16px; }
     const c = Object.assign(cfgDefaults(), S.config);
     $("exp-title").textContent = S.schema.models[S.model].label + " exportieren";
     $("exp-text").textContent = `${parts} Teile auf ${sheets} ${sheets === 1 ? "Platte" : "Platten"} ${c.sheet_width} × ${c.sheet_height} mm. ` +
-      "Schnitt und Gravur liegen auf eigenen Farben – fertig für xTool Creative Space und LightBurn.";
+      "Schnitt und Gravur liegen auf eigenen Farben – fertig für xTool Creative Space.";
+    $("exp-sch").textContent = schText(schSumme(asms));
+    $("exp-xcsopen").hidden = S.schema.mode !== "server";
     const pr = activeProfile();
     $("exp-lz").hidden = $("exp-lz-hint").hidden = !pr;
     if (pr) {
       renderLaser($("exp-lz"), pr, false);
-      $("exp-lz-hint").textContent = `In XCS: Material „${pr.name}“ · ${LASER[laserKey()]} – Rot auf Schneiden, Blau auf Ritzen stellen.`;
+      $("exp-lz-hint").textContent = `In XCS: Material „${pr.name}“ · ${LASER[laserKey()]} – Rot auf Schneiden, Blau auf Ritzen stellen. Im .xs-Projekt sind diese Werte schon eingetragen.`;
     }
     const fmt = $("exp-fmt");
     fmt.querySelector('[value="svg"]').disabled = !(a && a.ok && sh);
@@ -1768,12 +1878,17 @@ details.dis .in { padding: 0 0 6px 16px; }
   function expHint() {
     const v = $("exp-fmt").value, a = S.result && S.result.assemblies[S.asm], sh = a && a.sheets[S.sheet];
     $("exp-hint").textContent = v === "svg" && sh ? sh.file : v === "save" ? "Speichert nach " + S.schema.out_dir : "";
+    $("exp-extra").hidden = $("exp-extra-l").hidden = v === "svg";
   }
   $("exp-fmt").addEventListener("change", () => { store.set("expFmt", $("exp-fmt").value); expHint(); });
   $("exp-go").addEventListener("click", () => {
     const v = $("exp-fmt").value; closeOverlays();
     if (v === "svg") dlSvg(); else if (v === "save") saveDir(); else dlZip();
   });
+  for (const id of ["exp-xcs", "exp-xs", "exp-pdf"]) {
+    $(id).addEventListener("change", () => store.set(id, $(id).checked));
+  }
+  $("exp-xcsopen").addEventListener("click", () => { closeOverlays(); openInXcs(); });
   $("t-export").addEventListener("click", openExport);
   $("pill").addEventListener("click", openReport);
 
@@ -2376,6 +2491,9 @@ details.dis .in { padding: 0 0 6px 16px; }
   (async () => {
     const live = store.get("live"); if (live === false) { $("live").checked = false; $("go").hidden = false; }
     const ef = store.get("expFmt"); if (ef) $("exp-fmt").value = ef;
+    for (const id of ["exp-xcs", "exp-xs", "exp-pdf"]) $(id).checked = store.get(id) ?? (id === "exp-xcs");
+    $("preis").value = store.get("preisPlatte") || "";
+    $("preis").addEventListener("change", () => { store.set("preisPlatte", +$("preis").value || 0); schedule(0); });
     try {
       const r = await fetch("/api/schema?lang=" + LANG);
       S.schema = await r.json();
@@ -2390,6 +2508,7 @@ details.dis .in { padding: 0 0 6px 16px; }
     if (S.schema.app) startApp();
     renderModels(); renderParams(); renderConfig(); renderProfiles(); renderPakete(); renderMotivLib(); kiRender(); bsRender();
     $("bw-btn").hidden = S.schema.mode !== "server";
+    $("t-proj").hidden = S.schema.mode !== "server";
 
     if (S.schema.mode !== "server") { $("tab-pakete").hidden = true; $("tab-motive").hidden = true; $("tab-updates").hidden = true; $("tab-assistent").hidden = true; }
 
