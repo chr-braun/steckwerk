@@ -23,9 +23,18 @@ VERHAELTNIS: Dict[str, Dict[str, float]] = {
     "gartenzaun": dict(laenge=1.6, hoehe=0.5),
     "werkbank": dict(laenge=0.9, hoehe=0.5, tiefe=0.38),
     "wegelaterne": dict(hoehe=1.35),
+    # Edles Zubehör (ab Wichtel 1.1.0)
+    "kamin": dict(breite=1.0, hoehe=0.8, tiefe=0.32),
+    "standuhr": dict(hoehe=1.3),
+    "schaukelstuhl": dict(hoehe=0.92, breite=0.48),
+    "christbaum": dict(hoehe=1.2),
+    "schneemann": dict(hoehe=0.95),
+    "wichtelgarten": dict(breite=1.4),
 }
 MIN_FAKTOR: Dict[str, float] = dict(lebkuchenstand=13.0, kreidetafel=9.0, wichtelpost=9.0, gartenzaun=10.0,
-                                   werkbank=14.0, wegelaterne=11.0)
+                                   werkbank=14.0, wegelaterne=11.0, kamin=15.0,
+                                   standuhr=12.0, schaukelstuhl=15.0, christbaum=11.0,
+                                   schneemann=10.0, wichtelgarten=12.0)
 
 
 def mindestgroesse(modell: str, T: float) -> float:

@@ -1,5 +1,19 @@
 # Weihnachten
 
+**Edler Namensanhänger** (neu in 2.1.0) – Der Name in echter Schreibschrift (elegant, schwungvoll oder rund),
+ein Anhänger je Name (mit | trennen):
+- *Schriftzug im Kugelring*: Der Name ist als ein Stück ausgeschnitten und spannt sich von Rand zu Rand. Unten
+  steht eine Szene auf dem Schneehügel, die Jahreszahl ist in den Schnee graviert. Winterlandschaft: Winterdorf mit
+  Kirche, Winterwald mit Hirsch, Schneemann mit Laterne, Schlittenfahrt. Weihnachtsvorbereitung: Adventskranz,
+  Christbaum mit Geschenken, Plätzchen backen, Geschenke packen. Oben hängt ein Stern, eine Schneeflocke oder der
+  Mond mit Sternen.
+- *Medaillon zweilagig*: Grundplatte mit gefüllt graviertem Namen, darauf ein Spitzenrahmen (Blütenkranz,
+  Klöppelspitze, Ranken, Sterne, Herzchen, Perlen). In zwei Holzfarben wirkt das wie eine Intarsie.
+- *Spitze einlagig*: Spitzenrahmen und volle Mitte mit Name, Zusatzzeile und Jahreszahl.
+
+Feine Haarstriche werden für den Laser verstärkt, i-Punkte und Umlaute hängen an kleinen Brücken. Die Schriften
+stehen unter der SIL Open Font License (siehe SCHRIFTEN-LIZENZ.txt).
+
 **Zierschlitten** – 3D-Schlitten zum Stecken: Seitenwände mit Schnörkelkufen und durchbrochenen Ranken (oder
 Herzen/Sternen), Boden, Sitzbank und Rückenlehne mit Herz. Länge und Breite einstellbar, ein Name kann auf die
 Lehne graviert werden. Schön als Geschenkverpackung oder Kerzenschlitten.
