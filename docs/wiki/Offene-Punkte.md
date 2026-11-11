@@ -17,6 +17,11 @@ Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Zum Ausprobieren bei dir
 
+- **XCS-Projekte testen:** Ein kleines Modell mit „XCS-Projekt (.xcs)“ und „xTool Studio (.xs)“ exportieren
+  bzw. „In XCS öffnen“ drücken und in XCS prüfen: Liegen die Teile richtig, heißen die Ebenen
+  *Schneiden*/*Ritzen*, ist der M2 gewählt? Beim `.xs`: stehen Leistung, Tempo und Durchgänge? Wenn etwas nicht
+  passt, kurz Bescheid geben (am besten mit der Datei, die XCS selbst speichert) – dann passen wir das Format an.
+
 - **Filigran-Rezepte ausprobieren (Paket Weihnachten):** Beim Spitzenschmuck „Muster: eigenes Rezept“ oder „Zufall“ wählen
   und ein paar Startwerte durchklicken. Gefällt dir ein Muster, steht sein Rezept bei den Hinweisen zum Modell.
 - **Passungstest schneiden (Paket Grundlagen):** Einmal mit deinem Holz schneiden und den Kerf aus dem

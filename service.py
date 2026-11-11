@@ -309,8 +309,10 @@ CONFIG_INFO = [
     sel("openings", "Fenster/Türen", [("cut", "ausschneiden"), ("engrave", "gravieren")], "cut"),
     num("sheet_width", "Platte Breite", 400, 50, 2000, 1),
     num("sheet_height", "Platte Höhe", 300, 50, 2000, 1),
-    txt("cut_color", "Farbe Schnitt", "#000000", "LightBurn-Layer 00"),
-    txt("engrave_color", "Farbe Gravur", "#0000FF", "LightBurn-Layer 01"),
+    txt("cut_color", "Farbe Schnitt", "#000000", "XCS: Rot #FF0000 = Schneiden (setzt das Materialprofil)"),
+    txt("engrave_color", "Farbe Gravur", "#0000FF", "XCS: Blau #0000FF = Ritzen"),
+    flag("part_numbers", "Teilenummern gravieren", False,
+         help="Kleine Nummer auf jedes Teil – passt zur Montageanleitung (PDF)"),
 ]
 
 
@@ -546,6 +548,9 @@ def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = Fa
     for asm in assemblies:
         if stop and stop():
             raise Abgeloest()
+        if cfg.part_numbers:
+            import montage
+            asm = montage.nummerieren(asm, cfg)
         rep = Report(asm.name)
         validate_assembly(asm, cfg, rep)
         res = Result(asm, rep)
@@ -592,7 +597,8 @@ def report_text(res: Result, cfg: Config) -> str:
             f"Config: {cfg.to_dict()}\n\n{res.report.text()}\nMontage:\n{notes}\n")
 
 
-def write_results(results: List[Result], cfg: Config, out: str, preview: bool = False) -> Tuple[List[str], Optional[bool]]:
+def write_results(results: List[Result], cfg: Config, out: str, preview: bool = False,
+                  req: Optional[Dict[str, Any]] = None) -> Tuple[List[str], Optional[bool]]:
     if not all(r.ok for r in results):
         raise RuntimeError("Validierung fehlgeschlagen – es wird keine Datei geschrieben")
     written: List[str] = []
@@ -617,10 +623,18 @@ def write_results(results: List[Result], cfg: Config, out: str, preview: bool = 
             written.append(os.path.join(d, fname))
         write_text(os.path.join(d, "pruefbericht.txt"), report_text(res, cfg))
         written.append(os.path.join(d, "pruefbericht.txt"))
+    for rel, data in extra_files(results, cfg, req or {}):
+        path = os.path.join(out, *rel.split("/"))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        tmp = path + ".tmp"
+        with open(tmp, "wb") as fh:
+            fh.write(data)
+        os.replace(tmp, path)
+        written.append(path)
     return written, preview_ok
 
 
-def zip_results(results: List[Result], cfg: Config) -> bytes:
+def zip_results(results: List[Result], cfg: Config, req: Optional[Dict[str, Any]] = None) -> bytes:
     if not all(r.ok for r in results):
         raise RuntimeError("Validierung fehlgeschlagen – kein Download")
     buf = io.BytesIO()
@@ -631,7 +645,55 @@ def zip_results(results: List[Result], cfg: Config) -> bytes:
             for fname, png in bild_dateien(res):
                 z.writestr(f"{res.asm.name}/{fname}", png)
             z.writestr(f"{res.asm.name}/pruefbericht.txt", report_text(res, cfg))
+        for rel, data in extra_files(results, cfg, req or {}):
+            z.writestr(rel, data)
     return buf.getvalue()
+
+
+# --- Laser: Schätzung, XCS-Projekte, Montageanleitung -------------------------------------------
+FORMATE = ("xcs", "xs", "pdf")
+
+
+def laser_einstellungen(req: Dict[str, Any], cfg: Config) -> Tuple[Dict[str, List[float]], str, float]:
+    """(Laserwerte, Leistungsklasse w10/w20, Preis je Platte) aus der Anfrage."""
+    import laser
+    leistung = "w20" if str(req.get("leistung") or "") == "w20" else "w10"
+    try:
+        preis = max(0.0, float(req.get("preis_platte") or 0))
+    except (TypeError, ValueError):
+        preis = 0.0
+    return laser.laserwerte(req.get("laser"), cfg, leistung), leistung, preis
+
+
+def schaetzung(res: Result, cfg: Config, req: Dict[str, Any]) -> Dict[str, Any]:
+    import laser
+    werte, _, preis = laser_einstellungen(req, cfg)
+    return laser.schaetzung(res.sheets, werte, preis)
+
+
+def extra_files(results: List[Result], cfg: Config, req: Dict[str, Any]) -> List[Tuple[str, bytes]]:
+    """Zusätzliche Ausgaben je nach req["formate"]: xcs (xTool Creative Space), xs (xTool Studio)
+    und pdf (Montageanleitung). Nur für geprüfte Ergebnisse."""
+    formate = [f for f in (req.get("formate") or []) if f in FORMATE]
+    if not formate or not all(r.ok for r in results):
+        return []
+    import laser
+    import montage
+    werte, leistung, _ = laser_einstellungen(req, cfg)
+    watt = 20 if leistung == "w20" else 10
+    out: List[Tuple[str, bytes]] = []
+    for res in results:
+        for sh, fname, _ in res.svgs:
+            stem = fname[:-4]
+            if "xcs" in formate:
+                out.append((f"{res.asm.name}/{stem}.xcs", laser.xcs_bytes(sh, cfg, stem, watt)))
+            if "xs" in formate:
+                out.append((f"{res.asm.name}/{stem}.xs", laser.xs_bytes(sh, cfg, stem, werte, watt)))
+    if "pdf" in formate:
+        for res in results:
+            pdf = montage.anleitung_pdf([(res.asm, res.sheets, schaetzung(res, cfg, req))], cfg)
+            out.append((f"{res.asm.name}/{res.asm.name}_montage.pdf", pdf))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -720,6 +782,7 @@ def generate(req: Dict[str, Any], stop: Optional[Callable[[], bool]] = None) -> 
             notes=list(res.asm.notes), params={k: v for k, v in res.asm.params.items()},
             parts=len(res.asm.parts), joints=len(res.asm.connections), teile=gravur.teile([res.asm]),
             errors=[e.line() for e in res.report.errors][:50],
+            schaetzung=schaetzung(res, cfg, req) if res.sheets else None,
             sheets=[dict(file=f, svg=t, width=sh.width, height=sh.height, parts=len(sh.parts), checked=res.ok)
                     for sh, f, t in sheets]))
     return dict(ok=all(r.ok for r in results), assemblies=out, elapsed=round(time.time() - t0, 2),

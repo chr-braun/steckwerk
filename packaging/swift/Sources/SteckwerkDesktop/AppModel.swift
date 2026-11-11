@@ -52,6 +52,11 @@ final class AppModel: ObservableObject {
     /// Ergebnis der letzten Update-Prüfung (beim Start oder unter „Updates“): Pakete und die App selbst.
     @Published var updateCheck: UpdateCheck?
     @Published var desktopCheck: DesktopCheck?
+    /// Zusätzliche Ausgaben beim Speichern: xcs (xTool Creative Space), xs (xTool Studio), pdf (Montageanleitung).
+    @Published var exportFormate: Set<String> = Set(UserDefaults.standard.stringArray(forKey: AppModel.formateKey) ?? ["xcs"]) {
+        didSet { UserDefaults.standard.set(Array(exportFormate).sorted(), forKey: Self.formateKey) }
+    }
+    static let formateKey = "exportFormate"
 
     private(set) var client: EngineClient?
     private var engine: EngineProcess?
@@ -414,11 +419,30 @@ final class AppModel: ObservableObject {
         guard let client, let id = selectedModelID, let body = requestBody(for: id) else { return }
         do {
             let saved = try await client.save(model: id, params: body.params, config: body.config,
-                                              gravuren: gravurJSON(for: id))
+                                              formate: Array(exportFormate).sorted(), gravuren: gravurJSON(for: id))
             statusMessage = "\(saved.files.count) Dateien gespeichert"
         } catch {
             show(error, title: "Speichern fehlgeschlagen")
         }
+    }
+
+    /// Platte als XCS-Projekt speichern und direkt in xTool Creative Space öffnen.
+    func openInXCS() async {
+        guard let client, let id = selectedModelID, let body = requestBody(for: id) else { return }
+        do {
+            let r = try await client.xcsOeffnen(model: id, params: body.params, config: body.config)
+            if r.ok {
+                statusMessage = r.message ?? "In xTool Creative Space geöffnet"
+            } else {
+                alert = AppAlert(title: "XCS lässt sich nicht öffnen", message: r.error ?? "Unbekannter Fehler")
+            }
+        } catch {
+            show(error, title: "XCS lässt sich nicht öffnen")
+        }
+    }
+
+    func toggleFormat(_ format: String) {
+        if exportFormate.contains(format) { exportFormate.remove(format) } else { exportFormate.insert(format) }
     }
 
     func openFolder() async {

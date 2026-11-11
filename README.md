@@ -10,7 +10,7 @@
 Parametrische, **validierte** Lasercut-SVGs für Wichtelhäuser, Weihnachtszubehör, ganze
 zusammengehörige Serien, Christbaumschmuck, Schwibbögen, Schneeflocken und Steckfahrzeuge mit drehenden
 Rädern – erweiterbar über eigene [Pakete](PAKETE.md).
-Cut-ready für CO2- und Diodenlaser (LightBurn, xTool Creative Space, Glowforge).
+Cut-ready für den xTool M2 mit xTool Creative Space (eigene `.xcs`-Projekte), aber auch für andere CO2- und Diodenlaser (LightBurn, Glowforge).
 
 Neu in 1.2: viele **Gravuren und Beschriftungen** – Fensterformen mit Läden, Blumenkästen und
 Schneehauben, Türschmuck, Wand- und Dachgravuren (Fachwerk, Ziegel, Schindeln …), Zierleisten
@@ -18,6 +18,10 @@ Schneehauben, Türschmuck, Wand- und Dachgravuren (Fachwerk, Ziegel, Schindeln �
 Kleinbuchstaben und Symbolen ♥ ★ ❄ 🎄 – für Häuser, Serien, Schmuck, Fahrzeuge, Briefkasten und
 Figuren. Alles ist auswählbar und wird wie gewohnt vor dem Schreiben geprüft
 (siehe [Gestaltung und Beschriftung](#gestaltung-und-beschriftung)).
+
+Neu: **Export direkt für xTool Creative Space** (`.xcs`, „In XCS öffnen“) und xTool Studio (`.xs` mit
+Laserwerten), **Schnittzeit- und Kostenschätzung**, **Teilenummern und Montageanleitung (PDF)**, **Projekte**
+zum Merken und dichteres Verschachteln auf mehreren Platten.
 
 - Als **Mac-App** zum Doppelklicken (`Steckwerk-2.10.1-macOS.zip` unter
   [Releases](https://github.com/chr-braun/steckwerk/releases/latest)), als **Weboberfläche** im Browser
@@ -471,26 +475,36 @@ und den Symbolen ♥ ★ ❄ 🎄 (❤ ☆ ❅ werden automatisch umgesetzt). St
 `normal` (wie eingegeben). `|` erzwingt eine neue Zeile; ist ein Text in einem Schild zu lang,
 bricht Steckwerk ihn selbst an Leerzeichen um, bevor die Schrift kleiner als 2.5 mm würde.
 
-## So importierst du's in LightBurn
+## So kommt's auf den xTool M2 (xTool Creative Space)
 
-1. **Datei → Importieren** (`Strg+I` / `⌘+I`) und die `.svg` wählen. Die Datei enthält echte mm-Maße
-   (`width="400mm"`, `viewBox` in mm), LightBurn übernimmt den Maßstab 1:1.
-   *Kontrolle:* Beim Standard-Wichtelhaus ist die Bodenplatte **92 × 82 mm** (Sollmaß + Kerf 0.2).
-   Stimmt das nicht, in LightBurns Einstellungen die SVG-Import-Optionen (Einheiten/DPI) prüfen –
-   die Datei selbst ist in mm angelegt.
-2. LightBurn sortiert nach Farbe automatisch in Layer:
-   - **00 Schwarz = Schnitt** → Modus *Line*, Leistung/Geschwindigkeit für Durchschnitt deines Materials.
-   - **01 Blau = Gravur** → Modus *Line* mit wenig Leistung (Ritzen). Die Gravur besteht aus Linien,
-     nicht aus Flächen – auch Namen und Aufschriften (einlinige Schrift).
-3. Unter *Optimierungseinstellungen* „Innenformen zuerst schneiden" aktivieren (die Datei listet
-   Innenschnitte ohnehin vor der Außenkontur).
-4. **Nicht** zusätzlich LightBurns Kerf-Offset einschalten – die Kompensation steckt schon in der Datei.
-   Wenn du lieber in LightBurn kompensierst: Datei mit `--kerf 0` erzeugen.
-5. Reihenfolge: Gravur-Layer vor den Schnitt-Layer ziehen, damit sich nichts verschiebt.
+Steckwerk ist auf den **xTool M2** mit **xTool Creative Space (XCS)** abgestimmt. Am bequemsten geht es
+ohne SVG-Umweg:
 
-**xTool Creative Space:** SVG importieren, Objekte nach Farbe auswählen, Schwarz → *Schneiden*,
-Blau → *Ritzen* (Score). **Glowforge:** SVG hochladen; die Farben landen als getrennte Schritte –
-Schwarz auf *Cut*, Blau auf *Score* stellen.
+1. **Materialprofil wählen** (Material-Menü oben), z. B. „Pappel-Sperrholz 3 mm“ und 10 W oder 20 W.
+   Damit sind Stärke, Kerf und die Farben gesetzt: **Rot = Schneiden**, **Blau = Ritzen**.
+2. **Exportieren… → „XCS-Projekt (.xcs)“** ankreuzen (ist voreingestellt). Neben jeder SVG liegt dann eine
+   `.xcs`-Datei für den M2 mit den Ebenen *Schneiden* und *Ritzen*. Oder gleich **„In XCS öffnen“** – das
+   speichert die Platte und öffnet sie direkt in xTool Creative Space.
+3. In XCS je Ebene Leistung, Tempo und Durchgänge eintragen (die Startwerte stehen im Export-Fenster).
+   **xTool Studio ab 1.7** kann stattdessen die `.xs`-Datei öffnen – dort sind die Werte schon eingetragen.
+4. Rahmen fahren, starten. Den Kerf-Ausgleich **nicht** zusätzlich in XCS einschalten – er steckt schon in der Datei.
+
+> Die Projektformate von xTool sind nicht offen dokumentiert. Steckwerk schreibt sie nach öffentlich
+> beschriebenen Beispielen. Beim ersten Mal kurz prüfen, ob Ebenen und Werte stimmen – im Zweifel gilt die SVG.
+
+**Mit SVG:** importieren, Objekte nach Farbe wählen, Rot (bzw. Schwarz ohne Profil) → *Schneiden*,
+Blau → *Ritzen*. Die Datei hat echte mm-Maße, der Maßstab stimmt 1:1.
+*Kontrolle:* Beim Standard-Wichtelhaus ist die Bodenplatte **92 × 82 mm** (Sollmaß + Kerf 0.2).
+
+**Schnittzeit und Material:** Steckwerk schätzt für jedes Modell Laserzeit, Schnittlänge und Plattenbedarf
+(im Inspektor und im Export-Fenster); mit einem Preis je Platte (Einstellungen → Material) auch die Materialkosten.
+
+**Montageanleitung:** „Teilenummern gravieren“ (Einstellungen → Material) schreibt jedem Teil eine kleine Nummer
+auf; „Montageanleitung (PDF)“ im Export legt die passende Anleitung mit Blattübersicht, Teileliste und
+Zusammenbau-Schritten dazu.
+
+**LightBurn / Glowforge:** SVG importieren; die Farben landen in getrennten Layern. Schnittfarbe auf *Cut/Line*,
+Blau auf *Score/Line* mit wenig Leistung. Innenformen zuerst schneiden, kein zusätzlicher Kerf-Offset.
 
 ## Kerf richtig einstellen
 

@@ -17,6 +17,10 @@ API (JSON; jeder POST braucht den Header X-Steckwerk, damit fremde Webseiten nic
   POST /api/generate     {model, params, config} → Prüfbericht + SVGs
   POST /api/zip          gleiche Anfrage → ZIP (SVGs + Prüfberichte)
   POST /api/save         gleiche Anfrage → schreibt in den Ausgabeordner
+                         zip/save verstehen zusätzlich {formate: ["xcs", "xs", "pdf"], laser: {cut, score},
+                         leistung: "w10"|"w20"} → Projekte für xTool Creative Space/Studio, Montageanleitung
+  POST /api/xcs-oeffnen  gleiche Anfrage → .xcs speichern und direkt in xTool Creative Space öffnen (nur App)
+  GET/POST /api/projekte {aktion: liste|speichern|loeschen, name, projekt} → gemerkte Projekte
   POST /api/motiv-import    {name, filename, data (base64), invert} → Motiv in die Bibliothek
   POST /api/motiv-entfernen {id} → eigenes Motiv löschen
   POST /api/motiv-design    {model, params, config} → Grundform ohne Motive (Platzierungs-Editor)
@@ -375,13 +379,42 @@ class Handler(BaseHTTPRequestHandler):
             elif path == "/api/zip":
                 self._touch()
                 results, cfg = service.run_request(req, preview_on_error=False)
-                data = service.zip_results(results, cfg)
+                data = service.zip_results(results, cfg, req)
                 name = "steckwerk_" + "".join(c for c in str(req.get("model", "modell")) if c.isalnum()) + ".zip"
                 self._send(200, data, "application/zip", {"Content-Disposition": f'attachment; filename="{name}"'})
+            elif path == "/api/projekte":
+                import projekte
+                self._touch()
+                aktion = str(req.get("aktion") or "liste")
+                try:
+                    if aktion == "speichern":
+                        projekte.speichern(str(req.get("name") or ""), req.get("projekt") or {})
+                    elif aktion == "loeschen":
+                        projekte.loeschen(str(req.get("name") or ""))
+                except projekte.ProjektFehler as e:
+                    return self._json({"ok": False, "error": str(e)}, 400)
+                self._json({"ok": True, "projekte": projekte.liste()})
+            elif path == "/api/xcs-oeffnen":
+                import laser
+                self._touch()
+                if self.lan:
+                    return self._json({"ok": False, "error": "Nur am Rechner selbst möglich"}, 403)
+                results, cfg = service.run_request(req, preview_on_error=False)
+                fmt = "xs" if req.get("format") == "xs" else "xcs"
+                written, _ = service.write_results(results, cfg, out, False, dict(req, formate=[fmt]))
+                datei = next((p for p in written if p.endswith("." + fmt)), None)
+                if not datei:
+                    return self._json({"ok": False, "error": "Keine Projektdatei entstanden"}, 400)
+                try:
+                    prog = laser.oeffnen_in_xcs(datei)
+                except OSError as e:
+                    return self._json({"ok": False, "error": str(e), "files": written})
+                self._json({"ok": True, "programm": prog, "datei": datei, "files": written,
+                            "message": f"In {prog} geöffnet: {os.path.basename(datei)}"})
             elif path == "/api/save":
                 self._touch()
                 results, cfg = service.run_request(req, preview_on_error=False)
-                written, _ = service.write_results(results, cfg, out, bool(req.get("preview")))
+                written, _ = service.write_results(results, cfg, out, bool(req.get("preview")), req)
                 self._json({"ok": True, "out_dir": os.path.abspath(out), "files": written})
             else:
                 self._json({"error": "nicht gefunden"}, 404)

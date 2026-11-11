@@ -200,3 +200,10 @@ def test_cli_gravur(foto, tmp_path, capsys):
                   "--out", str(tmp_path / "out"), "-q"])
     assert rc == 0
     assert list((tmp_path / "out" / "anhaenger").glob("*_bild1_*.png"))
+
+
+def test_teilenummern_behalten_bild(foto):
+    d = service.generate(dict(model="motiv_anhaenger", params=dict(motive=[]), config=dict(part_numbers=True),
+                              gravuren=[dict(quelle="bild", bild=foto["id"], groesse=25)]))
+    assert d["ok"], d.get("error") or d["assemblies"][0]["errors"]
+    assert 'id="layer-bild"' in d["assemblies"][0]["sheets"][0]["svg"]

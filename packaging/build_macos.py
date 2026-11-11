@@ -32,7 +32,7 @@ from steckwerk import __version__  # noqa: E402
 APP = "Steckwerk"
 BUNDLE_ID = "app.steckwerk.werkbank"
 CODE_FILES = ["steckwerk.py", "validator.py", "service.py", "cli.py", "webui.py", "preview.py",
-              "steckwerk_app.py", "steckwerk.yaml", "README.md", "PAKETE.md", "pakete.py", "motive.py", "updater.py", "i18n.py", "assistent.py", "bildgen.py", "bilder.py", "gravur.py",
+              "steckwerk_app.py", "steckwerk.yaml", "README.md", "PAKETE.md", "pakete.py", "motive.py", "updater.py", "i18n.py", "assistent.py", "bildgen.py", "laser.py", "montage.py", "projekte.py", "bilder.py", "gravur.py",
               "laserforge.py", "README.en.md", "web/index.html",
               "web/icon.png"]
 

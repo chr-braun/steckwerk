@@ -26,7 +26,7 @@ import re
 from dataclasses import dataclass, field, fields
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
-__version__ = "2.10.1"
+__version__ = "2.11.0"
 
 
 def migrate_legacy(home: Optional[str] = None) -> List[str]:
@@ -83,6 +83,7 @@ class Config:
     arc_tolerance: float = 0.05    # max. Sehnenabweichung bei Kreisbögen
     openings: str = "cut"          # Fenster/Türen: "cut" (Durchbruch) oder "engrave" (Gravur)
     seed: int = 7                  # Zufallsstartwert für Serien
+    part_numbers: bool = False     # jedem Teil seine Nummer eingravieren (passend zur Montageanleitung)
 
     def __post_init__(self):
         self.check()
@@ -140,7 +141,9 @@ class Config:
         kwargs = {}
         for k, v in data.items():
             typ = known[k].type
-            if typ in ("float", float):
+            if typ in ("bool", bool):
+                v = v if isinstance(v, bool) else str(v).strip().lower() in ("1", "true", "ja", "yes", "on")
+            elif typ in ("float", float):
                 v = float(v)
             elif typ in ("int", int):
                 v = int(v)
@@ -1066,6 +1069,79 @@ def layout(parts: Sequence[Part], cfg: Config) -> List[Sheet]:
             new_sheet()
             sheets[-1].parts.append(_to_sheet(p, cfg.sheet_margin, cfg.sheet_margin, rot))
             shelves[-1] = [w + gap, 0.0, h]
+    if len(sheets) > 1:
+        # Braucht das Regal-Packing mehrere Platten, enger verschachteln versuchen. Nur übernehmen,
+        # wenn es wirklich eine Platte spart – sonst bleibt die Ausgabe genau wie bisher.
+        dicht = _layout_dicht(parts, cfg)
+        if dicht is not None and len(dicht) < len(sheets):
+            return dicht
+    return sheets
+
+
+def _layout_dicht(parts: Sequence[Part], cfg: Config) -> Optional[List[Sheet]]:
+    """Dichteres Packing (MaxRects, „beste kurze Seite“) mit 90°-Drehung je Teil.
+    Größte Teile zuerst; jedes Teil kommt auf die erste Platte, auf der es Platz findet."""
+    uw = cfg.sheet_width - 2 * cfg.sheet_margin
+    uh = cfg.sheet_height - 2 * cfg.sheet_margin
+    gap = cfg.part_spacing
+    # freie Rechtecke je Platte: (x, y, w, h); Teile werden um `gap` vergrößert gepackt
+    W, H = uw + gap, uh + gap
+    items = sorted(((p,) + p.size() for p in parts), key=lambda it: -(it[1] * it[2]))
+    free: List[List[Tuple[float, float, float, float]]] = []
+    placed: List[List[Tuple[Part, float, float, bool]]] = []
+
+    def split(fr, used):
+        ux, uy, uw_, uh_ = used
+        out = []
+        for fx, fy, fw, fh in fr:
+            if ux >= fx + fw - EPS or ux + uw_ <= fx + EPS or uy >= fy + fh - EPS or uy + uh_ <= fy + EPS:
+                out.append((fx, fy, fw, fh))
+                continue
+            if ux > fx + EPS:
+                out.append((fx, fy, ux - fx, fh))
+            if ux + uw_ < fx + fw - EPS:
+                out.append((ux + uw_, fy, fx + fw - ux - uw_, fh))
+            if uy > fy + EPS:
+                out.append((fx, fy, fw, uy - fy))
+            if uy + uh_ < fy + fh - EPS:
+                out.append((fx, uy + uh_, fw, fy + fh - uy - uh_))
+        # enthaltene Rechtecke entfernen
+        keep = []
+        for i, a in enumerate(out):
+            if any(j != i and a[0] >= b[0] - EPS and a[1] >= b[1] - EPS and a[0] + a[2] <= b[0] + b[2] + EPS
+                   and a[1] + a[3] <= b[1] + b[3] + EPS and (a != b or j < i) for j, b in enumerate(out)):
+                continue
+            keep.append(a)
+        return keep
+
+    for p, w, h in items:
+        best = None
+        for si in range(len(free) + 1):
+            if si == len(free):
+                free.append([(0.0, 0.0, W, H)])
+                placed.append([])
+            for rot in (False, True):
+                pw, ph = (h, w) if rot else (w, h)
+                pw += gap
+                ph += gap
+                for fx, fy, fw, fh in free[si]:
+                    if pw <= fw + EPS and ph <= fh + EPS:
+                        score = (min(fw - pw, fh - ph), fy, fx)
+                        if best is None or score < best[0]:
+                            best = (score, fx, fy, pw, ph, rot)
+            if best is not None:
+                break
+            if not placed[si]:
+                return None                                   # passt auch auf eine leere Platte nicht
+        _, fx, fy, pw, ph, rot = best
+        free[si] = split(free[si], (fx, fy, pw, ph))
+        placed[si].append((p, fx, fy, rot))
+    sheets = []
+    for si, items_ in enumerate(placed):
+        sh = Sheet(si + 1, cfg.sheet_width, cfg.sheet_height)
+        for p, x, y, rot in items_:
+            sh.parts.append(_to_sheet(p, cfg.sheet_margin + x, cfg.sheet_margin + y, rot))
+        sheets.append(sh)
     return sheets
 
 

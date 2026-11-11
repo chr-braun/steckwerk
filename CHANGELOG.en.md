@@ -2,6 +2,14 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## 2.11.0 – 2026-11-11
+
+- Christmas 2.1.0: new model **Fine name ornament**: names in real script lettering (elegant, flowing, round and bold), one ornament per name.
+  - Cut-out script inside a bauble ring with a scene on a snowy hill: winter village, winter forest with stag, snowman with lantern, sleigh ride, Advent wreath, Christmas tree with presents, baking cookies, wrapping presents. The year is engraved in the snow.
+  - Two-layer medallion (base plate with filled engraved name, lace frame on top) and single-layer lace.
+  - Hairlines are thickened for the laser; i dots, umlauts and names with spaces stay in one piece.
+  - The fonts ship as outlines inside the package (SIL Open Font License); Steckwerk needs no font files.
+
 ## 2.10.1 – 2026-11-10
 
 - Steckwerk computes much faster, so it runs smoothly on older Macs too. The cut files stay bit-for-bit identical; only the way there is shorter:

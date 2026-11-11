@@ -139,10 +139,22 @@ public struct EngineClient: Sendable {
     }
 
     public func save(model: String, params: [String: JSONValue], config: [String: JSONValue],
-                     gravuren: [JSONValue] = []) async throws -> SaveResponse {
+                     formate: [String] = [], gravuren: [JSONValue] = []) async throws -> SaveResponse {
         var body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+        if !formate.isEmpty { body["formate"] = .array(formate.map { .string($0) }) }
         if !gravuren.isEmpty { body["gravuren"] = .array(gravuren) }
         return try await call("api/save", body, as: SaveResponse.self)
+    }
+
+    /// Platte als XCS-Projekt in den Ausgabeordner speichern und in xTool Creative Space öffnen.
+    public func xcsOeffnen(model: String, params: [String: JSONValue], config: [String: JSONValue]) async throws -> XcsOeffnenResponse {
+        let body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+        let request = try makeRequest("api/xcs-oeffnen", body: body, timeout: 120)
+        let (data, status) = try await transport.send(request)
+        if let response = try? JSONDecoder().decode(XcsOeffnenResponse.self, from: data), response.ok || response.error != nil {
+            return response
+        }
+        return try Self.decode(XcsOeffnenResponse.self, data: data, status: status)
     }
 
     public func openFolder() async throws {
