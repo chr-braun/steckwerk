@@ -47,6 +47,7 @@ Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
 | Wichtelfiguren (jetzt in Wichtel) | 1.0.0 Schicht-Wichtel aus vier Lagen (16.10.) |
 | Werkstatt (jetzt in Grundlagen) | 1.0.0 Passungstest (16.10.) |
 | **Wichtel** | 1.0.0 alle Wichtel in einem Paket, neu mit Wichtelmarkt: Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne (16.10.), 1.0.1 lädt sicher bei parallelen Anfragen (16.10.) |
+| **Spiele** | 1.0.0 Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär (11.11.), 1.1.0 mit Bilderpuzzle (11.11.) |
 
 ## Warum „Steckwerk“?
 

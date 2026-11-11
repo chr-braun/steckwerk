@@ -2,6 +2,10 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## New, not yet released
+
+- **Games 1.1.0** with the new **Jigsaw puzzle** model: picture puzzle with tabs (classic, playful or straight for toddlers), rectangular or round, 4 to 200 pieces, a new cut pattern for every number, optional frame with base. The picture runs across all pieces: five detailed scenes (winter village at night, Christmas tree with presents, mandala, starry sky, forest clearing with owl and hedgehog) or your own motif or logo from the motif library, filled or outlined, with a background pattern. Lettering on a ribbon or on the frame, decorative border, adjustable play between pieces. Even 200 pieces compute in under a second.
+
 ## Christmas 2.2.0 – 2026-11-11
 
 - New model **Fine tree ornaments**: twelve richly detailed ornaments in paper-cut quality, single or as a set: angel with feathered wings, faceted star, bauble with starry sky and winter scene, bell with bow, pine cone, decorated tree, snowman with top hat, heart with tree of life, sleeping moon, candle with fir sprigs, present and Santa boot.
