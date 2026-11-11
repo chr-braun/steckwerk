@@ -22,7 +22,8 @@ Vektorgeometrie und rechnet auch auf einem alten Rechner in Sekundenbruchteilen.
   Kleinkinder, rechteckig oder rund, 4 bis 200 Teile. Jede Nummer ergibt ein neues Schnittmuster. Das Bild
   läuft über alle Teile: Winterdorf bei Nacht, Christbaum mit Geschenken, Mandala, Sternenhimmel über dem
   Wald, Waldlichtung mit Eule und Igel – oder dein eigenes Motiv bzw. Logo aus der Motiv-Bibliothek (SVG/PNG
-  importieren), flächig oder als Umriss, mit Hintergrundmuster. Dazu Schriftband, Zierrand und auf Wunsch ein
+  importieren), flächig oder als Umriss, mit Hintergrundmuster. **Fotopuzzle:** Bild „Foto“ wählen und unter
+  „Eigene Gravur“ ein Foto hinzufügen – es läuft einmal über alle Teile. Dazu Schriftband, Zierrand und auf Wunsch ein
   Rahmen mit Boden zum Hineinlegen. Tipp: erst gravieren, dann schneiden; das Spiel (Standard 0,1 mm) bei
   strammen Teilen erhöhen.
 

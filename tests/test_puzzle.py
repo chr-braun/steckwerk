@@ -143,3 +143,42 @@ def test_schnittstelle_fuer_andere_pakete(umgebung):
     teile = mod.puzzle_aus_bild(cfg, "test", "rechteck", 120, 90, 12, "klassisch", 5, bild)
     assert len(teile) == 12
     assert sum(len(p.engrave) for p in teile) >= 6
+
+
+def _testfoto():
+    """Kleines Graustufen-Testbild (Verlauf mit Kreis) als PNG."""
+    import bilder
+    w, h = 120, 80
+    px = bytearray()
+    for y in range(h):
+        for x in range(w):
+            v = int(255 * x / w)
+            if (x - 60) ** 2 + (y - 40) ** 2 < 25 ** 2:
+                v = 255 - v
+            px.append(v)
+    return bilder.png_bytes(w, h, bytes(px))
+
+
+@pytest.mark.parametrize("form,teil", [("rechteck", "auto"), ("rund", "alle")])
+def test_fotopuzzle_ueber_alle_teile(umgebung, tmp_path, monkeypatch, form, teil):
+    """Ein Foto aus „Eigene Gravur“ läuft einmal über alle Puzzleteile (nicht je Teil ein ganzes Foto)."""
+    import bilder
+    import gravur
+    monkeypatch.setenv("STECKWERK_BILDER", str(tmp_path / "bilder"))
+    monkeypatch.setattr(bilder, "user_dir", lambda: str(tmp_path / "bilder"))
+    monkeypatch.setattr(bilder, "cache_dir", lambda: str(tmp_path / "cache"))
+    meta = bilder.import_bytes(_testfoto(), "foto.png", "Testfoto")
+    mod, _ = umgebung
+    cfg = Config(thickness=3.0, kerf=0.2)
+    asm = mod.build(cfg, bild="foto", form=form, teile=12, breite=160, hoehe=110, rahmen="rahmen")
+    gravur.anwenden([asm], [{"quelle": "bild", "bild": meta["id"], "teil": teil, "aufloesung": 5}])
+    assert_cut_ready(asm, cfg)
+    teile = _teile(asm)
+    assert all(len(p.images) == 1 for p in teile), "jedes Teil bekommt seinen Ausschnitt"
+    assert not asm.part("puzzle_rahmen").images
+    # die Ausschnitte zusammen sind etwa so groß wie das Puzzle, nicht 12 ganze Fotos
+    flaeche = sum(abs((im.corners[1][0] - im.corners[0][0]) * (im.corners[0][1] - im.corners[2][1]))
+                  for p in teile for im in p.images)
+    soll = 160 * 110 if form == "rechteck" else math.pi * 80 ** 2
+    assert flaeche < 2.2 * soll
+    assert any("läuft über alle" in n for n in asm.notes)

@@ -38,7 +38,8 @@ P = _sub("_puzzle")
 B = _sub("_bilder")
 
 FORMEN = [("rechteck", "rechteckig"), ("rund", "rund")]
-BILDWAHL = B.BILDER + [("eigenes", "eigenes Motiv oder Logo"), ("ohne", "ohne Bild (nur Muster)")]
+BILDWAHL = B.BILDER + [("eigenes", "eigenes Motiv oder Logo"), ("foto", "Foto (über „Eigene Gravur“)"),
+                       ("ohne", "ohne Bild (nur Muster)")]
 MOTIV_ART = [("flaeche", "flächig gravieren"), ("umriss", "nur Umriss gravieren")]
 RAHMEN = [("keiner", "ohne Rahmen"), ("rahmen", "Rahmen mit Boden (Legepuzzle)")]
 
@@ -55,7 +56,8 @@ INFO = dict(
         integer("teile", "Teile (ungefähr)", 24, 4, 200, help="Kleinkinder 4–12, Kinder 20–48, Erwachsene ab 60"),
         sel("schnitt", "Schnitt", P.SCHNITTE, "klassisch"),
         integer("nummer", "Schnittmuster-Nr.", 1, 1, 9999, help="jede Nummer ergibt andere Nasen"),
-        sel("bild", "Bild", BILDWAHL, "winterdorf", section="Bild"),
+        sel("bild", "Bild", BILDWAHL, "winterdorf", section="Bild",
+            help="Fotopuzzle: „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen – es läuft über alle Teile"),
         motiv("motiv", "Motiv", "stern", "eigenes Bild oder Logo über „Motive importieren“ (SVG oder PNG) laden",
               when={"bild": ["eigenes"]}, section="Bild"),
         sel("motiv_art", "Motiv als", MOTIV_ART, "flaeche", when={"bild": ["eigenes"]}, section="Bild"),
@@ -86,7 +88,11 @@ UEBERSETZUNG = {"en": dict(S.UEBERSETZUNG_GEMEINSAM, **{
     "Christbaum mit Geschenken": "Christmas tree with presents", "Mandala": "Mandala",
     "Sternenhimmel über dem Wald": "Starry sky over the forest",
     "Waldlichtung mit Eule und Igel": "Forest clearing with owl and hedgehog",
-    "eigenes Motiv oder Logo": "own motif or logo", "ohne Bild (nur Muster)": "no picture (pattern only)",
+    "eigenes Motiv oder Logo": "own motif or logo", "Foto (über „Eigene Gravur“)": "photo (via “Custom engraving”)",
+    "Fotopuzzle: „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen – es läuft über alle Teile":
+        "Photo puzzle: choose “photo” and add a photo under “Custom engraving” – it runs across all pieces",
+    "Fotopuzzle: unter „Eigene Gravur“ ein Foto hinzufügen (Teil „größtes Teil“ oder „alle Teile“) – es wird einmal über alle Puzzleteile gelegt.":
+        "Photo puzzle: add a photo under “Custom engraving” (part “largest part” or “all parts”) – it is laid once across all puzzle pieces.", "ohne Bild (nur Muster)": "no picture (pattern only)",
     "Motiv": "Motif",
     "eigenes Bild oder Logo über „Motive importieren“ (SVG oder PNG) laden":
         "load your own picture or logo via “Import motifs” (SVG or PNG)",
@@ -236,6 +242,8 @@ def build(cfg, name: str = "puzzle", form: str = "rechteck", breite: float = 200
             striche = B.szene(bild, box, seed)
     elif bild == "eigenes":
         striche = _motiv_bild(motiv, motiv_art, motiv_groesse, box, muster, seed)
+    elif bild == "foto":
+        striche = []
     else:
         striche = B.muster(muster, box, None, groesse=max(6.0, min(W, H) / 14), seed=seed)
 
@@ -272,7 +280,7 @@ def build(cfg, name: str = "puzzle", form: str = "rechteck", breite: float = 200
     teile_liste = puzzle_aus_bild(cfg, name, form, W, H, teile, schnitt, nummer, striche, oben, sperren, spiel)
 
     asm = Assembly(name, params=dict(form=form, breite=W, hoehe=H, teile=len(teile_liste), schnitt=schnitt,
-                                     nummer=nummer, bild=bild))
+                                     nummer=nummer, bild=bild, verbund=f"{name}_teil_"))
     asm.parts += teile_liste
     if rahmen == "rahmen":
         luft = 0.25 + spiel
@@ -301,6 +309,9 @@ def build(cfg, name: str = "puzzle", form: str = "rechteck", breite: float = 200
         boden = Part(f"{name}_boden", oriented(list(aussen), True))
         asm.parts += [platte, boden]
         asm.notes.append("Die Rahmenplatte auf den Boden leimen; die Teile liegen dann in der Mulde.")
+    if bild == "foto":
+        asm.notes.append("Fotopuzzle: unter „Eigene Gravur“ ein Foto hinzufügen (Teil „größtes Teil“ oder „alle Teile“) – "
+                         "es wird einmal über alle Puzzleteile gelegt.")
     asm.notes += [
         "Gravur zuerst lasern, dann schneiden – so verrutschen die kleinen Teile nicht.",
         "Zum Sortieren erst die Randteile heraussuchen – die Teile tragen ihre Position im Namen (Zeile-Spalte).",

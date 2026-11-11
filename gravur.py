@@ -170,6 +170,13 @@ def anwenden(assemblies: Sequence[Assembly], specs: Any) -> List[Assembly]:
             continue
         treffer = 0
         for asm in assemblies:
+            verbund = _verbund(asm, g)
+            if verbund:                   # Puzzle: ein Foto läuft über alle Teile
+                treffer += len(verbund)
+                note = _bild_verbund(verbund, g, i)
+                if note and note not in asm.notes:
+                    asm.notes.append(note)
+                continue
             for p in _ziele(asm, g["teil"]):
                 treffer += 1
                 note = _eine(p, g, i)
@@ -182,6 +189,101 @@ def anwenden(assemblies: Sequence[Assembly], specs: Any) -> List[Assembly]:
             namen = ", ".join(t["name"] for t in teile(assemblies)[:12])
             raise ValueError(f"Gravur {i}: Teil {g['teil']!r} gibt es in diesem Modell nicht – vorhanden: {namen}")
     return list(assemblies)
+
+
+def _verbund(asm: Assembly, g: Dict[str, Any]) -> List[Part]:
+    """Teile, die zusammen eine Fläche bilden (Puzzle: asm.params["verbund"] = Namensanfang der Teile).
+    Ein Foto auf „auto“ oder „alle“ wird dann einmal über alle diese Teile gelegt statt auf jedes einzeln."""
+    pre = asm.params.get("verbund") if isinstance(asm.params, dict) else None
+    if not pre or g["quelle"] != "bild" or g["teil"] not in ("auto", "alle"):
+        return []
+    return [p for p in asm.parts if p.name.startswith(pre) and len(p.outline) >= 3]
+
+
+def _zeilen_intervalle(poly: Sequence[Point], y: float) -> List[Tuple[float, float]]:
+    xs = []
+    n = len(poly)
+    for k in range(n):
+        (x0, y0), (x1, y1) = poly[k], poly[(k + 1) % n]
+        if (y0 <= y < y1) or (y1 <= y < y0):
+            xs.append(x0 + (y - y0) * (x1 - x0) / (y1 - y0))
+    xs.sort()
+    return [(xs[k], xs[k + 1]) for k in range(0, len(xs) - 1, 2)]
+
+
+def _bild_verbund(parts: Sequence[Part], g: Dict[str, Any], i: int) -> str:
+    """Ein Foto über alle Teile eines Puzzles: einmal aufbereiten (gleiche Punkte-Rasterung über die Fugen),
+    dann je Teil den passenden Ausschnitt nehmen und auf die Teilefläche (innen um „rand“) maskieren."""
+    from steckwerk import offset_polygon
+    meta = bilder.load(g["bild"])
+    xs = [q[0] for p in parts for q in p.outline]
+    ys = [q[1] for p in parts for q in p.outline]
+    X0, Y0, X1, Y1 = min(xs), min(ys), max(xs), max(ys)
+    sw, sh = float(meta["w"]), float(max(1, meta["h"]))
+    if g["groesse"] > 0:                  # feste Größe: wie gewohnt um die Mitte (verschoben um x, y)
+        L = g["groesse"]
+        w, h = (L, L * sh / sw) if sw >= sh else (L * sw / sh, L)
+        cx, cy = (X0 + X1) / 2 + g["x"], (Y0 + Y1) / 2 + g["y"]
+        tl = (cx - w / 2, cy + h / 2)
+        ausschnitt = None
+    else:                                 # füllend: das Foto deckt das ganze Puzzle, überstehende Ränder fallen weg
+        w, h = X1 - X0, Y1 - Y0
+        tl = (X0, Y1)
+        t = w / h
+        if sw / sh > t:
+            f = t / (sw / sh)
+            ausschnitt = ((1 - f) / 2, 0.0, (1 + f) / 2, 1.0)
+        else:
+            f = (sw / sh) / t
+            ausschnitt = (0.0, (1 - f) / 2, 1.0, (1 + f) / 2)
+    ppmm = min(g["aufloesung"], math.sqrt(3_900_000 / max(1.0, w * h)))
+    W, H, png = bilder.aufbereiten(g["bild"], w, h, ppmm=ppmm, modus=g["modus"], helligkeit=g["helligkeit"],
+                                   kontrast=g["kontrast"], gamma=g["gamma"], invertieren=g["invertieren"],
+                                   form=g["form"], ausschnitt=ausschnitt, auto=g["auto"])
+    gw, gh, grau, alpha = bilder._png_rows(png)
+    kx, ky = gw / w, gh / h               # Pixel je mm
+    name = meta.get("name", g["bild"])
+    rand = min(g["rand"], 0.5)            # schmale Fugen: das Bild soll über die Teile hinweg wirken
+    n = 0
+    for p in parts:
+        innen = oriented(offset_polygon(oriented(p.outline, True), -rand, miter_limit=2.0), True) \
+            if rand > 0 else oriented(p.outline, True)
+        bx0, by0, bx1, by1 = bbox(innen)
+        c0 = max(0, int(math.floor((bx0 - tl[0]) * kx)))
+        c1 = min(gw, int(math.ceil((bx1 - tl[0]) * kx)))
+        r0 = max(0, int(math.floor((tl[1] - by1) * ky)))
+        r1 = min(gh, int(math.ceil((tl[1] - by0) * ky)))
+        cw, ch = c1 - c0, r1 - r0
+        if cw < 2 or ch < 2:
+            continue
+        g_out = bytearray(b"\xff" * (cw * ch))
+        a_out = bytearray(cw * ch)
+        voll = False
+        for r in range(ch):
+            y_mm = tl[1] - (r0 + r + 0.5) / ky
+            src = (r0 + r) * gw
+            for xa, xb in _zeilen_intervalle(innen, y_mm):
+                a = max(c0, int(math.ceil((xa - tl[0]) * kx - 0.5)))
+                b = min(c1, int(math.floor((xb - tl[0]) * kx - 0.5)) + 1)
+                if b <= a:
+                    continue
+                o = r * cw
+                g_out[o + a - c0:o + b - c0] = grau[src + a:src + b]
+                a_out[o + a - c0:o + b - c0] = alpha[src + a:src + b] if alpha else b"\xff" * (b - a)
+                voll = True
+        if not voll:
+            continue
+        for k, av in enumerate(a_out):    # durchsichtige Pixel sind weiß (nichts gravieren)
+            if av == 0:
+                g_out[k] = 255
+        ecke = (tl[0] + c0 / kx, tl[1] - r0 / ky)
+        ecken = (ecke, (ecke[0] + cw / kx, ecke[1]), (ecke[0], ecke[1] - ch / ky))
+        p.images.append(RasterImage(bilder.png_bytes(cw, ch, bytes(g_out), bytes(a_out), kx), ecken,
+                                    f"Gravur {i}: {name}"))
+        n += 1
+    modus = dict(bilder.MODI)[g["modus"]]
+    return (f"Foto „{name}“ läuft über alle {n} Puzzleteile: {w:.0f} × {h:.0f} mm, {modus}, {W} × {H} Pixel – "
+            f"in XCS die Ebene „Bild“ als Bitmap gravieren.")
 
 
 def _feld(p: Part, rand: float) -> Tuple[float, float, float, float]:
