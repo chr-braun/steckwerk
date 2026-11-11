@@ -47,7 +47,13 @@ jobs:
         run: |
           V=${TAG#v}
           awk -v v="$V" '$0 ~ "^## "v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
-          gh release create "$TAG" dist/*.zip dist/*.swpaket --target "$GITHUB_SHA" --title "Steckwerk $V" --notes-file notes.md
+          # Gibt es das Release schon (z. B. weil ein früherer Lauf beim Update-Kanal hängen blieb), nur die Dateien
+          # ersetzen – so lässt sich der Workflow gefahrlos noch einmal starten.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/*.zip dist/*.swpaket --clobber
+          else
+            gh release create "$TAG" dist/*.zip dist/*.swpaket --target "$GITHUB_SHA" --title "Steckwerk $V" --notes-file notes.md
+          fi
 
   desktop:
     name: Steckwerk Desktop (macOS)
