@@ -2,6 +2,14 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Weihnachten 2.2.0 – 2026-11-11
+
+- Neues Modell **Edler Christbaumschmuck**: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set.
+  - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel.
+  - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf.
+  - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz.
+  - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.
+
 ## Weihnachten 2.1.0 – 2026-11-10
 
 - Neues Modell **Edler Namensanhänger**: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name.
