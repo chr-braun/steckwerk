@@ -27,6 +27,8 @@ from steckwerk import (Assembly, Config, ConfigError, LayoutError, Sheet, __vers
 from models import (ACCESSORIES, MODELS, _deko as dk, fahrzeug, ornament, schneeflocke, schwibbogen, serie,
                     wichtelhaus)
 from validator import Report, validate_assembly, validate_sheets, validate_svg_text
+import bilder
+import gravur
 import motive as mt
 from models import motivvorlagen as mv
 
@@ -575,6 +577,20 @@ def process(assemblies: List[Assembly], cfg: Config, preview_on_error: bool = Fa
     return results, all_ok
 
 
+def bild_dateien(res: Result) -> List[Tuple[str, bytes]]:
+    """Bild-Gravuren zusätzlich als einzelne PNG-Dateien (mit Auflösung in mm), falls ein Programm
+    eingebettete Bilder im SVG nicht übernimmt."""
+    out = []
+    for sh, fname, _ in res.svgs:
+        k = 0
+        for p in sh.parts:
+            for im in p.images:
+                k += 1
+                w, h = im.size()
+                out.append((f"{fname[:-4]}_bild{k}_{w:.0f}x{h:.0f}mm.png", im.png))
+    return out
+
+
 def report_text(res: Result, cfg: Config) -> str:
     notes = "\n".join(f"- {n}" for n in res.asm.notes)
     return (f"Steckwerk {__version__} – {res.asm.name}\nParameter: {res.asm.params}\n"
@@ -601,6 +617,10 @@ def write_results(results: List[Result], cfg: Config, out: str, preview: bool = 
                 preview_ok = bool(png)
                 if png:
                     written.append(png)
+        for fname, png in bild_dateien(res):
+            with open(os.path.join(d, fname), "wb") as fh:
+                fh.write(png)
+            written.append(os.path.join(d, fname))
         write_text(os.path.join(d, "pruefbericht.txt"), report_text(res, cfg))
         written.append(os.path.join(d, "pruefbericht.txt"))
     for rel, data in extra_files(results, cfg, req or {}):
@@ -622,6 +642,8 @@ def zip_results(results: List[Result], cfg: Config, req: Optional[Dict[str, Any]
         for res in results:
             for _, fname, text in res.svgs:
                 z.writestr(f"{res.asm.name}/{fname}", text)
+            for fname, png in bild_dateien(res):
+                z.writestr(f"{res.asm.name}/{fname}", png)
             z.writestr(f"{res.asm.name}/pruefbericht.txt", report_text(res, cfg))
         for rel, data in extra_files(results, cfg, req or {}):
             z.writestr(rel, data)
@@ -691,6 +713,7 @@ def schema() -> Dict[str, Any]:
             for _, m, err in PAKETE]
     return dict(version=__version__, groups=groups, models=MODEL_INFO, config=CONFIG_INFO,
                 motive=[mt.summary(m) for m in mt.library()], motive_ordner=mt.user_dir(),
+                bilder=bilder.library(), bilder_ordner=bilder.user_dir(), gravur=gravur.optionen(),
                 vehicle_defaults=VEHICLE_DEFAULTS, pakete=paks, pakete_ordner=pakete.install_dir())
 
 
@@ -706,8 +729,8 @@ def _cache_key(req: Dict[str, Any]) -> Optional[str]:
     if (req.get("params") or {}).get("seed", 0) in (None, ""):
         return None                                       # Zufall ohne Startwert: jedes Mal neu würfeln
     try:
-        return json.dumps([req.get("model", "wichtelhaus"), req.get("params") or {}, req.get("config") or {}],
-                          sort_keys=True, separators=(",", ":"))
+        return json.dumps([req.get("model", "wichtelhaus"), req.get("params") or {}, req.get("config") or {},
+                           req.get("gravuren") or []], sort_keys=True, separators=(",", ":"))
     except (TypeError, ValueError):
         return None
 
@@ -729,6 +752,8 @@ def run_request(req: Dict[str, Any], preview_on_error: bool = True,
                 return hit
     cfg = make_config(req.get("config"))
     assemblies = build_assemblies(str(req.get("model", "wichtelhaus")), req.get("params"), cfg)
+    if req.get("gravuren"):
+        assemblies = gravur.anwenden(assemblies, req.get("gravuren"))
     results, _ = process(assemblies, cfg, preview_on_error=preview_on_error, stop=stop)
     if key is not None and preview_on_error:
         with _ERGEBNISSE_LOCK:
@@ -755,7 +780,7 @@ def generate(req: Dict[str, Any], stop: Optional[Callable[[], bool]] = None) -> 
         out.append(dict(
             name=res.asm.name, ok=res.ok, summary=res.report.summary(), report=res.report.text(),
             notes=list(res.asm.notes), params={k: v for k, v in res.asm.params.items()},
-            parts=len(res.asm.parts), joints=len(res.asm.connections),
+            parts=len(res.asm.parts), joints=len(res.asm.connections), teile=gravur.teile([res.asm]),
             errors=[e.line() for e in res.report.errors][:50],
             schaetzung=schaetzung(res, cfg, req) if res.sheets else None,
             sheets=[dict(file=f, svg=t, width=sh.width, height=sh.height, parts=len(sh.parts), checked=res.ok)

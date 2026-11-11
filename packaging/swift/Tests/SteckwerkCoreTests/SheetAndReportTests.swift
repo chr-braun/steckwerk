@@ -42,6 +42,24 @@ final class SheetGeometryTests: XCTestCase {
         XCTAssertEqual(geo.lines.map(\.kind), [.cut, .engrave])
     }
 
+    func testParsesEmbeddedEngraveImage() {
+        let png = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3]).base64EncodedString()
+        let svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100mm" height="50mm" viewBox="0 0 100 50">
+          <g id="layer-bild"><image x="0" y="0" width="40" height="30" preserveAspectRatio="none"
+            transform="matrix(0 1 -1 0 60 5)" href="data:image/png;base64,\(png)" xlink:href="data:image/png;base64,\(png)"/></g>
+          <g id="layer-schnitt" stroke="#000000"><path d="M0,0 L10,0 L10,10 Z"/></g>
+        </svg>
+        """
+        let geo = SheetGeometry.parse(svg: svg)
+        XCTAssertEqual(geo.images.count, 1)
+        XCTAssertEqual(geo.images.first?.width, 40)
+        XCTAssertEqual(geo.images.first?.height, 30)
+        XCTAssertEqual(geo.images.first?.matrix, [0, 1, -1, 0, 60, 5])
+        XCTAssertEqual(geo.images.first?.png.count, 11)
+        XCTAssertEqual(geo.cutCount, 1)
+    }
+
     func testBrokenSVGDoesNotCrash() {
         let geo = SheetGeometry.parse(svg: "<svg><path d=\"M1")
         XCTAssertTrue(geo.lines.isEmpty)

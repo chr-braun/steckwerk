@@ -9,7 +9,9 @@ Einstellungen → Motive → **Motiv hochladen …**
 - **SVG** (am besten): gefüllte Flächen werden Konturen, Weiß ist ein Loch, Linien ohne Füllung werden
   Gravur. Text vorher in Pfade umwandeln.
 - **PNG**: wird nachgezeichnet. Dunkel = Motiv, hell/transparent = Hintergrund; sonst „Farben umkehren“.
-  JPG geht nicht, vorher als PNG speichern.
+  JPG und HEIC gehen auch (werden genauso nachgezeichnet).
+
+Fotos als echte Bild-Gravur (mit Graustufen) gehen über [Eigene Gravur](Eigene-Gravur.md).
 
 19 Motive sind schon eingebaut. Seit 2.3.0 kannst du Motive auch von einer KI zeichnen lassen, siehe
 [KI-Funktionen](KI-Funktionen.md).

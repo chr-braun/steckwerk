@@ -51,10 +51,12 @@ public struct Assembly: Decodable, Sendable, Identifiable {
     public let joints: Int
     public let errors: [String]
     public let sheets: [SheetResult]
+    /// Bauteile (Name, Breite, Höhe) – zur Auswahl, worauf eine eigene Gravur kommt.
+    public let teile: [TeilInfo]
     /// Laserzeit, Schnittlänge und Plattenbedarf (Schätzung der Engine, ab 2.11).
     public let schaetzung: Schaetzung?
 
-    enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets, schaetzung }
+    enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets, teile, schaetzung }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -67,6 +69,7 @@ public struct Assembly: Decodable, Sendable, Identifiable {
         joints = try c.decodeIfPresent(Int.self, forKey: .joints) ?? 0
         errors = try c.decodeIfPresent([String].self, forKey: .errors) ?? []
         sheets = try c.decodeIfPresent([SheetResult].self, forKey: .sheets) ?? []
+        teile = (try? c.decodeIfPresent([TeilInfo].self, forKey: .teile)) ?? []
         schaetzung = try? c.decodeIfPresent(Schaetzung.self, forKey: .schaetzung)
     }
 }
@@ -123,6 +126,12 @@ public struct XcsOeffnenResponse: Decodable, Sendable {
         error = try c.decodeIfPresent(String.self, forKey: .error)
         datei = try c.decodeIfPresent(String.self, forKey: .datei)
     }
+}
+
+public struct TeilInfo: Decodable, Hashable, Sendable {
+    public let name: String
+    public let w: Double
+    public let h: Double
 }
 
 public struct SheetResult: Decodable, Sendable, Identifiable {
@@ -355,4 +364,23 @@ public struct MotivResponse: Decodable, Sendable {
     public let ok: Bool
     public let message: String?
     public let id: String?
+}
+
+public struct FotoResponse: Decodable, Sendable {
+    public let ok: Bool
+    public let message: String?
+    public let error: String?
+    public let id: String?
+    public let bilder: [BildInfo]
+
+    enum CodingKeys: String, CodingKey { case ok, message, error, id, bilder }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        ok = try c.decodeIfPresent(Bool.self, forKey: .ok) ?? false
+        message = try c.decodeIfPresent(String.self, forKey: .message)
+        error = try c.decodeIfPresent(String.self, forKey: .error)
+        id = try c.decodeIfPresent(String.self, forKey: .id)
+        bilder = (try? c.decodeIfPresent([BildInfo].self, forKey: .bilder)) ?? []
+    }
 }

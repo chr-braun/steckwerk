@@ -2,6 +2,15 @@
 
 Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.Neben.Fix.
 
+## Neu, noch ohne Versionsnummer
+
+- **Eigene Gravur auf jedem Modell:** Fotos, Logos, Motive und Muster lassen sich auf jedes Teil gravieren (größtes Teil, alle Teile oder ein bestimmtes), in der Browser-App, in Steckwerk Desktop und auf der Kommandozeile (`--gravur`, `--bild-import`). Gravuren laufen nie über Schnitte, Durchbrüche oder Steckverbindungen.
+- **Fotos und Logos als Bild-Gravur:** JPG, PNG und HEIC importieren; Fotogravur (fein gerastert), Graustufen für XCS, Schwarzweiß-Logo oder Skizze; Bildform Rechteck, abgerundet, Oval, Kreis, Herz oder weicher Rand; Helligkeit, Kontrast, Gamma, Umkehren, Auflösung bis 12,7 Punkte je mm. Die Bilder kommen als eigene Ebene „Bild“ ins SVG und zusätzlich als PNG-Datei daneben. Fertige Bilder werden zwischengespeichert, damit es auch auf älteren Rechnern flott bleibt.
+- **Motive als gestochen scharfe Bild-Gravur:** flächige Logos ohne Schraffurlinien.
+- **18 neue Flächenmuster:** Rautengitter, Karo, Waben, Schuppen, Fischgrät, Wellen, Holzmaserung, Streifen, Punkte, Blume des Lebens, Mandala, Strahlen, Spitze, Ranken, Sternenhimmel, Schneeflocken, Herzen, Tannenwald – mit einstellbarem Rapport, auf Wunsch nur in einem Bereich; Zierrahmen und vorhandene Gravuren bleiben frei.
+- Motive lassen sich jetzt auch aus JPG und HEIC importieren.
+- Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.
+
 ## 2.11.0 – 2026-11-11
 
 - Neues Themenpaket **Spiele** 1.0.0 (braucht Grundlagen 2.0.0): Mühle mit Steinablage und Spielernamen, rundes Tic-Tac-Toe mit ausgesägten Figuren (zum Beispiel Tanne gegen Stern), Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen (jede Nummer ein neuer Irrgarten) und Solitär mit Kugelrinne. Alle Bretter haben zwei Lagen mit Mulden, und alles rechnet in Sekundenbruchteilen.

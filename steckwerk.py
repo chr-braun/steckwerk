@@ -778,6 +778,24 @@ class JointFeature:
 
 
 @dataclass
+class RasterImage:
+    """Bild-Gravur (Rasterbild) auf einem Bauteil. Lage über drei Ecken in Bauteil-Koordinaten:
+    oben links, oben rechts, unten links (Bildrichtung). So übersteht das Bild jedes Verschieben,
+    Drehen und Spiegeln beim Layout ohne Umrechnung der Pixel."""
+    png: bytes
+    corners: Tuple[Point, Point, Point]
+    label: str = "Bild"
+
+    def mapped(self, fn: Callable[[Sequence[Point]], List[Point]]) -> "RasterImage":
+        a, b, c = fn(list(self.corners))
+        return RasterImage(self.png, (a, b, c), self.label)
+
+    def size(self) -> Tuple[float, float]:
+        a, b, c = self.corners
+        return dist(a, b), dist(a, c)
+
+
+@dataclass
 class Part:
     name: str
     outline: List[Point]
@@ -785,6 +803,7 @@ class Part:
     engrave: List[Stroke] = field(default_factory=list)
     features: List[JointFeature] = field(default_factory=list)
     note: str = ""
+    images: List[RasterImage] = field(default_factory=list)
 
     def __post_init__(self):
         # Orientierung erzwingen (CCW außen, CW Löcher). Bewusst KEIN Bereinigen –
@@ -824,11 +843,12 @@ class Part:
         return Part(self.name, offset_polygon(self.outline, d),
                     [offset_polygon(h, d) for h in self.holes],
                     [Stroke(list(s.points), s.closed) for s in self.engrave],
-                    self.features, self.note)
+                    self.features, self.note, list(self.images))
 
     def transformed(self, fn: Callable[[Sequence[Point]], List[Point]]) -> "Part":
         p = Part(self.name, fn(self.outline), [fn(h) for h in self.holes],
-                 [Stroke(fn(s.points), s.closed) for s in self.engrave], self.features, self.note)
+                 [Stroke(fn(s.points), s.closed) for s in self.engrave], self.features, self.note,
+                 [im.mapped(fn) for im in self.images])
         return p
 
 
@@ -1155,7 +1175,8 @@ def sheet_to_svg(sheet: Sheet, cfg: Config, title: str, meta: Optional[dict] = N
         desc.update(meta)
     out = ['<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
            f'<svg xmlns="http://www.w3.org/2000/svg" '
-           f'xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" '
+           f'xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" '
+           f'xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" '
            f'width="{_fmt(W)}mm" height="{_fmt(H)}mm" viewBox="0 0 {_fmt(W)} {_fmt(H)}">',
            f"  <title>{_esc(title)}</title>",
            f"  <desc>{_esc(json.dumps(desc, ensure_ascii=False))}</desc>",
@@ -1163,6 +1184,10 @@ def sheet_to_svg(sheet: Sheet, cfg: Config, title: str, meta: Optional[dict] = N
            "oder Fill einstellen, niedrige Leistung. -->",
            f'  <g id="layer-gravur" inkscape:groupmode="layer" inkscape:label="Gravur" '
            f'stroke="{cfg.engrave_color}" fill="none" stroke-width="{sw}">']
+    bilder = [(p, im) for p in sheet.parts for im in p.images]
+    if bilder:
+        # Bild-Gravur zuerst (wird beim Lasern als Erstes flächig graviert), eigene Ebene
+        out.insert(len(out) - 2, image_layer(bilder))
     for p in sheet.parts:
         if p.engrave:
             out.append(f'    <g id="gravur-{_esc(p.name)}">')
@@ -1184,6 +1209,28 @@ def sheet_to_svg(sheet: Sheet, cfg: Config, title: str, meta: Optional[dict] = N
     out.append("  </g>")
     out.append("</svg>")
     return "\n".join(out) + "\n"
+
+
+def image_layer(items: Sequence[Tuple["Part", RasterImage]]) -> str:
+    """Ebene „Bild“ mit eingebetteten PNGs (Rastergravur). Jedes Bild bekommt seine echte Größe in mm
+    und eine reine Dreh-/Verschiebematrix – so übernehmen XCS und LightBurn Lage und Maß."""
+    import base64
+    out = ['  <!-- Layer \'Bild\': Rastergravur (Foto/Logo) – in XCS „Gravieren“ (Bitmap) einstellen. -->',
+           '  <g id="layer-bild" inkscape:groupmode="layer" inkscape:label="Bild">']
+    for k, (p, im) in enumerate(items):
+        (ax, ay), (bx, by), (cx, cy) = im.corners
+        w, h = im.size()
+        if w <= 1e-9 or h <= 1e-9:
+            continue
+        a, b = (bx - ax) / w, (by - ay) / w
+        c, d = (cx - ax) / h, (cy - ay) / h
+        uri = "data:image/png;base64," + base64.b64encode(im.png).decode("ascii")
+        out.append(f'    <image id="bild-{_esc(p.name)}-{k + 1}" x="0" y="0" width="{_fmt(w)}" height="{_fmt(h)}" '
+                   f'preserveAspectRatio="none" '
+                   f'transform="matrix({a:.6f} {b:.6f} {c:.6f} {d:.6f} {_fmt(ax)} {_fmt(ay)})" '
+                   f'href="{uri}" xlink:href="{uri}"><title>{_esc(im.label)}</title></image>')
+    out.append("  </g>")
+    return "\n".join(out)
 
 
 def write_text(path: str, text: str) -> None:

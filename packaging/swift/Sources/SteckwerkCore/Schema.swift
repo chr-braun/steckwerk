@@ -10,9 +10,11 @@ public struct Schema: Decodable, Sendable {
     public let pakete: [PaketInfo]
     public let version: String?
     public let assistent: KISettings?
+    public let bilder: [BildInfo]
+    public let gravur: GravurOptionen
 
     enum CodingKeys: String, CodingKey {
-        case models, groups, config, motive, pakete, version, assistent
+        case models, groups, config, motive, pakete, version, assistent, bilder, gravur
         case groupLabels = "group_labels"
     }
 
@@ -26,6 +28,8 @@ public struct Schema: Decodable, Sendable {
         pakete = try c.decodeIfPresent([PaketInfo].self, forKey: .pakete) ?? []
         version = try c.decodeIfPresent(String.self, forKey: .version)
         assistent = try? c.decodeIfPresent(KISettings.self, forKey: .assistent)
+        bilder = (try? c.decodeIfPresent([BildInfo].self, forKey: .bilder)) ?? []
+        gravur = (try? c.decodeIfPresent(GravurOptionen.self, forKey: .gravur)) ?? GravurOptionen()
     }
 
     /// Modelle für die Seitenleiste: Gruppen in der Reihenfolge der Engine, darin nach Name sortiert.
@@ -324,5 +328,61 @@ public struct BildSettings: Decodable, Sendable {
             ?? ["openrouter": keyGesetzt, "chatgpt": chatgpt]
         limit = (try? c.decodeIfPresent(Double.self, forKey: .limit)) ?? 0
         stile = (try? c.decodeIfPresent([ParamOption].self, forKey: .stile)) ?? []
+    }
+}
+
+
+/// Foto oder Logo aus der Bild-Bibliothek (für die Bild-Gravur); `vorschau` ist ein PNG als data:-URI.
+public struct BildInfo: Decodable, Hashable, Sendable, Identifiable {
+    public let id: String
+    public let name: String
+    public let w: Int
+    public let h: Int
+    public let vorschau: String
+
+    enum CodingKeys: String, CodingKey { case id, name, w, h, vorschau }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decodeIfPresent(String.self, forKey: .name) ?? id
+        w = try c.decodeIfPresent(Int.self, forKey: .w) ?? 0
+        h = try c.decodeIfPresent(Int.self, forKey: .h) ?? 0
+        vorschau = try c.decodeIfPresent(String.self, forKey: .vorschau) ?? ""
+    }
+
+    /// PNG-Daten der Vorschau.
+    public var vorschauDaten: Data? {
+        guard let comma = vorschau.firstIndex(of: ",") else { return nil }
+        return Data(base64Encoded: String(vorschau[vorschau.index(after: comma)...]))
+    }
+}
+
+/// Auswahllisten für „Eigene Gravur“ (Foto, Motiv, Muster).
+public struct GravurOptionen: Decodable, Hashable, Sendable {
+    public var modi: [ParamOption] = []
+    public var formen: [ParamOption] = []
+    public var motivArten: [ParamOption] = []
+    public var muster: [ParamOption] = []
+    public var bereiche: [ParamOption] = []
+    public var aufloesungen: [Double] = [5, 8, 10, 12.7]
+    public var max: Int = 8
+
+    public init() {}
+
+    enum CodingKeys: String, CodingKey {
+        case modi, formen, muster, bereiche, aufloesungen, max
+        case motivArten = "motiv_arten"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        modi = (try? c.decodeIfPresent([ParamOption].self, forKey: .modi)) ?? []
+        formen = (try? c.decodeIfPresent([ParamOption].self, forKey: .formen)) ?? []
+        motivArten = (try? c.decodeIfPresent([ParamOption].self, forKey: .motivArten)) ?? []
+        muster = (try? c.decodeIfPresent([ParamOption].self, forKey: .muster)) ?? []
+        bereiche = (try? c.decodeIfPresent([ParamOption].self, forKey: .bereiche)) ?? []
+        aufloesungen = (try? c.decodeIfPresent([Double].self, forKey: .aufloesungen)) ?? [5, 8, 10, 12.7]
+        max = (try? c.decodeIfPresent(Int.self, forKey: .max)) ?? 8
     }
 }
