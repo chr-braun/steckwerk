@@ -2,29 +2,35 @@
   "standard": 1,
   "erstellt": "2026-11-11",
   "programm": {
-    "version": "2.11.0",
+    "version": "2.12.0",
     "datum": "2026-11-11",
     "hinweise": [
-      "Neues Themenpaket Spiele 1.0.0 (braucht Grundlagen 2.0.0): Mühle mit Steinablage und Spielernamen, rundes Tic-Tac-Toe mit ausgesägten Figuren (zum Beispiel Tanne gegen Stern), Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen (jede Nummer ein neuer Irrgarten) und Solitär mit Kugelrinne. Alle Bretter haben zwei Lagen mit Mulden, und alles rechnet in Sekundenbruchteilen.",
-      "Der Release-Workflow nimmt jetzt auch ganz neue Pakete in den Update-Kanal auf, nicht nur neue Versionen bekannter Pakete.",
-      "Wichtel 1.1.0: edles Wichtelzubehör, alles im Wichtel-Maßstab und in jeder Größe prüfbar schnittfertig: - Wichtelkamin in zwei Lagen: Korpus zum Stecken (Rückwand mit Mauerwerk, Sockel mit gefliester Herdplatte, Sims mit Zierkante) und filigrane Zierblende mit Fries, kannelierten Pilastern und Schlussstein. Dazu Feuer mit Holzscheiten, Funkengitter mit Rosette, dreiarmige Kerzenleuchter, Kaminuhr, Girlande und Strümpfe mit Namen. - Standuhr mit Pendelfenster, Pendel und Gewichten, Zierblende mit Rosette, Uhrenkopf mit Zifferblatt und Krone (Bogen, Giebel oder Schwanenhals), auf Wunsch mit Inschrift. - Schaukelstuhl mit geschwungenen Kufen, Sprossen, schräger Sprossenlehne (Neigung einstellbar) und Armlehnen-Schnecken, dazu Sitzkissen und Strickkorb. - Christbaum aus zwei gekreuzten Hälften mit Etagen, Schmuck-Ausschnitten, Lichterkette und Stern, dazu Geschenke mit Schleife und Namen. - Schneemann über Kreuz gesteckt: Gesicht und Zweigarme vorn, Möhrennase und wehender Schal im Profil, Zylinder oder Wollmütze, Besen oder Laterne. - Wichtelgarten: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.",
-      "Weihnachten 2.1.0: neues Modell Edler Namensanhänger: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name. - Schriftzug im Kugelring mit Szene auf dem Schneehügel: Winterdorf, Winterwald mit Hirsch, Schneemann mit Laterne, Schlittenfahrt, Adventskranz, Christbaum mit Geschenken, Plätzchen backen, Geschenke packen. Die Jahreszahl steht im Schnee. - Zweilagiges Medaillon (Grundplatte mit gefüllt graviertem Namen, Spitzenrahmen obendrauf) und einlagige Spitze. - Haarstriche werden laserfest verstärkt, i-Punkte, Umlaute und Namen mit Leerzeichen bleiben ein Stück. - Die Schriften sind als Umrisse im Paket (SIL Open Font License), Steckwerk braucht keine Schriftdateien.",
-      "Direkt für den xTool M2: Beim Export legt Steckwerk auf Wunsch neben jede SVG ein .xcs-Projekt für xTool Creative Space (Ebenen „Schneiden“ rot und „Ritzen“ blau, Gerät M2) und ein .xs-Projekt für xTool Studio ab 1.7, in dem Leistung, Tempo und Durchgänge aus dem Materialprofil schon eingetragen sind. Die Formate sind nicht offen dokumentiert und nach öffentlichen Beispielen geschrieben – beim ersten Mal in XCS kurz prüfen.",
-      "„In XCS öffnen“: speichert die Platte als .xcs und öffnet sie gleich in xTool Creative Space (oder xTool Studio). Browser-Oberfläche, Mac-App und Steckwerk Desktop.",
-      "Schnittzeit und Material: Für jedes Modell schätzt Steckwerk Laserzeit, Schnitt- und Ritzlänge, Plattenbedarf und Ausnutzung; mit einem Preis je Platte (Einstellungen → Material) auch die Materialkosten. Zu sehen im Inspektor, im Export-Fenster und in Steckwerk Desktop neben dem Prüfstatus.",
-      "Teilenummern und Montageanleitung: „Teilenummern gravieren“ (Material) schreibt jedem Teil eine kleine, geprüfte Nummer an die Stelle mit dem meisten Platz. „Montageanleitung (PDF)“ legt die Anleitung mit Blattübersicht, Teileliste und Zusammenbau-Schritten dazu.",
-      "Projekte: Modell, Werte und Material unter einem Namen merken und mit einem Klick wieder öffnen (Knopf „Projekte“, gespeichert in ~/.steckwerk/projekte.json).",
-      "Enger verschachteln: Braucht ein Modell mehrere Platten, versucht Steckwerk eine dichtere Anordnung mit gedrehten Teilen und nimmt sie, wenn sie eine Platte spart. Passt alles auf eine Platte, bleibt die Datei genau wie bisher.",
-      "Schneller auf älteren Macs (Grundlagen 2.0.1): Mehrlagige Bilder merken sich die Durchbrüche unveränderter Ebenen. Ändert man Text, Rückwand, Abstand oder Rahmen, ist ein Ebenenbild statt in rund 4 in gut 1 Sekunde neu gerechnet.",
-      "README: Anleitung für xTool Creative Space statt LightBurn."
+      "Neue Oberfläche in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf An xTool senden, unten eine Statusleiste mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.",
+      "Seitenleiste mit Zuletzt (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit ⌘S, der Titel zeigt *gesichert* oder *geändert*.",
+      "Ausgeben-Blatt mit zwei klaren Wegen: *In xTool Creative Space öffnen* (empfohlen) oder *Dateien sichern*. Teilenummern und Montageanleitung sind Schalter, die Schätzung steht in Kacheln darunter.",
+      "Prüfbericht als Teiletabelle mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt. Der technische Rohbericht steht eingeklappt darunter. „Überrasch mich“ ersetzt den Würfel.",
+      "Steckwerk Desktop: Werte im Inspektor rechts (⌥⌘I), Platte in Holzoptik, Systemakzentfarbe, Prüfbericht mit ⌘R.",
+      "Eigene Gravur auf jedem Modell: Fotos, Logos, Motive und Muster lassen sich auf jedes Teil gravieren (größtes Teil, alle Teile oder ein bestimmtes), in der Browser-App, in Steckwerk Desktop und auf der Kommandozeile (--gravur, --bild-import). Gravuren laufen nie über Schnitte, Durchbrüche oder Steckverbindungen.",
+      "Fotos und Logos als Bild-Gravur: JPG, PNG und HEIC importieren; Fotogravur (fein gerastert), Graustufen für XCS, Schwarzweiß-Logo oder Skizze; Bildform Rechteck, abgerundet, Oval, Kreis, Herz oder weicher Rand; Helligkeit, Kontrast, Gamma, Umkehren, Auflösung bis 12,7 Punkte je mm. Die Bilder kommen als eigene Ebene „Bild“ ins SVG und zusätzlich als PNG-Datei daneben. Fertige Bilder werden zwischengespeichert, damit es auch auf älteren Rechnern flott bleibt.",
+      "Motive als gestochen scharfe Bild-Gravur: flächige Logos ohne Schraffurlinien.",
+      "18 neue Flächenmuster: Rautengitter, Karo, Waben, Schuppen, Fischgrät, Wellen, Holzmaserung, Streifen, Punkte, Blume des Lebens, Mandala, Strahlen, Spitze, Ranken, Sternenhimmel, Schneeflocken, Herzen, Tannenwald – mit einstellbarem Rapport, auf Wunsch nur in einem Bereich; Zierrahmen und vorhandene Gravuren bleiben frei.",
+      "Motive lassen sich jetzt auch aus JPG und HEIC importieren.",
+      "Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.",
+      "Spiele 1.1.0 mit neuem Modell Puzzle: Bilderpuzzle mit Nasen (klassisch, verspielt oder gerade für Kleinkinder), rechteckig oder rund, 4 bis 200 Teile, jede Nummer ein neues Schnittmuster, auf Wunsch mit Rahmen und Boden zum Hineinlegen. Das Bild läuft über alle Teile und bleibt an jedem Schnittrand sauber frei: fünf detailreiche Szenen (Winterdorf bei Nacht, Christbaum mit Geschenken, Mandala, Sternenhimmel über dem Wald, Waldlichtung mit Eule und Igel) oder dein eigenes Motiv bzw. Logo aus der Motiv-Bibliothek, flächig oder als Umriss, mit Hintergrundmuster (Sterne, Schneeflocken, Rauten, Wellen, Punkte). Beschriftung auf einem Schriftband oder auf dem Rahmen, Zierrand, einstellbares Spiel zwischen den Teilen. Auch 200 Teile rechnen in unter einer Sekunde. Fotopuzzle: Bild „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen; es wird einmal über alle Teile gelegt (gleiche Fotogravur-Punkte über die Fugen hinweg), jedes Teil bekommt seinen Ausschnitt.",
+      "Weihnachten 2.2.0 mit neuem Modell Edler Christbaumschmuck: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set. - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel. - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf. - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz. - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.",
+      "Die Updateprüfung klappt wieder, auch wenn noch ein alter Zugangsschlüssel aus der Zeit gespeichert ist, als das Repo privat war."
     ],
     "hinweise_en": [
-      "Christmas 2.1.0: new model Fine name ornament: names in real script lettering (elegant, flowing, round and bold), one ornament per name. - Cut-out script inside a bauble ring with a scene on a snowy hill: winter village, winter forest with stag, snowman with lantern, sleigh ride, Advent wreath, Christmas tree with presents, baking cookies, wrapping presents. The year is engraved in the snow. - Two-layer medallion (base plate with filled engraved name, lace frame on top) and single-layer lace. - Hairlines are thickened for the laser; i dots, umlauts and names with spaces stay in one piece. - The fonts ship as outlines inside the package (SIL Open Font License); Steckwerk needs no font files."
+      "New interface in the browser UI, Mac app and Steckwerk Desktop: only material and the main button Send to xTool at the top, a status bar below the sheet (check status, parts, sheets, laser time, material cost), Recent projects in the sidebar (save with ⌘S), an Export sheet with two clear paths and the check report as a parts table.",
+      "Custom engraving on every model: photos, logos, motifs and 18 new area patterns on any part.",
+      "Games 1.1.0 with the new Jigsaw puzzle model: picture puzzle with tabs (classic, playful or straight for toddlers), rectangular or round, 4 to 200 pieces, a new cut pattern for every number, optional frame with base. The picture runs across all pieces: five detailed scenes (winter village at night, Christmas tree with presents, mandala, starry sky, forest clearing with owl and hedgehog) or your own motif or logo from the motif library, filled or outlined, with a background pattern. Lettering on a ribbon or on the frame, decorative border, adjustable play between pieces. Even 200 pieces compute in under a second. Photo puzzle: choose picture “photo” and add a photo under custom engraving; it is laid once across all pieces and each piece gets its own section.",
+      "Christmas 2.2.0 with the new model Fine tree ornaments: twelve richly detailed ornaments in paper-cut quality, single or as a set: angel with feathered wings, faceted star, bauble with starry sky and winter scene, bell with bow, pine cone, decorated tree, snowman with top hat, heart with tree of life, sleeping moon, candle with fir sprigs, present and Santa boot. - Cut-out windows, feathers, scales and lace edges plus fine engraving: faces, quills, needles, facets, pearl borders, folds. - Optionally a name in script lettering. All motifs pass the laser check in 2, 3 and 4 mm.",
+      "The update check works again even if an old access key from the time the repo was private is still stored."
     ],
     "mac": {
-      "datei": "Steckwerk-2.11.0-macOS.zip",
-      "sha256": "7d8526d08c21712132bb1ab86c21549e2e0be48dbd6f333bd9b1e9e614268ebf",
-      "groesse": 514709
+      "datei": "Steckwerk-2.12.0-macOS.zip",
+      "sha256": "55d73fa460dcadebc563659e9c04b56f3b99ce0f5c368ee64acec25926ade16d",
+      "groesse": 551146
     }
   },
   "pakete": [
@@ -165,31 +171,33 @@
     {
       "id": "spiele",
       "name": "Spiele",
-      "version": "1.0.0",
-      "beschreibung": "Holzspiele für die ganze Familie: Mühle mit Steinablage, Tic-Tac-Toe mit Tannen und Sternen, Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen und Solitär mit Kugelrinne.",
+      "version": "1.1.0",
+      "beschreibung": "Holzspiele für die ganze Familie: Mühle mit Steinablage, Tic-Tac-Toe mit Tannen und Sternen, Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen und Solitär mit Kugelrinne. Neu: Bilderpuzzle mit Nasen, rechteckig oder rund, mit detailreichen Bildern oder deinem eigenen Motiv bzw. Logo.",
       "autor": "Christian & Claude",
       "name_en": "Games",
-      "beschreibung_en": "Wooden games for the whole family: nine men's morris with piece storage, tic-tac-toe with fir trees and stars, four in a row with release slider, marble maze with traps and peg solitaire with marble gutter.",
+      "beschreibung_en": "Wooden games for the whole family: nine men's morris with piece storage, tic-tac-toe with fir trees and stars, four in a row with release slider, marble maze with traps and peg solitaire with marble gutter. New: picture jigsaw with tabs, rectangular or round, with detailed pictures or your own motif or logo.",
       "benoetigt": {
         "verzierungen": "2.0.0"
       },
       "steckwerk": "2.8.0",
-      "datei": "pakete/spiele-1.0.0.swpaket",
-      "sha256": "e118514073eb0e3042a08889a7681a0a29a23656ab7c475c14ff02a59bfe2dad",
-      "groesse": 21298,
+      "datei": "pakete/spiele-1.1.0.swpaket",
+      "sha256": "f658984681f9ea9c88fef908717ab65c8dacbb7819e18c37b6d3ab664d182164",
+      "groesse": 51925,
       "inhalt": [
         "Mühle",
         "Tic-Tac-Toe",
         "Vier in einer Reihe",
         "Kugellabyrinth",
-        "Solitär"
+        "Solitär",
+        "Puzzle"
       ],
       "inhalt_en": [
         "Nine men's morris",
         "Tic-tac-toe",
         "Four in a row",
         "Marble maze",
-        "Peg solitaire"
+        "Peg solitaire",
+        "Jigsaw puzzle"
       ]
     },
     {
@@ -240,11 +248,11 @@
     {
       "id": "weihnacht",
       "name": "Weihnachten",
-      "version": "2.1.0",
-      "beschreibung": "Alles für Weihnachten in einem Paket: edle Namensanhänger in echter Schreibschrift mit Winter- und Adventsszenen, Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken.",
+      "version": "2.2.0",
+      "beschreibung": "Alles für Weihnachten in einem Paket: edler, detailreicher Christbaumschmuck (Engel, Stern, Kugel, Glocke, Zapfen, Tannenbaum, Schneemann, Herz, Mond, Kerze, Geschenk, Stiefel), edle Namensanhänger in echter Schreibschrift mit Winter- und Adventsszenen, Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken.",
       "autor": "Christian & Claude",
       "name_en": "Christmas",
-      "beschreibung_en": "Everything for Christmas in one package: fine name ornaments in real script lettering with winter and Advent scenes, slot-together sleigh, nativity with stable and figures, family and Christmas ornaments, filigree lace baubles, paper-cut medallions with winter scenes and crystal snowflakes.",
+      "beschreibung_en": "Everything for Christmas in one package: fine, richly detailed tree ornaments (angel, star, bauble, bell, pine cone, tree, snowman, heart, moon, candle, present, boot), fine name ornaments in real script lettering with winter and Advent scenes, slot-together sleigh, nativity with stable and figures, family and Christmas ornaments, filigree lace baubles, paper-cut medallions with winter scenes and crystal snowflakes.",
       "benoetigt": {
         "verzierungen": "2.0.0"
       },
@@ -252,14 +260,15 @@
         "filigran"
       ],
       "steckwerk": "2.6.0",
-      "datei": "pakete/weihnacht-2.1.0.swpaket",
-      "sha256": "0b5c15f74f3fe8111d98d9ad92102df6a2442210842bc9296124d1c7ff6184ea",
-      "groesse": 159355,
+      "datei": "pakete/weihnacht-2.2.0.swpaket",
+      "sha256": "8bb1b31529702e42345cfad3c3268b4a373c0e3833945a8354f2315c1378ad6d",
+      "groesse": 177675,
       "inhalt": [
         "Zierschlitten",
         "Steckkrippe",
         "Familienanhänger",
         "Weihnachtsanhänger",
+        "Edler Christbaumschmuck",
         "Edler Namensanhänger",
         "Spitzenschmuck",
         "Scherenschnitt-Medaillon",
@@ -270,6 +279,7 @@
         "Slot-together nativity",
         "Family ornament",
         "Christmas ornaments",
+        "Fine tree ornaments",
         "Fine name ornament",
         "Lace ornament",
         "Paper-cut medallion",
@@ -381,26 +391,28 @@
     }
   ],
   "desktop": {
-    "version": "2.11.0",
+    "version": "2.12.0",
     "datum": "2026-11-11",
     "hinweise": [
-      "Neues Themenpaket Spiele 1.0.0 (braucht Grundlagen 2.0.0): Mühle mit Steinablage und Spielernamen, rundes Tic-Tac-Toe mit ausgesägten Figuren (zum Beispiel Tanne gegen Stern), Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen (jede Nummer ein neuer Irrgarten) und Solitär mit Kugelrinne. Alle Bretter haben zwei Lagen mit Mulden, und alles rechnet in Sekundenbruchteilen.",
-      "Der Release-Workflow nimmt jetzt auch ganz neue Pakete in den Update-Kanal auf, nicht nur neue Versionen bekannter Pakete.",
-      "Wichtel 1.1.0: edles Wichtelzubehör, alles im Wichtel-Maßstab und in jeder Größe prüfbar schnittfertig: - Wichtelkamin in zwei Lagen: Korpus zum Stecken (Rückwand mit Mauerwerk, Sockel mit gefliester Herdplatte, Sims mit Zierkante) und filigrane Zierblende mit Fries, kannelierten Pilastern und Schlussstein. Dazu Feuer mit Holzscheiten, Funkengitter mit Rosette, dreiarmige Kerzenleuchter, Kaminuhr, Girlande und Strümpfe mit Namen. - Standuhr mit Pendelfenster, Pendel und Gewichten, Zierblende mit Rosette, Uhrenkopf mit Zifferblatt und Krone (Bogen, Giebel oder Schwanenhals), auf Wunsch mit Inschrift. - Schaukelstuhl mit geschwungenen Kufen, Sprossen, schräger Sprossenlehne (Neigung einstellbar) und Armlehnen-Schnecken, dazu Sitzkissen und Strickkorb. - Christbaum aus zwei gekreuzten Hälften mit Etagen, Schmuck-Ausschnitten, Lichterkette und Stern, dazu Geschenke mit Schleife und Namen. - Schneemann über Kreuz gesteckt: Gesicht und Zweigarme vorn, Möhrennase und wehender Schal im Profil, Zylinder oder Wollmütze, Besen oder Laterne. - Wichtelgarten: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.",
-      "Weihnachten 2.1.0: neues Modell Edler Namensanhänger: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name. - Schriftzug im Kugelring mit Szene auf dem Schneehügel: Winterdorf, Winterwald mit Hirsch, Schneemann mit Laterne, Schlittenfahrt, Adventskranz, Christbaum mit Geschenken, Plätzchen backen, Geschenke packen. Die Jahreszahl steht im Schnee. - Zweilagiges Medaillon (Grundplatte mit gefüllt graviertem Namen, Spitzenrahmen obendrauf) und einlagige Spitze. - Haarstriche werden laserfest verstärkt, i-Punkte, Umlaute und Namen mit Leerzeichen bleiben ein Stück. - Die Schriften sind als Umrisse im Paket (SIL Open Font License), Steckwerk braucht keine Schriftdateien.",
-      "Direkt für den xTool M2: Beim Export legt Steckwerk auf Wunsch neben jede SVG ein .xcs-Projekt für xTool Creative Space (Ebenen „Schneiden“ rot und „Ritzen“ blau, Gerät M2) und ein .xs-Projekt für xTool Studio ab 1.7, in dem Leistung, Tempo und Durchgänge aus dem Materialprofil schon eingetragen sind. Die Formate sind nicht offen dokumentiert und nach öffentlichen Beispielen geschrieben – beim ersten Mal in XCS kurz prüfen.",
-      "„In XCS öffnen“: speichert die Platte als .xcs und öffnet sie gleich in xTool Creative Space (oder xTool Studio). Browser-Oberfläche, Mac-App und Steckwerk Desktop.",
-      "Schnittzeit und Material: Für jedes Modell schätzt Steckwerk Laserzeit, Schnitt- und Ritzlänge, Plattenbedarf und Ausnutzung; mit einem Preis je Platte (Einstellungen → Material) auch die Materialkosten. Zu sehen im Inspektor, im Export-Fenster und in Steckwerk Desktop neben dem Prüfstatus.",
-      "Teilenummern und Montageanleitung: „Teilenummern gravieren“ (Material) schreibt jedem Teil eine kleine, geprüfte Nummer an die Stelle mit dem meisten Platz. „Montageanleitung (PDF)“ legt die Anleitung mit Blattübersicht, Teileliste und Zusammenbau-Schritten dazu.",
-      "Projekte: Modell, Werte und Material unter einem Namen merken und mit einem Klick wieder öffnen (Knopf „Projekte“, gespeichert in ~/.steckwerk/projekte.json).",
-      "Enger verschachteln: Braucht ein Modell mehrere Platten, versucht Steckwerk eine dichtere Anordnung mit gedrehten Teilen und nimmt sie, wenn sie eine Platte spart. Passt alles auf eine Platte, bleibt die Datei genau wie bisher.",
-      "Schneller auf älteren Macs (Grundlagen 2.0.1): Mehrlagige Bilder merken sich die Durchbrüche unveränderter Ebenen. Ändert man Text, Rückwand, Abstand oder Rahmen, ist ein Ebenenbild statt in rund 4 in gut 1 Sekunde neu gerechnet.",
-      "README: Anleitung für xTool Creative Space statt LightBurn."
+      "Neue Oberfläche in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf An xTool senden, unten eine Statusleiste mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.",
+      "Seitenleiste mit Zuletzt (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit ⌘S, der Titel zeigt *gesichert* oder *geändert*.",
+      "Ausgeben-Blatt mit zwei klaren Wegen: *In xTool Creative Space öffnen* (empfohlen) oder *Dateien sichern*. Teilenummern und Montageanleitung sind Schalter, die Schätzung steht in Kacheln darunter.",
+      "Prüfbericht als Teiletabelle mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt. Der technische Rohbericht steht eingeklappt darunter. „Überrasch mich“ ersetzt den Würfel.",
+      "Steckwerk Desktop: Werte im Inspektor rechts (⌥⌘I), Platte in Holzoptik, Systemakzentfarbe, Prüfbericht mit ⌘R.",
+      "Eigene Gravur auf jedem Modell: Fotos, Logos, Motive und Muster lassen sich auf jedes Teil gravieren (größtes Teil, alle Teile oder ein bestimmtes), in der Browser-App, in Steckwerk Desktop und auf der Kommandozeile (--gravur, --bild-import). Gravuren laufen nie über Schnitte, Durchbrüche oder Steckverbindungen.",
+      "Fotos und Logos als Bild-Gravur: JPG, PNG und HEIC importieren; Fotogravur (fein gerastert), Graustufen für XCS, Schwarzweiß-Logo oder Skizze; Bildform Rechteck, abgerundet, Oval, Kreis, Herz oder weicher Rand; Helligkeit, Kontrast, Gamma, Umkehren, Auflösung bis 12,7 Punkte je mm. Die Bilder kommen als eigene Ebene „Bild“ ins SVG und zusätzlich als PNG-Datei daneben. Fertige Bilder werden zwischengespeichert, damit es auch auf älteren Rechnern flott bleibt.",
+      "Motive als gestochen scharfe Bild-Gravur: flächige Logos ohne Schraffurlinien.",
+      "18 neue Flächenmuster: Rautengitter, Karo, Waben, Schuppen, Fischgrät, Wellen, Holzmaserung, Streifen, Punkte, Blume des Lebens, Mandala, Strahlen, Spitze, Ranken, Sternenhimmel, Schneeflocken, Herzen, Tannenwald – mit einstellbarem Rapport, auf Wunsch nur in einem Bereich; Zierrahmen und vorhandene Gravuren bleiben frei.",
+      "Motive lassen sich jetzt auch aus JPG und HEIC importieren.",
+      "Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.",
+      "Spiele 1.1.0 mit neuem Modell Puzzle: Bilderpuzzle mit Nasen (klassisch, verspielt oder gerade für Kleinkinder), rechteckig oder rund, 4 bis 200 Teile, jede Nummer ein neues Schnittmuster, auf Wunsch mit Rahmen und Boden zum Hineinlegen. Das Bild läuft über alle Teile und bleibt an jedem Schnittrand sauber frei: fünf detailreiche Szenen (Winterdorf bei Nacht, Christbaum mit Geschenken, Mandala, Sternenhimmel über dem Wald, Waldlichtung mit Eule und Igel) oder dein eigenes Motiv bzw. Logo aus der Motiv-Bibliothek, flächig oder als Umriss, mit Hintergrundmuster (Sterne, Schneeflocken, Rauten, Wellen, Punkte). Beschriftung auf einem Schriftband oder auf dem Rahmen, Zierrand, einstellbares Spiel zwischen den Teilen. Auch 200 Teile rechnen in unter einer Sekunde. Fotopuzzle: Bild „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen; es wird einmal über alle Teile gelegt (gleiche Fotogravur-Punkte über die Fugen hinweg), jedes Teil bekommt seinen Ausschnitt.",
+      "Weihnachten 2.2.0 mit neuem Modell Edler Christbaumschmuck: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set. - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel. - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf. - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz. - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.",
+      "Die Updateprüfung klappt wieder, auch wenn noch ein alter Zugangsschlüssel aus der Zeit gespeichert ist, als das Repo privat war."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.11.0-macOS.zip",
-      "sha256": "994d711e79a43961c21248bc40b582fbf9b4abdb32eeba650cc53e24b0b249e1",
-      "groesse": 1898825
+      "datei": "Steckwerk-Desktop-2.12.0-macOS.zip",
+      "sha256": "92ee1760564e923b68286f10aecfd0dac6108926f878f7cbd5119b50609c8855",
+      "groesse": 2453866
     }
   }
 }
