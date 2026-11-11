@@ -763,6 +763,18 @@ def run_request(req: Dict[str, Any], preview_on_error: bool = True,
     return results, cfg
 
 
+def teile(res: Result) -> List[Dict[str, Any]]:
+    """Teileliste für den Prüfbericht: Nummer (wie bei „Teilenummern gravieren“), Name, Größe, geprüft."""
+    kaputt = {e.scope for e in res.report.errors}
+    out = []
+    for i, p in enumerate(res.asm.parts, 1):
+        xs = [x for x, _ in p.outline] or [0.0]
+        ys = [y for _, y in p.outline] or [0.0]
+        out.append(dict(nr=i, name=p.name, w=round(max(xs) - min(xs), 1), h=round(max(ys) - min(ys), 1),
+                        ok=p.name not in kaputt))
+    return out
+
+
 def generate(req: Dict[str, Any], stop: Optional[Callable[[], bool]] = None) -> Dict[str, Any]:
     """Anfrage {model, params, config} → Ergebnis mit Prüfbericht und SVGs (nur wenn OK).
     Mit `stop` lässt sich eine überholte Live-Vorschau vorzeitig beenden (Antwort: cancelled=True)."""
@@ -780,7 +792,8 @@ def generate(req: Dict[str, Any], stop: Optional[Callable[[], bool]] = None) -> 
         out.append(dict(
             name=res.asm.name, ok=res.ok, summary=res.report.summary(), report=res.report.text(),
             notes=list(res.asm.notes), params={k: v for k, v in res.asm.params.items()},
-            parts=len(res.asm.parts), joints=len(res.asm.connections), teile=gravur.teile([res.asm]),
+            parts=len(res.asm.parts), joints=len(res.asm.connections),
+            teile=teile(res),
             errors=[e.line() for e in res.report.errors][:50],
             schaetzung=schaetzung(res, cfg, req) if res.sheets else None,
             sheets=[dict(file=f, svg=t, width=sh.width, height=sh.height, parts=len(sh.parts), checked=res.ok)

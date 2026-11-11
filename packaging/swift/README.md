@@ -25,16 +25,22 @@ Geometrie, Validator, Pakete, Updates und KI bleiben vollständig in Python; Swi
 
 ## Bedienung
 
-- **Seitenleiste:** Modelle nach Gruppen mit Suchfeld, darunter *Pakete*, *KI*, *Material* und *Updates*.
-- **Modell:** links das Formular (Abschnitte wie in der Weboberfläche, Zahlen mit Stepper und Einheit,
-  Auswahllisten, Schalter, Text, Motiv-Raster), rechts Vorschau und Prüfbericht.
-- **Bauen & prüfen** (⌘B): baut über die Engine und zeigt z. B. „0 FEHLER · 8 Teile · 1 Blatt · CUT-READY“.
-  Vorschau: Schnitt schwarz, Gravur blau, Blattrahmen; zoomen mit Pinch oder den Lupen, verschieben durch Ziehen,
-  Doppelklick setzt zurück.
-- **Exportieren** (⌘E): Ordner wählen; geschrieben werden je Baugruppe die Blatt-SVGs und `pruefbericht.txt`.
-  Wie überall in Steckwerk nur, wenn der Validator alles als CUT-READY bestätigt.
+- **Seitenleiste:** Suchfeld, **Zuletzt** mit deinen Projekten, **Vorlagen** nach Thema mit Symbol und Anzahl,
+  darunter *Werkstatt* mit Material, Pakete, Assistent und Motive sowie Updates.
+- **Mitte:** die Platte in Holzoptik (Teile hell, Gravur blau); zoomen mit Pinch oder den Lupen, verschieben durch
+  Ziehen, Doppelklick setzt zurück. Jede Änderung wird sofort neu gerechnet und geprüft.
+- **Statusleiste unten:** *Schnittfertig* oder *Fehler* (Klick oder ⌘R öffnet den Prüfbericht mit Teiletabelle und
+  Zusammenbau), Teile, Platten, Ausnutzung und geschätzte Laserzeit.
+- **Inspektor rechts** (⌥⌘I): die Werte der Vorlage, *Zurücksetzen* und *Überrasch mich*.
+- **An xTool senden** (⌘E): in xTool Creative Space öffnen oder Dateien sichern (Ordner wählen oder
+  Steckwerk-Ordner mit .xcs, .xs und Montageanleitung). Wie überall in Steckwerk nur, wenn der Validator alles
+  als CUT-READY bestätigt.
+- **Projekt sichern** (⌘S, ⇧⌘S als neues Projekt): Vorlage, Werte und Material unter einem Namen, gemeinsam mit
+  der Browser-Oberfläche.
 - **Ordner öffnen** (⌘O): öffnet den Steckwerk-Ordner (Dokumente/Steckwerk).
 - **Einstellungen** (⌘,): Material (T, Kerf, Maßstab, Blatt, Farben) und KI-Anbieter.
+- `--snapshot <Ordner>` legt Bilder von Hauptfenster, Ausgeben-Blatt und Prüfbericht (hell und dunkel) ab;
+  der macOS-Workflow lädt sie als Artefakt *Steckwerk-Desktop-Bildschirmfotos* hoch.
 
 ## KI und Schlüssel
 

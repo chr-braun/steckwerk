@@ -18,6 +18,12 @@ enum SidebarItem: Hashable {
     case updates
 }
 
+/// Ein geöffnetes Projekt: Name und ob die Werte seit dem Sichern geändert wurden.
+struct OpenProject: Equatable {
+    let name: String
+    var geaendert = false
+}
+
 struct AppAlert: Identifiable {
     let id = UUID()
     let title: String
@@ -33,8 +39,12 @@ final class AppModel: ObservableObject {
     @Published private(set) var engineVersion: String?
     @Published private(set) var schema: Schema?
     @Published var selection: SidebarItem? {
-        didSet { if selectedModelID != nil { schedulePreview() } }
+        didSet {
+            if selection != oldValue, !openingProject { projekt = nil }
+            if selectedModelID != nil { schedulePreview() }
+        }
     }
+    private var openingProject = false
     @Published private(set) var values: [String: [String: JSONValue]] = [:]
     /// Eigene Gravuren (Foto, Motiv, Muster) je Modell – bleiben über Neustarts erhalten.
     @Published private(set) var gravuren: [String: [GravurEintrag]] = [:]
@@ -47,7 +57,18 @@ final class AppModel: ObservableObject {
     @Published var selectedSheet = 0
     @Published private(set) var isBuilding = false
     @Published private(set) var isPreviewing = false
-    @Published var statusMessage: String?
+    /// Kurze Rückmeldung in der Statusleiste; verschwindet nach ein paar Sekunden wieder.
+    @Published var statusMessage: String? {
+        didSet {
+            guard statusMessage != nil else { return }
+            statusClear?.cancel()
+            statusClear = Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 6_000_000_000)
+                if !Task.isCancelled { self?.statusMessage = nil }
+            }
+        }
+    }
+    private var statusClear: Task<Void, Never>?
     @Published var alert: AppAlert?
     /// Ergebnis der letzten Update-Prüfung (beim Start oder unter „Updates“): Pakete und die App selbst.
     @Published var updateCheck: UpdateCheck?
@@ -57,6 +78,17 @@ final class AppModel: ObservableObject {
         didSet { UserDefaults.standard.set(Array(exportFormate).sorted(), forKey: Self.formateKey) }
     }
     static let formateKey = "exportFormate"
+
+    // Oberfläche: Blätter und Inspektor
+    @Published var showReport = false
+    @Published var showExport = false
+    @Published var showSaveProject = false
+    @Published var showInspector = UserDefaults.standard.object(forKey: "inspektor") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(showInspector, forKey: "inspektor") }
+    }
+    /// Gespeicherte Projekte (neueste zuerst) und das gerade geöffnete.
+    @Published private(set) var projekte: [Projekt] = []
+    @Published private(set) var projekt: OpenProject?
 
     private(set) var client: EngineClient?
     private var engine: EngineProcess?
@@ -122,6 +154,7 @@ final class AppModel: ObservableObject {
             try await loadSchema()
             engineState = .running
             startPinging()
+            Task { await loadProjects() }
             if UserDefaults.standard.object(forKey: Self.autoUpdateKey) as? Bool ?? true {
                 Task { await checkForUpdates(quiet: true) }
             }
@@ -286,6 +319,7 @@ final class AppModel: ObservableObject {
             set: { newValue in
                 self.values[modelID, default: [:]][param.key] = ParameterLogic.coerce(newValue, for: param)
                 if self.resultModelID == modelID { self.resultIsStale = true }
+                self.markEdited()
                 self.schedulePreview()
             }
         )
@@ -297,6 +331,7 @@ final class AppModel: ObservableObject {
             set: { newValue in
                 self.material[param.key] = ParameterLogic.coerce(newValue, for: param)
                 self.resultIsStale = true
+                self.markEdited()
                 self.schedulePreview()
                 if let data = try? JSONEncoder().encode(self.material) {
                     UserDefaults.standard.set(data, forKey: Self.materialDefaultsKey)
@@ -307,6 +342,7 @@ final class AppModel: ObservableObject {
 
     func resetValues(for modelID: String) {
         values[modelID] = nil
+        markEdited()
         if resultModelID == modelID { resultIsStale = true }
         schedulePreview()
     }
@@ -441,6 +477,138 @@ final class AppModel: ObservableObject {
         }
     }
 
+    // MARK: Projekte
+
+    func markEdited() {
+        if projekt?.geaendert == false { projekt?.geaendert = true }
+    }
+
+    func loadProjects() async {
+        guard let client else { return }
+        if let list = try? await client.projekte() {
+            projekte = list.sorted { $0.geaendert > $1.geaendert }
+        }
+    }
+
+    /// Projekt öffnen: Vorlage wählen, Werte und Material übernehmen.
+    func openProject(_ p: Projekt) {
+        guard let schema, let info = schema.models[p.model] else {
+            alert = AppAlert(title: "Projekt lässt sich nicht öffnen",
+                             message: "Die Vorlage „\(p.model)“ ist nicht installiert. Fehlt ein Paket?")
+            return
+        }
+        var v = ParameterLogic.defaults(for: info.params)
+        _ = ParameterLogic.apply(p.params, to: &v, params: info.params)
+        values[p.model] = v
+        if !p.config.isEmpty {
+            var m = material
+            for (k, val) in p.config { m[k] = val }
+            material = m
+            if let data = try? JSONEncoder().encode(material) { UserDefaults.standard.set(data, forKey: Self.materialDefaultsKey) }
+        }
+        openingProject = true
+        selection = .model(p.model)
+        openingProject = false
+        projekt = OpenProject(name: p.name)
+        resultIsStale = true
+        schedulePreview()
+    }
+
+    /// Aktuelle Vorlage mit Werten und Material unter einem Namen sichern (überschreibt gleichnamige).
+    func saveProject(named raw: String) async {
+        let name = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let client, let id = selectedModelID, !name.isEmpty else { return }
+        let projektDaten: [String: JSONValue] = [
+            "model": .string(id), "params": .object(values[id] ?? [:]), "config": .object(material), "profil": .string(""),
+        ]
+        do {
+            let list = try await client.projekte(aktion: "speichern", name: name, projekt: projektDaten)
+            projekte = list.sorted { $0.geaendert > $1.geaendert }
+            projekt = OpenProject(name: name)
+            statusMessage = "Projekt „\(name)“ gesichert"
+        } catch {
+            show(error, title: "Projekt nicht gesichert")
+        }
+    }
+
+    func deleteProject(_ p: Projekt) async {
+        guard let client else { return }
+        do {
+            let list = try await client.projekte(aktion: "loeschen", name: p.name)
+            projekte = list.sorted { $0.geaendert > $1.geaendert }
+            if projekt?.name == p.name { projekt = nil }
+        } catch {
+            show(error, title: "Projekt nicht gelöscht")
+        }
+    }
+
+    /// ⌘S: geöffnetes Projekt sichern, sonst nach einem Namen fragen.
+    func saveCurrent() {
+        if let projekt { Task { await saveProject(named: projekt.name) } } else { showSaveProject = true }
+    }
+
+    // MARK: Gestaltung und Material
+
+    /// „Überrasch mich“: alle Gestaltungs-Auswahlen zufällig, „ohne“ nur selten.
+    func surprise(for modelID: String) {
+        guard let info = schema?.models[modelID] else { return }
+        var v = values(for: modelID)
+        let leer: Set<String> = ["keine", "keins", "keiner", "ohne", "none"]
+        for p in info.params where p.kind == .select && p.section != nil && !p.options.isEmpty {
+            let opts = p.options.filter { !leer.contains($0.value.stringValue ?? "") || Double.random(in: 0..<1) < 0.15 }
+            if let pick = (opts.isEmpty ? p.options : opts).randomElement() { v[p.key] = pick.value }
+        }
+        values[modelID] = v
+        markEdited()
+        resultIsStale = true
+        schedulePreview()
+    }
+
+    func hasSurprise(for modelID: String) -> Bool {
+        schema?.models[modelID]?.params.contains { $0.kind == .select && $0.section != nil } ?? false
+    }
+
+    /// Materialstärke aus der Werkzeugleiste setzen.
+    func setThickness(_ t: Double) {
+        guard let p = schema?.config.first(where: { $0.key == "thickness" }) else { return }
+        materialBinding(for: p).wrappedValue = .double(t)
+    }
+
+    var thickness: Double { material["thickness"]?.doubleValue ?? 3 }
+    var kerf: Double { material["kerf"]?.doubleValue ?? 0.2 }
+
+    /// „3 mm · Kerf 0,2“
+    var materialSummary: String {
+        func de(_ v: Double) -> String { String(format: "%g", v).replacingOccurrences(of: ".", with: ",") }
+        return "\(de(thickness)) mm · Kerf \(de(kerf))"
+    }
+
+    var partNumbersParam: Param? { schema?.config.first { $0.key == "part_numbers" } }
+
+    // MARK: Ausgeben
+
+    /// XCS-Weg: Projekt öffnen und auf Wunsch die Montageanleitung in den Steckwerk-Ordner legen.
+    func sendToXCS(withGuide: Bool) async {
+        await openInXCS()
+        guard withGuide, let client, let id = selectedModelID, let body = requestBody(for: id) else { return }
+        if (try? await client.save(model: id, params: body.params, config: body.config, formate: ["pdf"])) != nil {
+            statusMessage = (statusMessage.map { $0 + " · " } ?? "") + "Montageanleitung im Steckwerk-Ordner"
+        }
+    }
+
+    /// Summe der Schätzungen aller Baugruppen.
+    var estimate: (zeit: String, schnitt: Double, ritzen: Double, ausnutzung: Int, kosten: Double?)? {
+        guard let result, result.error == nil else { return nil }
+        let xs = result.assemblies.compactMap(\.schaetzung)
+        guard !xs.isEmpty else { return nil }
+        if xs.count == 1, let s = xs.first { return (s.zeit, s.schnittM, s.ritzM, s.ausnutzung, s.kosten) }
+        let min = Int((xs.reduce(0) { $0 + $1.sekunden } / 60).rounded())
+        let zeit = min < 60 ? "\(min) min" : "\(min / 60) h \(String(format: "%02d", min % 60)) min"
+        let kosten: Double? = xs.allSatisfy { $0.kosten != nil } ? xs.reduce(0) { $0 + ($1.kosten ?? 0) } : nil
+        return (zeit, xs.reduce(0) { $0 + $1.schnittM }, xs.reduce(0) { $0 + $1.ritzM },
+                xs.reduce(0) { $0 + $1.ausnutzung } / xs.count, kosten)
+    }
+
     func toggleFormat(_ format: String) {
         if exportFormate.contains(format) { exportFormate.remove(format) } else { exportFormate.insert(format) }
     }
@@ -491,7 +659,9 @@ final class AppModel: ObservableObject {
     func teile(for modelID: String) -> [TeilInfo] {
         guard resultModelID == modelID, let result else { return [] }
         var seen = Set<String>()
-        return result.assemblies.flatMap(\.teile).filter { seen.insert($0.name).inserted }
+        return result.assemblies.flatMap(\.teile)
+            .filter { $0.w * $0.h > 0 && seen.insert($0.name).inserted }
+            .sorted { $0.w * $0.h > $1.w * $1.h }
     }
 
     /// Foto oder Logo wählen, auf höchstens 1600 Pixel verkleinern und als PNG in die Bibliothek legen.

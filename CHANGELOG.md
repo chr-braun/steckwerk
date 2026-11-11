@@ -4,6 +4,11 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Neu, noch ohne Versionsnummer
 
+- **Neue Oberfläche** in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf **An xTool senden**, unten eine **Statusleiste** mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.
+- Seitenleiste mit **Zuletzt** (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit **⌘S**, der Titel zeigt *gesichert* oder *geändert*.
+- **Ausgeben-Blatt** mit zwei klaren Wegen: *In xTool Creative Space öffnen* (empfohlen) oder *Dateien sichern*. Teilenummern und Montageanleitung sind Schalter, die Schätzung steht in Kacheln darunter.
+- **Prüfbericht** als Teiletabelle mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt. Der technische Rohbericht steht eingeklappt darunter. „Überrasch mich“ ersetzt den Würfel.
+- Steckwerk Desktop: Werte im Inspektor rechts (⌥⌘I), Platte in Holzoptik, Systemakzentfarbe, Prüfbericht mit ⌘R.
 - **Eigene Gravur auf jedem Modell:** Fotos, Logos, Motive und Muster lassen sich auf jedes Teil gravieren (größtes Teil, alle Teile oder ein bestimmtes), in der Browser-App, in Steckwerk Desktop und auf der Kommandozeile (`--gravur`, `--bild-import`). Gravuren laufen nie über Schnitte, Durchbrüche oder Steckverbindungen.
 - **Fotos und Logos als Bild-Gravur:** JPG, PNG und HEIC importieren; Fotogravur (fein gerastert), Graustufen für XCS, Schwarzweiß-Logo oder Skizze; Bildform Rechteck, abgerundet, Oval, Kreis, Herz oder weicher Rand; Helligkeit, Kontrast, Gamma, Umkehren, Auflösung bis 12,7 Punkte je mm. Die Bilder kommen als eigene Ebene „Bild“ ins SVG und zusätzlich als PNG-Datei daneben. Fertige Bilder werden zwischengespeichert, damit es auch auf älteren Rechnern flott bleibt.
 - **Motive als gestochen scharfe Bild-Gravur:** flächige Logos ohne Schraffurlinien.

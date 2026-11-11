@@ -14,7 +14,7 @@ struct ParameterForm: View {
             Section {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(info.label)
-                        .font(.title2.bold())
+                        .font(.title3.weight(.semibold))
                     if !info.desc.isEmpty {
                         Text(info.desc)
                             .font(.callout)
@@ -37,9 +37,22 @@ struct ParameterForm: View {
             }
             GravurSection(modelID: modelID)
             Section {
-                Button("Auf Standardwerte zurücksetzen") {
-                    model.resetValues(for: modelID)
+                HStack {
+                    Button("Zurücksetzen") {
+                        model.resetValues(for: modelID)
+                    }
+                    .help("Alle Werte dieser Vorlage auf Standard")
+                    Spacer()
+                    if model.hasSurprise(for: modelID) {
+                        Button {
+                            model.surprise(for: modelID)
+                        } label: {
+                            Label("Überrasch mich", systemImage: "dice")
+                        }
+                        .help("Alle Gestaltungsoptionen zufällig wählen")
+                    }
                 }
+                .buttonStyle(.link)
             }
         }
         .formStyle(.grouped)

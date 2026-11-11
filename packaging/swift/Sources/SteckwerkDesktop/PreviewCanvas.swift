@@ -2,7 +2,7 @@ import AppKit
 import SteckwerkCore
 import SwiftUI
 
-/// Native Vorschau eines Blattplans: Schnitt schwarz, Gravur blau, Blattrahmen; Zoom (Pinch/Scroll) und Verschieben.
+/// Native Vorschau einer Platte: Holz als Restplatte, Teile hell, Gravur blau; Zoom (Pinch) und Verschieben.
 @MainActor
 struct PreviewCanvas: View {
     let geometry: SheetGeometry
@@ -18,9 +18,10 @@ struct PreviewCanvas: View {
             Canvas { context, size in
                 draw(in: &context, size: size)
             }
-            .background(Theme.card)
-            .clipShape(RoundedRectangle(cornerRadius: Theme.cornerRadius))
-            .overlay(RoundedRectangle(cornerRadius: Theme.cornerRadius).stroke(Color.primary.opacity(0.1)))
+            .background(Theme.paper)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.primary.opacity(0.08)))
+            .shadow(color: .black.opacity(0.07), radius: 10, y: 3)
             .contentShape(Rectangle())
             .gesture(
                 MagnificationGesture()
@@ -35,20 +36,14 @@ struct PreviewCanvas: View {
             )
             .onTapGesture(count: 2) { reset() }
 
-            HStack(spacing: 8) {
-                legend(color: Theme.cut, text: "Schnitt \(geometry.cutCount)")
-                legend(color: Theme.engrave, text: "Gravur \(geometry.engraveCount)")
-                if !checked {
-                    Text("Vorschau – nicht geprüft")
-                        .foregroundStyle(Theme.error)
-                }
-                Text("\(Int(geometry.width)) × \(Int(geometry.height)) mm")
-                    .foregroundStyle(.secondary)
+            if !checked {
+                Text("Ungeprüft – nicht lasern")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .background(Theme.error, in: RoundedRectangle(cornerRadius: 4))
+                    .padding(12)
             }
-            .font(.caption)
-            .padding(6)
-            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 6))
-            .padding(8)
 
             VStack {
                 Spacer()
@@ -70,7 +65,7 @@ struct PreviewCanvas: View {
 
     private func draw(in context: inout GraphicsContext, size: CGSize) {
         guard geometry.width > 0, geometry.height > 0 else { return }
-        let margin: CGFloat = 16
+        let margin: CGFloat = 18
         let fit = min((size.width - 2 * margin) / geometry.width, (size.height - 2 * margin) / geometry.height)
         let scale = max(fit, 0.01) * zoom
         let origin = CGPoint(x: (size.width - geometry.width * scale) / 2 + offset.width,
@@ -80,8 +75,8 @@ struct PreviewCanvas: View {
         }
 
         let frame = CGRect(x: origin.x, y: origin.y, width: geometry.width * scale, height: geometry.height * scale)
-        context.fill(Path(frame), with: .color(Theme.accent.opacity(0.05)))
-        context.stroke(Path(frame), with: .color(Theme.accent.opacity(0.6)), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+        context.fill(Path(frame), with: .color(Theme.ply))
+        context.stroke(Path(frame), with: .color(Theme.plyEdge), lineWidth: 1)
 
         // Bild-Gravuren (Fotos/Logos) unter den Linien
         for image in geometry.images {
@@ -107,16 +102,12 @@ struct PreviewCanvas: View {
                 cut.addPath(path)
             }
         }
-        context.stroke(engrave, with: .color(Theme.engrave), lineWidth: 0.8)
-        context.stroke(cut, with: .color(Theme.cut), lineWidth: 1)
+        // Teile hell auf dem Holz: Außenkonturen und Löcher gerade-ungerade gefüllt.
+        context.fill(cut, with: .color(Theme.part), style: FillStyle(eoFill: true))
+        context.stroke(engrave, with: .color(Theme.engrave.opacity(0.85)), lineWidth: 0.7)
+        context.stroke(cut, with: .color(Theme.cutLine.opacity(0.55)), lineWidth: 0.7)
     }
 
-    private func legend(color: Color, text: String) -> some View {
-        HStack(spacing: 4) {
-            RoundedRectangle(cornerRadius: 1).fill(color).frame(width: 14, height: 3)
-            Text(text)
-        }
-    }
 
     private func clampZoom(_ value: CGFloat) -> CGFloat {
         min(max(value, 0.2), 20)

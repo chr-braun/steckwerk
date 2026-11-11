@@ -11,6 +11,7 @@
   --win: #ececec; --side: #e8e8ec; --content: #ffffff; --canvas: #f5f5f7; --ink: #1d1d1f; --ink2: #6e6e73; --ink3: #a1a1a6;
   --sep: rgba(0,0,0,.1); --ctl: #ffffff; --ctlb: rgba(0,0,0,.15); --accent: #007aff; --accent-ink: #ffffff;
   --accent-soft: rgba(0,122,255,.12); --selbg: rgba(0,0,0,.07); --toolbar: #f6f6f6;
+  --insp: #f7f7f9; --card: #ffffff; --status: #f8f8f9; --chip: #f1e2c2; --chip-ink: #7a5a2c; --cardline: rgba(0,0,0,.08);
   --ok: #248a3d; --ok-soft: rgba(40,167,69,.13); --bad: #d70015; --bad-soft: rgba(255,59,48,.12); --busy: #6e6e73;
   --ply: #e3c792; --ply-edge: #c9a66b; --part: #f3e2bf; --part-hover: #f9eed6; --eng: #2b52d9;
   --shadow: 0 0 0 .5px rgba(0,0,0,.12), 0 12px 32px rgba(0,0,0,.18);
@@ -25,6 +26,7 @@
     --win: #1e1e1e; --side: #2a2a2e; --content: #1e1e1e; --canvas: #161618; --ink: #f5f5f7; --ink2: #a1a1a6; --ink3: #6e6e73;
     --sep: rgba(255,255,255,.1); --ctl: #3a3a3c; --ctlb: rgba(255,255,255,.14); --accent: #0a84ff; --accent-ink: #ffffff;
     --accent-soft: rgba(10,132,255,.2); --selbg: rgba(255,255,255,.1); --toolbar: #2c2c2e;
+  --insp: #232325; --card: #2e2e30; --status: #1b1b1d; --chip: #5a4728; --chip-ink: #f0dcb4; --cardline: rgba(255,255,255,.09);
     --ok: #32d74b; --ok-soft: rgba(50,215,75,.15); --bad: #ff453a; --bad-soft: rgba(255,69,58,.16); --busy: #a1a1a6;
     --ply: #b39566; --ply-edge: #8d6f45; --part: #d9c296; --part-hover: #e8d6b2; --eng: #7fa0ff;
     --shadow: 0 0 0 .5px rgba(255,255,255,.14), 0 12px 32px rgba(0,0,0,.55);
@@ -37,6 +39,7 @@
   --win: #1e1e1e; --side: #2a2a2e; --content: #1e1e1e; --canvas: #161618; --ink: #f5f5f7; --ink2: #a1a1a6; --ink3: #6e6e73;
   --sep: rgba(255,255,255,.1); --ctl: #3a3a3c; --ctlb: rgba(255,255,255,.14); --accent: #0a84ff; --accent-ink: #ffffff;
   --accent-soft: rgba(10,132,255,.2); --selbg: rgba(255,255,255,.1); --toolbar: #2c2c2e;
+  --insp: #232325; --card: #2e2e30; --status: #1b1b1d; --chip: #5a4728; --chip-ink: #f0dcb4; --cardline: rgba(255,255,255,.09);
   --ok: #32d74b; --ok-soft: rgba(50,215,75,.15); --bad: #ff453a; --bad-soft: rgba(255,69,58,.16); --busy: #a1a1a6;
   --ply: #b39566; --ply-edge: #8d6f45; --part: #d9c296; --part-hover: #e8d6b2; --eng: #7fa0ff;
   --shadow: 0 0 0 .5px rgba(255,255,255,.14), 0 12px 32px rgba(0,0,0,.55);
@@ -59,8 +62,8 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* Fenster */
-.win { display: grid; grid-template-columns: 220px minmax(0, 1fr) 300px; grid-template-rows: 52px minmax(0, 1fr); height: 100%; }
-.win.noinsp { grid-template-columns: 220px minmax(0, 1fr) 0; }
+.win { display: grid; grid-template-columns: 236px minmax(0, 1fr) 300px; grid-template-rows: 52px minmax(0, 1fr); height: 100%; }
+.win.noinsp { grid-template-columns: 236px minmax(0, 1fr) 0; }
 .win.noside { grid-template-columns: 0 minmax(0, 1fr) 300px; }
 .win.noside.noinsp { grid-template-columns: 0 minmax(0, 1fr) 0; }
 .win.noside .side, .win.noinsp .insp { visibility: hidden; }
@@ -70,18 +73,23 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
   display: flex; flex-direction: column; min-width: 0; }
 .brand { height: 52px; flex: none; display: flex; align-items: center; gap: 8px; padding-left: 8px; font-weight: 700; font-size: 14px; letter-spacing: -.01em; }
 .brand img { width: 20px; height: 20px; border-radius: 5px; }
-.side .grp-h { display: flex; align-items: center; width: 100%; border: 0; background: none; padding: 12px 8px 4px;
-  font-size: 11px; font-weight: 600; color: var(--ink3); text-align: left; }
-.side .grp-h::after { content: "›"; margin-left: auto; font-size: 13px; transform: rotate(90deg); transition: transform .15s; opacity: 0; }
-.side .grp-h:hover::after, .side .grp-h:focus-visible::after { opacity: 1; }
-.side .grp-h[aria-expanded="false"]::after { transform: none; opacity: 1; }
+.side .grp-h .chev { width: 12px; height: 12px; margin-left: auto; color: var(--ink3); transition: transform .15s; transform: rotate(-90deg); display: none; }
+.side .grp-h:hover .chev, .side .grp-h:focus-visible .chev, .side .grp-h[aria-expanded="true"] .chev { display: block; }
+.side .grp-h:hover .cnt, .side .grp-h:focus-visible .cnt, .side .grp-h[aria-expanded="true"] .cnt { display: none; }
+.side .grp-h[aria-expanded="true"] .chev { transform: none; }
 .item { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; padding: 4px 8px; border-radius: 6px;
   text-align: left; min-height: 26px; }
-.item .ico { width: 18px; flex: none; text-align: center; color: var(--accent); font-size: 13px; }
+.item .ico { width: 18px; height: 18px; flex: none; display: grid; place-items: center; color: var(--accent); }
+.ico svg, .ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; stroke-linejoin: round; display: block; flex: none; }
 .item .lbl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .item:hover { background: var(--selbg); }
-.item[aria-current="true"] { background: var(--accent); color: var(--accent-ink); }
-.item[aria-current="true"] .ico { color: var(--accent-ink); }
+.item[aria-current="true"] { background: var(--selbg); font-weight: 600; }
+.side:focus-within .item[aria-current="true"] { background: var(--accent); color: var(--accent-ink); }
+.side:focus-within .item[aria-current="true"] .ico, .side:focus-within .item[aria-current="true"] .meta { color: var(--accent-ink); }
+.item.sub { padding-left: 34px; }
+.item.doc .ico { color: var(--ink2); }
+.item .meta { margin-left: auto; padding-left: 8px; color: var(--ink3); font-size: 11px; white-space: nowrap; }
+.item.act { color: var(--accent); }
 .item .k { margin-left: auto; color: var(--ink3); font-size: 12px; }
 .item .n { margin-left: auto; min-width: 18px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
   font-size: 11px; font-weight: 600; text-align: center; line-height: 17px; }
@@ -90,8 +98,13 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
   background: var(--selbg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='6.5' cy='6.5' r='4.5' fill='none' stroke='%238e8e93' stroke-width='1.6'/%3E%3Cpath d='M10 10l4 4' stroke='%238e8e93' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 8px 50% / 13px;
   color: var(--ink); }
 .side-search input:focus { outline: 2px solid var(--accent-soft); background-color: var(--ctl); }
-.side .sect { margin: 14px 8px 2px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink2); }
-.side .grp-h .cnt { margin-left: 6px; font-weight: 500; color: var(--ink3); }
+.side .sect { display: flex; align-items: baseline; margin: 14px 8px 4px; font-size: 11px; font-weight: 600; color: var(--ink3); }
+.side .sect .linkish { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--ink3); }
+.side .sect .linkish:hover { color: var(--accent); text-decoration: none; }
+.side .grp-h .cnt { margin-left: auto; color: var(--ink3); font-size: 12px; font-variant-numeric: tabular-nums; }
+.side-foot .mini { display: flex; gap: 14px; padding: 6px 8px 0; }
+.side-foot .mini .linkish { color: var(--ink2); font-size: 12px; }
+.side-foot .mini .linkish:hover { color: var(--accent); text-decoration: none; }
 .side .nohit { padding: 10px 8px; color: var(--ink3); font-size: 12px; }
 .side-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--sep); display: grid; gap: 1px; }
 .side .spacer-top { height: 6px; flex: none; }
@@ -109,7 +122,11 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 .tb svg { width: 17px; height: 17px; display: block; margin: auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .popup { border: 1px solid var(--ctlb); background: var(--ctl); border-radius: 6px; padding: 3px 8px; font-size: 12px;
   box-shadow: 0 .5px 1px rgba(0,0,0,.08); white-space: nowrap; }
-.popup::after { content: " ⌄"; color: var(--ink2); }
+.popup { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px 0 9px; min-height: 26px; font-size: 13px; }
+.popup .swatch { width: 12px; height: 12px; border-radius: 3px; background: linear-gradient(135deg, var(--part), var(--ply)); box-shadow: inset 0 0 0 .5px rgba(0,0,0,.25); }
+.popup .ic { width: 12px; height: 12px; color: var(--ink2); }
+.pbtn.big { min-height: 26px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; }
+.pbtn.big .ic { width: 15px; height: 15px; }
 .pbtn { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 6px; padding: 4px 12px; font-weight: 500; white-space: nowrap; }
 .pbtn:disabled { opacity: .45; }
 .sbtn { border: 1px solid var(--ctlb); background: var(--ctl); border-radius: 6px; padding: 3px 12px; white-space: nowrap; box-shadow: 0 .5px 1px rgba(0,0,0,.06); }
@@ -117,17 +134,24 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 label.sbtn { display: inline-block; }
 .linkish { border: 0; background: none; padding: 0; color: var(--accent); font-size: 12px; }
 .linkish:hover { text-decoration: underline; }
-.pill { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px; padding: 3px 10px; font-size: 12px;
-  font-weight: 600; white-space: nowrap; background: var(--selbg); color: var(--busy); }
-.pill.ok { background: var(--ok-soft); color: var(--ok); }
-.pill.ok::before { content: "✓"; }
-.pill.bad { background: var(--bad-soft); color: var(--bad); }
-.pill.bad::before { content: "!"; font-weight: 800; }
-.pill.busy::before { content: ""; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite; }
+.pill { display: inline-flex; align-items: center; gap: 7px; border: 0; background: none; border-radius: 5px; padding: 2px 6px; margin-left: -6px;
+  font-size: 12px; font-weight: 500; white-space: nowrap; color: var(--busy); }
+.pill:hover { background: var(--selbg); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); }
+.pill.bad { color: var(--bad); }
+.pill.busy::before { width: 8px; height: 8px; background: none; border: 1.5px solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Mitte */
-.content { background: var(--canvas); display: grid; grid-template-rows: auto minmax(0, 1fr); min-width: 0; min-height: 0; }
+.content { background: var(--canvas); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; }
+.statusbar { display: flex; align-items: center; gap: 12px; min-height: 30px; padding: 0 14px; border-top: 1px solid var(--sep); background: var(--status);
+  font-size: 12px; color: var(--ink2); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.statusbar .v { width: 1px; height: 14px; background: var(--sep); flex: none; }
+.statusbar .g { display: inline-flex; align-items: center; gap: 5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.statusbar .g .ic { width: 14px; height: 14px; color: var(--ink3); }
+.statusbar .file { margin-left: auto; color: var(--ink3); overflow: hidden; text-overflow: ellipsis; }
+
 .segwrap { display: flex; justify-content: center; padding: 12px 12px 0; }
 .seg { display: inline-flex; background: var(--selbg); border-radius: 7px; padding: 2px; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 100%; }
 .seg:empty { display: none; }
@@ -135,9 +159,9 @@ label.sbtn { display: inline-block; }
 .seg button[aria-selected="true"] { background: var(--ctl); box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 0 0 .5px rgba(0,0,0,.06); font-weight: 500; }
 .seg .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
 .seg .dot.bad { background: var(--bad); }
-.stage { overflow: auto; padding: 22px 24px 28px; display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
-.sheet-wrap { background: var(--content); border-radius: 10px; box-shadow: var(--paper); padding: 18px; width: 100%; max-width: 1100px; }
-.sheet-wrap svg { width: 100%; height: auto; max-height: calc(100vh - 190px); display: block; }
+.stage { overflow: auto; padding: 24px 28px; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 10px; position: relative; }
+.sheet-wrap { background: var(--content); border-radius: 10px; box-shadow: var(--paper); padding: 16px 18px 14px; width: 100%; max-width: 1100px; }
+.sheet-wrap svg { width: 100%; height: auto; max-height: calc(100vh - 170px); display: block; }
 .sheet-wrap svg .sheet-bg { fill: var(--ply); stroke: var(--ply-edge); stroke-width: 1px; vector-effect: non-scaling-stroke; }
 .sheet-wrap svg .part-fill { fill: var(--part); fill-rule: evenodd; stroke: none; transition: fill .12s; }
 .sheet-wrap svg .part-fill:hover { fill: var(--part-hover); }
@@ -156,8 +180,9 @@ label.sbtn { display: inline-block; }
 code { font: 12px var(--mono); }
 
 /* Inspektor */
-.insp { background: var(--content); border-left: 1px solid var(--sep); overflow: auto; padding: 14px 14px 24px; min-width: 0; }
-.model-desc { margin: 0 0 4px; color: var(--ink2); font-size: 12px; }
+.insp { background: var(--insp); border-left: 1px solid var(--sep); overflow: auto; padding: 16px 14px 24px; min-width: 0; }
+.insp-h { margin: 0 2px 3px; font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.model-desc { margin: 0 2px 4px; color: var(--ink2); font-size: 12px; }
 .ki { background: var(--canvas); border-radius: 8px; padding: 8px; margin: 10px 0 4px; display: grid; gap: 6px; }
 .ki textarea { width: 100%; box-sizing: border-box; resize: vertical; min-height: 40px; font: inherit; font-size: 12px;
   border: 1px solid var(--ctlb); background: var(--ctl); color: var(--ink); border-radius: 6px; padding: 5px 7px; }
@@ -181,10 +206,13 @@ code { font: 12px var(--mono); }
 .bw-tune { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 8px; align-items: center; font-size: 12px; }
 .bw-tune input[type=range] { width: 100%; }
 @media (max-width: 640px) { .bw { grid-template-columns: minmax(0, 1fr); } }
-.insp h5 { font-size: 11px; font-weight: 600; color: var(--ink2); margin: 16px 2px 6px; display: flex; align-items: center; gap: 8px; }
-.insp h5 .linkish { margin-left: auto; font-weight: 500; font-size: 11px; }
+.insp h5 { font-size: 11px; font-weight: 600; color: var(--ink2); margin: 18px 4px 6px; display: flex; align-items: center; gap: 8px; }
+.insp h5 .linkish { margin-left: auto; font-weight: 500; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; }
+.insp h5 .linkish .ic { width: 13px; height: 13px; }
 .grp { background: var(--canvas); border-radius: 8px; padding: 1px 10px; }
-.field { border-bottom: 1px solid var(--sep); padding: 4px 0; }
+.insp .grp { background: var(--card); border-radius: 9px; box-shadow: 0 0 0 .5px var(--cardline); }
+.field { border-bottom: 1px solid var(--sep); padding: 5px 0; }
+.insp .r { min-height: 26px; }
 .grp > .field:last-child, .grp > details:last-child, .dis .in > .field:last-child { border-bottom: 0; }
 .r { display: flex; align-items: center; gap: 8px; min-height: 24px; }
 .r > label, .r > .lab { flex: 1; min-width: 0; }
@@ -198,7 +226,7 @@ code { font: 12px var(--mono); }
   position: relative; margin: 0; transition: background .15s; border: 1px solid var(--ctlb); }
 .sw::after { content: ""; position: absolute; top: 1px; left: 1px; width: 15px; height: 15px; border-radius: 50%; background: var(--knob);
   box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: left .15s; }
-.sw:checked { background: var(--ok); border-color: transparent; }
+.sw:checked { background: var(--accent); border-color: transparent; }
 .sw:checked::after { left: 14px; }
 details.dis { border-bottom: 1px solid var(--sep); }
 details.dis > summary { list-style: none; display: flex; align-items: center; gap: 6px; min-height: 30px; }
@@ -271,7 +299,54 @@ details.dis .in { padding: 0 0 6px 16px; }
 .sheet p { margin: 0 0 12px; color: var(--ink2); }
 .btns { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 .btns .grow { flex: 1; }
-.stats { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--ink2); font-size: 12px; margin-bottom: 12px; }
+.stats { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--ink2); font-size: 12px; margin: 4px 0 10px; }
+/* Prüfbericht */
+.rep-h { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+.rep-h .big { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--ok-soft); color: var(--ok); }
+.rep-h .big.bad { background: var(--bad-soft); color: var(--bad); }
+.rep-h .big .ic { width: 19px; height: 19px; stroke-width: 2; }
+.rep-h h3 { margin: 0 0 1px; }
+.rep-h p { margin: 0; }
+.tbl { background: var(--card); border-radius: 9px; box-shadow: 0 0 0 .5px var(--cardline); overflow: auto; max-height: 38vh; margin-bottom: 16px; }
+.tbl table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tbl th { position: sticky; top: 0; font-size: 11px; font-weight: 600; color: var(--ink2); text-align: left; padding: 6px 12px; background: var(--card); border-bottom: 1px solid var(--sep); }
+.tbl td { padding: 5px 12px; border-top: 1px solid var(--sep); }
+.tbl tr:first-child td { border-top: 0; }
+.tbl td.st { white-space: nowrap; color: var(--ok); }
+.tbl td.st.bad { color: var(--bad); font-weight: 500; }
+.tbl td.st .ic { width: 14px; height: 14px; display: inline-block; vertical-align: -3px; margin-right: 3px; }
+.pnum { display: inline-grid; place-items: center; min-width: 20px; height: 18px; padding: 0 5px; border-radius: 5px; background: var(--chip); color: var(--chip-ink);
+  font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sheet h4.sub-h { margin: 0 0 6px; font-size: 12px; }
+ol.steps { margin: 0 0 12px; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 2px; }
+ol.steps li { counter-increment: s; display: flex; gap: 10px; padding: 3px 0; }
+ol.steps li::before { content: counter(s); width: 20px; height: 20px; border-radius: 50%; background: var(--selbg); color: var(--ink2); font-size: 11px; font-weight: 600;
+  display: grid; place-items: center; flex: none; margin-top: -1px; }
+details.tech > summary { list-style: none; display: inline-flex; align-items: center; gap: 6px; color: var(--ink2); font-size: 12px; padding: 4px 0; }
+details.tech > summary::-webkit-details-marker { display: none; }
+details.tech > summary::before { content: "›"; display: inline-block; width: 10px; transition: transform .15s; }
+details.tech[open] > summary::before { transform: rotate(90deg); }
+details.tech .in { padding-top: 6px; }
+/* Ausgeben */
+.choices { display: grid; gap: 8px; margin-bottom: 12px; }
+.choice { display: flex; gap: 12px; align-items: flex-start; padding: 11px 14px; border-radius: 9px; background: var(--card); box-shadow: 0 0 0 .5px var(--ctlb); }
+.choice.on { box-shadow: 0 0 0 2px var(--accent); }
+.choice input[type=radio] { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; margin: 1px 0 0; flex: none;
+  border: 1px solid var(--ctlb); background: var(--ctl); }
+.choice input[type=radio]:checked { border: 5px solid var(--accent); background: #fff; }
+.choice .t { flex: 1; min-width: 0; }
+.choice b { display: block; font-weight: 600; }
+.choice small { display: block; color: var(--ink2); font-size: 12px; margin-top: 1px; }
+.choice select { align-self: center; max-width: 220px; }
+.reco { font-size: 10px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
+.optbox { background: var(--card); border-radius: 9px; box-shadow: 0 0 0 .5px var(--cardline); padding: 0 12px; margin-bottom: 12px; }
+.optbox .r { min-height: 34px; border-bottom: 1px solid var(--sep); }
+.optbox .r.last { border-bottom: 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 1px; background: var(--sep); border-radius: 9px; overflow: hidden;
+  box-shadow: 0 0 0 .5px var(--cardline); margin-bottom: 4px; }
+.facts div { background: var(--card); padding: 8px 12px; }
+.facts b { display: block; font-size: 15px; font-weight: 600; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.facts span { font-size: 11px; color: var(--ink2); }
 .stats b { color: var(--ink); font-variant-numeric: tabular-nums; }
 .report { margin: 0; max-height: 300px; overflow: auto; font: 11.5px/1.55 var(--mono); white-space: pre-wrap; word-break: break-word;
   background: var(--canvas); border-radius: 8px; padding: 10px 12px; }
@@ -293,7 +368,8 @@ details.dis .in { padding: 0 0 6px 16px; }
 .ptabs { display: flex; justify-content: center; gap: 2px; flex-wrap: wrap; }
 .ptabs button { border: 0; background: none; border-radius: 6px; padding: 4px 8px; display: flex; flex-direction: column; align-items: center;
   gap: 3px; font-size: 11px; color: var(--ink2); min-width: 66px; position: relative; }
-.ptabs button b { font-size: 19px; font-weight: 400; line-height: 1; color: var(--ink2); }
+.ptabs button b { display: block; color: var(--ink2); }
+.ptabs button b .ic { width: 22px; height: 22px; stroke-width: 1.35; }
 .ptabs button[aria-selected="true"] { background: var(--selbg); color: var(--ink); }
 .ptabs button[aria-selected="true"] b { color: var(--accent); }
 .ptabs .n { position: absolute; top: 0; right: 8px; min-width: 16px; padding: 0 4px; border-radius: 999px; background: var(--bad); color: #fff; font-size: 10px; line-height: 15px; }
@@ -369,6 +445,9 @@ details.dis .in { padding: 0 0 6px 16px; }
   .side .item { width: auto; white-space: nowrap; flex: none; }
   .side-foot { margin: 0; padding: 0 0 0 8px; border-top: 0; border-left: 1px solid var(--sep); display: flex; }
   .toolbar { grid-column: auto; flex-wrap: wrap; padding: 8px 12px; }
+  .side .item.sub { padding-left: 8px; }
+  .side-foot .mini { padding: 0 0 0 8px; }
+  .statusbar .file, .side .item .meta { display: none; }
   #t-side, #t-insp { display: none; }
   .insp { border-left: 0; border-top: 1px solid var(--sep); }
   .stage { min-height: 340px; padding: 16px; }
@@ -384,13 +463,11 @@ details.dis .in { padding: 0 0 6px 16px; }
     <div class="side-search"><input type="search" id="side-q" placeholder="Suchen" aria-label="Modelle suchen" autocomplete="off" spellcheck="false"></div>
     <div id="groups"></div>
     <div class="side-foot">
-      <button class="item" id="bw-btn" type="button" hidden><span class="ico">✧</span><span class="lbl">Motiv zeichnen …</span></button>
-      <button class="item" id="upd-btn" type="button" hidden><span class="ico">↻</span><span class="lbl">Updates</span><span class="n" id="upd-n" hidden></span></button>
-      <button class="item" id="open-settings" type="button"><span class="ico">⚙︎</span><span class="lbl">Einstellungen</span><span class="k">⌘,</span></button>
-      <span id="app-actions" hidden style="display:contents">
-        <button class="item" id="open-folder" type="button"><span class="ico">⌂</span><span class="lbl">Ordner öffnen</span></button>
-        <button class="item" id="quit" type="button"><span class="ico">⏻</span><span class="lbl">Beenden</span></button>
-      </span>
+      <button class="item" id="open-settings" type="button" title="⌘,"><span class="ico" data-ic="gear"></span><span class="lbl">Einstellungen</span><span class="n" id="upd-n" hidden></span></button>
+      <div class="mini" id="app-actions" hidden>
+        <button class="linkish" id="open-folder" type="button">Ordner öffnen</button>
+        <button class="linkish" id="quit" type="button">Beenden</button>
+      </div>
     </div>
   </nav>
 
@@ -398,12 +475,9 @@ details.dis .in { padding: 0 0 6px 16px; }
     <button class="tb" id="t-side" type="button" aria-pressed="true" title="Seitenleiste ein/aus"><svg viewBox="0 0 20 20"><rect x="2.5" y="4" width="15" height="12" rx="2.5"/><path d="M7.5 4v12"/></svg></button>
     <div class="ttl"><b id="t-name">Steckwerk</b><span id="t-sub"></span></div>
     <div class="grow"></div>
-    <button class="pill" id="pill" type="button" title="Prüfbericht und Zusammenbau">Bereit</button>
-    <button class="sbtn" id="t-proj" type="button" title="Projekte speichern und öffnen" hidden>Projekte</button>
-    <button class="popup" id="t-mat" type="button" title="Material und Laser"><span id="mat-sum"></span></button>
-    <button class="tb" id="dice" type="button" hidden title="Alle Gestaltungsoptionen zufällig wählen"><svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3"/><circle cx="7" cy="7" r=".9" fill="currentColor"/><circle cx="13" cy="13" r=".9" fill="currentColor"/><circle cx="10" cy="10" r=".9" fill="currentColor"/><circle cx="13" cy="7" r=".9" fill="currentColor"/><circle cx="7" cy="13" r=".9" fill="currentColor"/></svg></button>
     <button class="sbtn" id="go" type="button" hidden title="⌘↩">Vorschau</button>
-    <button class="pbtn" id="t-export" type="button" disabled>Exportieren…</button>
+    <button class="popup" id="t-mat" type="button" title="Material und Laser"><i class="swatch" aria-hidden="true"></i><span id="mat-sum"></span><span data-ic="chev"></span></button>
+    <button class="pbtn big" id="t-export" type="button" title="⌘E" disabled><span data-ic="laser"></span><span id="t-export-l">Exportieren …</span></button>
     <button class="tb" id="t-insp" type="button" aria-pressed="true" title="Inspektor ein/aus"><svg viewBox="0 0 20 20"><rect x="2.5" y="4" width="15" height="12" rx="2.5"/><path d="M12.5 4v12"/></svg></button>
   </header>
 
@@ -412,9 +486,16 @@ details.dis .in { padding: 0 0 6px 16px; }
     <div class="stage" id="stage">
       <div class="empty"><strong>Steckwerk lädt …</strong>Falls nichts passiert: Steckwerk-App neu starten bzw. im Steckwerk-Ordner <code>python3 webui.py</code>.</div>
     </div>
+    <footer class="statusbar">
+      <button class="pill" id="pill" type="button" title="Prüfbericht und Zusammenbau">Bereit</button>
+      <i class="v" id="st-v1" hidden></i><span class="g" id="st-parts" hidden></span>
+      <i class="v" id="st-v2" hidden></i><span class="g" id="st-time" hidden><span data-ic="clock"></span><span id="st-time-t"></span></span>
+      <span class="file" id="st-file" data-no-i18n></span>
+    </footer>
   </main>
 
   <aside class="insp" id="insp" aria-label="Inspektor">
+    <h2 class="insp-h" id="insp-h"></h2>
     <p class="model-desc" id="model-desc"></p>
     <div class="ki" id="ki-box" hidden>
       <textarea id="ki-text" rows="2" maxlength="600" spellcheck="true" placeholder="Was möchtest du? z. B. „zierlicher Stern, 12 cm, sehr fein“"></textarea>
@@ -430,16 +511,27 @@ details.dis .in { padding: 0 0 6px 16px; }
 
 <!-- Sheet: Prüfbericht und Zusammenbau -->
 <div class="sheet wide" id="sheet-report" role="dialog" aria-modal="true" aria-labelledby="rep-title" hidden>
-  <h3 id="rep-title">Prüfbericht</h3>
-  <div class="stats" id="stats"></div>
-  <div class="row" style="justify-content:space-between; margin-bottom:6px">
-    <h4 style="margin:0">Prüfbericht</h4>
-    <label class="toggle" style="font-size:12px"><input type="checkbox" class="sw" id="only-err"> nur Fehler</label>
+  <div class="rep-h">
+    <span class="big" id="rep-icon"><span data-ic="check"></span></span>
+    <div><h3 id="rep-title">Prüfbericht</h3><p id="rep-lead"></p></div>
   </div>
-  <pre class="report" id="report">–</pre>
-  <h4>Zusammenbau</h4>
-  <ol class="notes" id="notes"><li>–</li></ol>
-  <p class="params" id="params"></p>
+  <div class="tbl" id="rep-tbl"><table>
+    <thead><tr><th style="width:52px">Teil</th><th>Name</th><th>Größe</th><th style="width:96px">Prüfung</th></tr></thead>
+    <tbody id="rep-rows"></tbody>
+  </table></div>
+  <h4 class="sub-h" id="notes-h">Zusammenbau</h4>
+  <ol class="steps" id="notes"><li>–</li></ol>
+  <details class="tech" id="rep-tech">
+    <summary>Technische Details</summary>
+    <div class="in">
+      <div class="row" style="justify-content:space-between">
+        <div class="stats" id="stats"></div>
+        <label class="toggle" style="font-size:12px"><input type="checkbox" class="sw" id="only-err"> nur Fehler</label>
+      </div>
+      <pre class="report" id="report">–</pre>
+      <p class="params" id="params"></p>
+    </div>
+  </details>
   <div class="btns"><button class="pbtn" type="button" data-close>Fertig</button></div>
 </div>
 
@@ -447,27 +539,32 @@ details.dis .in { padding: 0 0 6px 16px; }
 <div class="sheet" id="sheet-export" role="dialog" aria-modal="true" aria-labelledby="exp-title" hidden>
   <h3 id="exp-title">Exportieren</h3>
   <p id="exp-text"></p>
-  <div class="grp lz" id="exp-lz" hidden></div>
-  <p class="hint" id="exp-lz-hint" hidden style="font-size:11px; color:var(--ink3); margin:6px 0 12px"></p>
-  <div class="form">
-    <label class="l" for="exp-fmt">Format</label>
-    <select id="exp-fmt">
-      <option value="zip">Alles als ZIP (SVGs und Prüfberichte)</option>
-      <option value="svg">Nur die gezeigte Platte als SVG</option>
-      <option value="save">In den Steckwerk-Ordner speichern</option>
-    </select>
-    <span class="sub" id="exp-hint"></span>
-    <span class="l" id="exp-extra-l">Dazu</span>
-    <span class="row" id="exp-extra" style="flex-wrap:wrap; gap:4px 14px">
-      <label><input type="checkbox" id="exp-xcs"> XCS-Projekt (.xcs)</label>
-      <label title="xTool Studio ab 1.7 – mit Leistung, Tempo und Durchgängen je Ebene"><input type="checkbox" id="exp-xs"> xTool Studio (.xs)</label>
-      <label><input type="checkbox" id="exp-pdf"> Montageanleitung (PDF)</label>
-    </span>
+  <div class="choices" role="radiogroup" aria-label="Ziel">
+    <label class="choice" id="exp-c-xcs"><input type="radio" name="exp-ziel" value="xcs">
+      <span class="t"><b>In xTool Creative Space öffnen<span class="reco">Empfohlen</span></b>
+      <small>Schnitt und Ritzen liegen auf eigenen Ebenen, das Gerät ist der M2. Du prüfst nur noch die Laserwerte und startest.</small></span></label>
+    <label class="choice" id="exp-c-file"><input type="radio" name="exp-ziel" value="datei">
+      <span class="t"><b>Dateien sichern</b><small id="exp-hint">Für andere Programme oder zum Aufheben.</small></span>
+      <select id="exp-fmt" aria-label="Format">
+        <option value="zip">Alles als ZIP</option>
+        <option value="svg">Gezeigte Platte als SVG</option>
+        <option value="save">In den Steckwerk-Ordner</option>
+      </select></label>
   </div>
-  <p class="hint" id="exp-sch" style="font-size:12px; margin:8px 2px 0"></p>
+  <div class="optbox">
+    <div class="r"><label for="exp-num">Teilenummern klein eingravieren</label><input type="checkbox" class="sw" id="exp-num"></div>
+    <div class="r" id="exp-r-pdf"><label for="exp-pdf">Montageanleitung als PDF dazulegen</label><input type="checkbox" class="sw" id="exp-pdf"></div>
+    <div class="r" id="exp-r-xcs"><label for="exp-xcs">XCS-Projekt (.xcs) dazulegen</label><input type="checkbox" class="sw" id="exp-xcs"></div>
+    <div class="r" id="exp-r-xs" title="xTool Studio ab 1.7 – mit Leistung, Tempo und Durchgängen je Ebene"><label for="exp-xs">xTool-Studio-Projekt (.xs) dazulegen</label><input type="checkbox" class="sw" id="exp-xs"></div>
+  </div>
+  <div class="facts" id="exp-facts"></div>
+  <details class="tech" id="exp-lz-box" hidden>
+    <summary>Laserwerte für dieses Material</summary>
+    <div class="in"><div class="grp lz" id="exp-lz"></div>
+      <p class="hint" id="exp-lz-hint" style="font-size:11px; color:var(--ink3); margin:6px 2px 0"></p></div>
+  </details>
   <div class="btns">
     <button class="linkish" id="exp-folder" type="button" hidden>Ordner öffnen</button>
-    <button class="sbtn" id="exp-xcsopen" type="button" hidden title="Speichert die Platte als XCS-Projekt und öffnet sie in xTool Creative Space">In XCS öffnen</button>
     <span class="grow"></span>
     <button class="sbtn" type="button" data-close>Abbrechen</button>
     <button class="pbtn" id="exp-go" type="button">Exportieren</button>
@@ -477,10 +574,10 @@ details.dis .in { padding: 0 0 6px 16px; }
 <!-- Sheet: Projekte -->
 <div class="sheet" id="sheet-proj" role="dialog" aria-modal="true" aria-labelledby="proj-title" hidden>
   <h3 id="proj-title">Projekte</h3>
-  <p>Ein Projekt merkt sich Modell, alle Werte und das Material. So holst du ein Lieblingsstück mit einem Klick zurück.</p>
+  <p>Ein Projekt merkt sich Vorlage, alle Werte und das Material. So holst du ein Lieblingsstück mit einem Klick zurück.</p>
   <div class="row" style="gap:8px">
     <input type="text" id="proj-name" placeholder="Name, z. B. Wichtelhaus Oma" maxlength="80" style="flex:1; min-width:0">
-    <button class="pbtn" id="proj-save" type="button">Aktuelles speichern</button>
+    <button class="pbtn" id="proj-save" type="button">Sichern</button>
   </div>
   <div id="proj-list" class="grp" style="margin-top:12px; max-height:46vh; overflow:auto"></div>
   <div class="btns"><span class="grow"></span><button class="sbtn" type="button" data-close>Fertig</button></div>
@@ -528,12 +625,12 @@ details.dis .in { padding: 0 0 6px 16px; }
     <button class="close" type="button" data-close aria-label="Schließen"></button>
     <div class="tt" id="set-title">Einstellungen</div>
     <div class="ptabs" role="tablist">
-      <button type="button" role="tab" data-pane="material"><b>◧</b>Material</button>
-      <button type="button" role="tab" data-pane="pakete" id="tab-pakete"><b>❑</b>Pakete</button>
-      <button type="button" role="tab" data-pane="motive" id="tab-motive"><b>✦</b>Motive</button>
-      <button type="button" role="tab" data-pane="updates" id="tab-updates"><b>↻</b>Updates<span class="n" id="upd-n2" hidden></span></button>
-      <button type="button" role="tab" data-pane="assistent" id="tab-assistent"><b>✧</b>Assistent</button>
-      <button type="button" role="tab" data-pane="allgemein"><b>⚙︎</b>Allgemein</button>
+      <button type="button" role="tab" data-pane="material"><b data-ic="layers"></b>Material</button>
+      <button type="button" role="tab" data-pane="pakete" id="tab-pakete"><b data-ic="box"></b>Pakete</button>
+      <button type="button" role="tab" data-pane="motive" id="tab-motive"><b data-ic="image"></b>Motive</button>
+      <button type="button" role="tab" data-pane="updates" id="tab-updates"><b data-ic="refresh"></b>Updates<span class="n" id="upd-n2" hidden></span></button>
+      <button type="button" role="tab" data-pane="assistent" id="tab-assistent"><b data-ic="spark"></b>Assistent</button>
+      <button type="button" role="tab" data-pane="allgemein"><b data-ic="gear"></b>Allgemein</button>
     </div>
   </div>
   <div class="body">
@@ -817,6 +914,26 @@ details.dis .in { padding: 0 0 6px 16px; }
     "Graupappe 2 mm": "Grey board 2 mm", "Acryl schwarz 3 mm": "Black acrylic 3 mm",
 
 
+      // Oberfläche 3: Seitenleiste, Statusleiste, Ausgeben, Prüfbericht, Projekte
+    "heute": "today", "gestern": "yesterday", "Verwalten": "Manage", "Alle": "All", "Neues Motiv zeichnen …": "Draw a new motif …",
+    "Zurücksetzen": "Reset", "Alle Werte dieser Vorlage auf Standard": "Reset all values of this template", "Überrasch mich": "Surprise me",
+    "An xTool senden": "Send to xTool", "Exportieren …": "Export …", "Prüfung": "Check", "passt": "fits", "Nicht schnittfertig": "Not cut-ready",
+    "Steckwerk erzeugt keine Datei, solange ein Teil nicht passt. Die Werte im Inspektor anpassen.":
+      "Steckwerk creates no file while a part does not fit. Adjust the values in the inspector.",
+    "Technische Details": "Technical details", "In xTool Creative Space öffnen": "Open in xTool Creative Space", "Empfohlen": "Recommended",
+    "Schnitt und Ritzen liegen auf eigenen Ebenen, das Gerät ist der M2. Du prüfst nur noch die Laserwerte und startest.":
+      "Cut and score are on separate layers and the device is set to the M2. Just check the laser settings and start.",
+    "Dateien sichern": "Save files", "Für andere Programme oder zum Aufheben.": "For other programs or to keep.",
+    "Gezeigte Platte als SVG": "Shown sheet as SVG", "In den Steckwerk-Ordner": "To the Steckwerk folder",
+    "Teilenummern klein eingravieren": "Engrave small part numbers", "Montageanleitung als PDF dazulegen": "Add assembly guide as PDF",
+    "XCS-Projekt (.xcs) dazulegen": "Add XCS project (.xcs)", "xTool-Studio-Projekt (.xs) dazulegen": "Add xTool Studio project (.xs)",
+    "Laserwerte für dieses Material": "Laser settings for this material", "In XCS öffnen": "Open in XCS", "Sichern": "Save",
+    "Laserzeit": "Laser time", "Ritzen": "Score", "Montageanleitung liegt im Steckwerk-Ordner.": "The assembly guide is in the Steckwerk folder.",
+    "Ein Projekt merkt sich Vorlage, alle Werte und das Material. So holst du ein Lieblingsstück mit einem Klick zurück.":
+      "A project remembers the template, all values and the material, so a favourite piece is one click away.",
+    "Ziel": "Destination", "Projekte": "Projects", "Name, z. B. Wichtelhaus Oma": "Name, e.g. Gnome house for Grandma",
+    "Noch keine Projekte gespeichert.": "No projects saved yet.", "Öffnen": "Open", "Löschen": "Delete",
+    "Speichere XCS-Projekt …": "Saving XCS project …", "Projekte nicht verfügbar": "Projects not available",
   };
   const EN_RX = [
     [/^(\d+) gewählt$/, "$1 selected"], [/^(\d+) Motive( · (\d+) eigene)?$/, (m, a, b, c) => a + " motifs" + (c ? " · " + c + " own" : "")],
@@ -848,6 +965,17 @@ details.dis .in { padding: 0 0 6px 16px; }
     [/^In XCS: Material „(.+)“ · (.+) – Rot auf Schneiden, Blau auf Ritzen stellen\.$/, (m, a, b) => `In XCS: material “${T(a)}” · ${b} – set red to Cut, blue to Score.`],
 
 
+      [/^„(.+)“ ausgeben$/, "Send “$1”"], [/^„(.+)“ exportieren$/, "Export “$1”"],
+    [/^(\d+) Teile auf (einer Platte|\d+ Platten) (\d+) × (\d+) mm, (.+)\.$/, (m, n, p, w, h, mat) =>
+      `${n} parts on ${p === "einer Platte" ? "one sheet" : p.replace("Platten", "sheets")} ${w} × ${h} mm, ${T(mat).replace(/ mm Material$/, " mm material")}.`],
+    [/^(\d+) Teile · (\d+) Platten?(, (\d+) % genutzt)?$/, (m, n, s, x, u) => `${n} parts · ${s} ${s === "1" ? "sheet" : "sheets"}${u ? `, ${u} % used` : ""}`],
+    [/^(\d+) % genutzt$/, "$1 % used"], [/^([\d.,]+) Platten?$/, (m, n) => `${n} ${n === "1" ? "sheet" : "sheets"}`],
+    [/^ca\. (.+) Laser( · ca\. (.+) € Material)?$/, (m, z, x, k) => `approx. ${z} laser${k ? ` · approx. ${k} € material` : ""}`],
+    [/^Vorlage (.+) · (gesichert|geändert)$/, (m, a, b) => `Template ${a} · ${b === "gesichert" ? "saved" : "edited"}`],
+    [/^Alle (\d+) Teile sind geschlossen, (\d+) Steckverbindungen passen bei (.+) mm Material und (.+) mm Kerf\.$/,
+      "All $1 parts are closed; $2 joints fit at $3 mm material and $4 mm kerf."],
+    [/^Projekt „(.+)“ gesichert$/, "Project “$1” saved"],
+    [/^(.+) Montageanleitung liegt im Steckwerk-Ordner\.$/, (m, a) => `${T(a)} The assembly guide is in the Steckwerk folder.`],
   ];
   function T(s) {
     if (LANG === "de" || typeof s !== "string") return s;
@@ -981,12 +1109,47 @@ details.dis .in { padding: 0 0 6px 16px; }
   }
 
   // ------------------------------------------------------------------ Seitenleiste
-  const ICONS = {
-    wichtelhaus: "⌂", serie: "⌂", tannenbaum: "▲", schneemann: "◎", wichtel: "♟", zaun: "‖", laterne: "✦", briefkasten: "✉",
-    zubehoer: "◇", ornament: "✶", schwibbogen: "◠", schneeflocke: "❄", fahrzeug: "◉", zug: "▬", motiv_aufsteller: "▢",
-    motiv_schild: "▭", motiv_anhaenger: "⊙", motiv_untersetzer: "○", motiv_silhouette: "◐", alle: "▦",
+  // Linien-Icons (18er Raster, 1,45 Strich) – eine Formensprache für Seitenleiste, Leisten und Blätter.
+  const IC = {
+    house: '<path d="M3 8.2 9 3l6 5.2V15a1 1 0 0 1-1 1h-3v-4.5H7V16H4a1 1 0 0 1-1-1z"/>',
+    tree: '<path d="M9 2.5 4.5 8h2L4 11.5h3L4.5 15h9L11 11.5h3L11.5 8h2zM9 15v2"/>',
+    star: '<path d="m9 2.6 1.9 4 4.3.5-3.2 3 .9 4.3L9 12.2l-3.9 2.2.9-4.3-3.2-3 4.3-.5z"/>',
+    ornament: '<circle cx="9" cy="10.5" r="5"/><path d="M7.5 5.6V4h3v1.6M9 4V2.5M4.3 9.2c3 1.2 6.4 1.2 9.4 0"/>',
+    car: '<path d="M3 12V9.5l1.8-3.7A1.5 1.5 0 0 1 6.2 5h5.6a1.5 1.5 0 0 1 1.4.8L15 9.5V12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 9.5h12"/><circle cx="6" cy="13" r="1.4"/><circle cx="12" cy="13" r="1.4"/>',
+    gnome: '<path d="M9 2 5 10h8zM5.5 10h7l-.5 5.5h-6z"/><circle cx="9" cy="11.8" r=".5" fill="currentColor"/>',
+    pumpkin: '<path d="M9 5.5c-4.5 0-6 2.3-6 5s1.8 4.5 6 4.5 6-1.8 6-4.5-1.5-5-6-5zM9 5.5V3.5c0-.6.4-1 1-1M9 5.5c-1.4 1.5-1.4 8 0 9.5M9 5.5c1.4 1.5 1.4 8 0 9.5"/>',
+    image: '<rect x="2.5" y="3.5" width="13" height="11" rx="2"/><circle cx="6.5" cy="7.5" r="1.3"/><path d="m3 13 4-3.5 3 2.5 2-1.5 3.5 2.5"/>',
+    grid: '<rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1"/><rect x="3" y="10" width="5" height="5" rx="1"/><rect x="10" y="10" width="5" height="5" rx="1"/>',
+    dice: '<rect x="3" y="3" width="12" height="12" rx="2.5"/><circle cx="6.5" cy="6.5" r=".7" fill="currentColor"/><circle cx="11.5" cy="11.5" r=".7" fill="currentColor"/><circle cx="9" cy="9" r=".7" fill="currentColor"/><circle cx="11.5" cy="6.5" r=".7" fill="currentColor"/><circle cx="6.5" cy="11.5" r=".7" fill="currentColor"/>',
+    motion: '<circle cx="9" cy="5" r="1.6"/><path d="M9 6.6v4.4M9 11l-2.5 4.5M9 11l2.5 4.5M4.5 7.5 9 8.6l4.5-1.1"/>',
+    sofa: '<path d="M4 9V6.5A1.5 1.5 0 0 1 5.5 5h7A1.5 1.5 0 0 1 14 6.5V9M2.5 9.5a1.5 1.5 0 0 1 3 0V11h7V9.5a1.5 1.5 0 0 1 3 0V14h-13zM4 14v1.5M14 14v1.5"/>',
+    layers: '<path d="m9 3 6.5 3.2L9 9.4 2.5 6.2zM2.5 9 9 12.2 15.5 9M2.5 11.8 9 15l6.5-3.2"/>',
+    ruler: '<path d="M2.8 12.2 12.2 2.8l3 3-9.4 9.4zM5.5 9.5l1.4 1.4M7.6 7.4l1.4 1.4M9.7 5.3l1.4 1.4"/>',
+    shapes: '<circle cx="6" cy="6" r="3.3"/><path d="m12.5 2.8 3.2 5.5H9.3z"/><rect x="8.3" y="10.3" width="6.4" height="5" rx="1"/>',
+    tag: '<path d="M2.8 9.2V3.5a.7.7 0 0 1 .7-.7h5.7l6.5 6.5a1 1 0 0 1 0 1.4l-4.3 4.3a1 1 0 0 1-1.4 0z"/><circle cx="6" cy="6" r="1.2"/>',
+    box: '<path d="m9 2.5 6 3v7L9 15.5l-6-3v-7zM3 5.5l6 3 6-3M9 8.5v7"/>',
+    doc: '<path d="M5 2.5h5.5L14 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z"/><path d="M10.5 2.5V6H14"/>',
+    clock: '<circle cx="9" cy="9" r="6.3"/><path d="M9 5.5V9l2.3 1.6"/>',
+    gear: '<circle cx="9" cy="9" r="2.3"/><path d="M9 2.5v1.8M9 13.7v1.8M2.5 9h1.8M13.7 9h1.8M4.4 4.4l1.3 1.3M12.3 12.3l1.3 1.3M4.4 13.6l1.3-1.3M12.3 5.7l1.3-1.3"/>',
+    spark: '<path d="M9 2.5c.5 3.4 1.9 5.1 5.5 6.5-3.6 1.4-5 3.1-5.5 6.5-.5-3.4-1.9-5.1-5.5-6.5 3.6-1.4 5-3.1 5.5-6.5z"/>',
+    refresh: '<path d="M14.5 9a5.5 5.5 0 1 1-1.6-3.9M13.5 2.8v2.8h-2.8"/>',
+    laser: '<path d="M9 2.5v6.5M6.6 6.6 9 9l2.4-2.4"/><path d="M3 12.5h12M5 15.5h8"/>',
+    check: '<path d="m4.5 9.5 3 3 6-7"/>',
+    cross: '<path d="m5 5 8 8M13 5l-8 8"/>',
+    chev: '<path d="m5.5 7 3.5 3.5L12.5 7"/>',
   };
-  const GROUP_ICON = { "Eigene Motive": "▢", "Pakete": "❑" };
+  const icon = (name, cls) => {
+    const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("viewBox", "0 0 18 18"); s.setAttribute("class", "ic" + (cls ? " " + cls : "")); s.setAttribute("aria-hidden", "true");
+    s.innerHTML = IC[name] || IC.box;
+    return s;
+  };
+  document.querySelectorAll("[data-ic]").forEach((el) => el.append(icon(el.dataset.ic)));
+  const GROUP_IC = {
+    "Häuser": "house", "Zubehör": "tree", "Schmuck": "star", "Fahrzeuge": "car", "Eigene Motive": "image", "Komplett": "grid",
+    "Wichtel": "gnome", "Halloween": "pumpkin", "Weihnachten": "ornament", "Spiele": "dice", "Bewegung": "motion",
+    "Wohnen": "sofa", "Mehrlagig": "layers", "Grundlagen": "ruler", "Formen": "shapes", "Verkauf": "tag",
+  };
   function paketModelle() {                              // Modellname → aus einem Paket?
     const out = new Set();
     for (const p of S.schema.pakete || []) for (const m of p.modelle || []) { out.add(m); out.add(`${p.id}_${m}`); }
@@ -994,21 +1157,44 @@ details.dis .in { padding: 0 0 6px 16px; }
   }
   function pickModel(key) {
     if (key === S.model) return;
+    S.projekt = null;
     S.model = key; S.mvSel = 0; S.design = null; S.designKey = null; store.set("model", key);
     const rec = (store.get("recent") || []).filter((k) => k !== key && S.schema.models[k]);
     rec.unshift(key); store.set("recent", rec.slice(0, 4));
     renderModels(); renderParams(); schedule(0);
   }
-  function modelItem(key, m, grp) {
+  function sideItem(iconName, text, cls) {               // eine Zeile: Icon (oder Einzug) + Text
     const b = document.createElement("button");
-    b.type = "button"; b.className = "item"; b.dataset.key = key;
-    const ic = document.createElement("span"); ic.className = "ico"; ic.setAttribute("aria-hidden", "true");
-    ic.textContent = ICONS[key] || GROUP_ICON[grp] || "◇";
-    const lb = document.createElement("span"); lb.className = "lbl"; lb.textContent = m.label;
-    b.title = m.desc || "";
-    b.append(ic, lb);
-    if (key === S.model) b.setAttribute("aria-current", "true");
+    b.type = "button"; b.className = "item" + (cls ? " " + cls : "");
+    if (iconName) { const ic = document.createElement("span"); ic.className = "ico"; ic.append(icon(iconName)); b.append(ic); }
+    const lb = document.createElement("span"); lb.className = "lbl"; lb.textContent = text; b.append(lb);
+    return b;
+  }
+  function modelItem(key, m, grp, flat) {
+    const b = sideItem(flat ? GROUP_IC[grp] || "box" : null, m.label, flat ? "" : "sub");
+    b.dataset.key = key; b.title = m.desc || "";
+    if (key === S.model && !S.projekt) b.setAttribute("aria-current", "true");
     b.addEventListener("click", () => pickModel(key));
+    return b;
+  }
+  function kurzDatum(sek) {                              // „heute“, „gestern“, „Mo“, „3. Nov.“
+    const d = new Date(sek * 1000), now = new Date();
+    const tage = Math.round((new Date(now.toDateString()) - new Date(d.toDateString())) / 864e5);
+    const loc = LANG === "de" ? "de-DE" : "en-GB";
+    if (tage === 0) return T("heute");
+    if (tage === 1) return T("gestern");
+    if (tage < 7) return d.toLocaleDateString(loc, { weekday: "short" }).replace(".", "");
+    return d.toLocaleDateString(loc, { day: "numeric", month: "short" });
+  }
+  function projektItem(p) {
+    const m = S.schema.models[p.model];
+    const b = sideItem("doc", p.name, "doc");
+    b.querySelector(".lbl").dataset.noI18n = "";
+    const meta = document.createElement("span"); meta.className = "meta"; meta.textContent = kurzDatum(p.geaendert); b.append(meta);
+    b.title = m ? m.label : p.model;
+    b.disabled = !m;
+    if (S.projekt && S.projekt.name === p.name) b.setAttribute("aria-current", "true");
+    b.addEventListener("click", () => ladeProjekt(p));
     return b;
   }
   function renderModels() {
@@ -1018,51 +1204,55 @@ details.dis .in { padding: 0 0 6px 16px; }
     const fromPak = paketModelle();
     const label = (grp) => (S.schema.group_labels || {})[grp] || grp;
     const all = Object.entries(S.schema.models);
-    if (q) {                                            // Suche: flache Trefferliste
+    const sect = (title, link) => {
+      const sh = document.createElement("div"); sh.className = "sect"; sh.append(document.createTextNode(title));
+      if (link) { const a = document.createElement("button"); a.type = "button"; a.className = "linkish"; a.textContent = link[0]; a.addEventListener("click", link[1]); sh.append(a); }
+      g.append(sh);
+    };
+    if (q) {                                            // Suche: flache Trefferliste (Projekte zuerst)
+      const ph = (S.projekte || []).filter((p) => p.name.toLowerCase().includes(q));
       const inLabel = ([, m]) => (m.label + " " + label(m.group)).toLowerCase().includes(q);
       const hits = all.filter(inLabel).concat(all.filter((e) => !inLabel(e) && (e[1].desc || "").toLowerCase().includes(q)));
-      if (!hits.length) { const p = document.createElement("div"); p.className = "nohit"; p.textContent = "Nichts gefunden"; g.append(p); }
-      for (const [k, m] of hits) g.append(modelItem(k, m, m.group));
+      if (!hits.length && !ph.length) { const p = document.createElement("div"); p.className = "nohit"; p.textContent = "Nichts gefunden"; g.append(p); }
+      for (const p of ph) g.append(projektItem(p));
+      for (const [k, m] of hits) g.append(modelItem(k, m, m.group, true));
     } else {
-      const rec = (store.get("recent") || []).filter((k) => S.schema.models[k]);
-      if (rec.length > 1) {
-        const box = document.createElement("div"); box.className = "grp-side";
-        const h = document.createElement("div"); h.className = "sect"; h.textContent = "Zuletzt";
-        box.append(h); for (const k of rec) box.append(modelItem(k, S.schema.models[k], S.schema.models[k].group));
-        g.append(box);
+      const proj = (S.projekte || []).slice(0, 4);
+      if (proj.length) {                                // Zuletzt: die eigenen Projekte
+        sect("Zuletzt", [S.projekte.length > 4 ? "Alle" : "Verwalten", openProjekte]);
+        for (const p of proj) g.append(projektItem(p));
       }
+      sect("Vorlagen");
       const builtin = [], paks = [];
       for (const grp of S.schema.groups) {
         const models = all.filter(([, m]) => m.group === grp);
         if (!models.length) continue;
         (models.every(([k]) => fromPak.has(k)) ? paks : builtin).push([grp, models]);
       }
-      for (const [title, list] of [["Vorlagen", builtin], ["Aus Paketen", paks]]) {
-        if (!list.length) continue;
-        const sh = document.createElement("div"); sh.className = "sect"; sh.textContent = title; g.append(sh);
-        for (const [grp, models] of list) {
-          const box = document.createElement("div"); box.className = "grp-side";
-          const h = document.createElement("button"); h.type = "button"; h.className = "grp-h";
-          h.append(document.createTextNode(label(grp)));
-          const c = document.createElement("span"); c.className = "cnt"; c.textContent = models.length; h.append(c);
-          const list2 = document.createElement("div"); list2.className = "side-list";
-          const active = models.some(([k]) => k === S.model);
-          const isOpen = active || !!opened[grp];
-          h.setAttribute("aria-expanded", String(isOpen)); list2.hidden = !isOpen;
-          h.addEventListener("click", () => {
-            const o = store.get("sideOpen") || {}; const now = list2.hidden;
-            if (now) o[grp] = true; else delete o[grp];
-            store.set("sideOpen", o); h.setAttribute("aria-expanded", String(now)); list2.hidden = !now;
-          });
-          for (const [key, m] of models) list2.append(modelItem(key, m, grp));
-          box.append(h, list2); g.append(box);
+      for (const [grp, models] of builtin.concat(paks)) {
+        const box = document.createElement("div"); box.className = "grp-side";
+        const h = sideItem(GROUP_IC[grp] || "box", label(grp), "grp-h");
+        const c = document.createElement("span"); c.className = "cnt"; c.textContent = models.length; h.append(c, icon("chev", "chev"));
+        const list2 = document.createElement("div"); list2.className = "side-list";
+        const active = models.some(([k]) => k === S.model);
+        const isOpen = active || !!opened[grp];
+        h.setAttribute("aria-expanded", String(isOpen)); list2.hidden = !isOpen;
+        h.addEventListener("click", () => {
+          const o = store.get("sideOpen") || {}; const now = list2.hidden;
+          if (now) o[grp] = true; else delete o[grp];
+          store.set("sideOpen", o); h.setAttribute("aria-expanded", String(now)); list2.hidden = !now;
+        });
+        for (const [key, m] of models) list2.append(modelItem(key, m, grp));
+        if (grp === "Eigene Motive" && S.schema.mode === "server") {   // Motiv zeichnen gehört zu den eigenen Motiven
+          const b = sideItem(null, "Neues Motiv zeichnen …", "sub act"); b.addEventListener("click", openBild); list2.append(b);
         }
+        box.append(h, list2); g.append(box);
       }
     }
     const m = S.schema.models[S.model];
+    $("insp-h").textContent = m.label;
     $("model-desc").textContent = m.desc;
-    $("t-name").textContent = m.label;
-    document.title = m.label + " – Steckwerk";
+    document.title = (S.projekt ? S.projekt.name : m.label) + " – Steckwerk";
     subtitle();
   }
   $("side-q").addEventListener("input", () => renderModels());
@@ -1070,14 +1260,17 @@ details.dis .in { padding: 0 0 6px 16px; }
     if (e.key === "Escape") { $("side-q").value = ""; renderModels(); $("side-q").blur(); }
     if (e.key === "Enter") { const b = $("groups").querySelector(".item"); if (b) { b.click(); $("side-q").value = ""; renderModels(); } }
   });
-  function subtitle() {
-    const m = S.schema.models[S.model], d = S.result;
-    let s = (S.schema.group_labels || {})[m.group] || m.group;
-    if (d && d.ok !== undefined && !d.error && d.model === S.model) {
-      const parts = (d.assemblies || []).reduce((n, a) => n + a.parts, 0);
-      s += ` · ${parts} Teile`;
+  function subtitle() {                                  // Titel: Projektname oder Vorlage, darunter woher es kommt
+    const m = S.schema.models[S.model];
+    const grp = (S.schema.group_labels || {})[m.group] || m.group;
+    const tn = $("t-name"), ts = $("t-sub");
+    if (S.projekt) {
+      tn.textContent = S.projekt.name; tn.dataset.noI18n = "";
+      ts.textContent = `Vorlage ${m.label} · ${S.projekt.geaendert ? "geändert" : "gesichert"}`;
+    } else {
+      tn.textContent = m.label; delete tn.dataset.noI18n;
+      ts.textContent = grp;
     }
-    $("t-sub").textContent = s;
   }
 
   // ------------------------------------------------------------------ Inspektor
@@ -1086,10 +1279,9 @@ details.dis .in { padding: 0 0 6px 16px; }
     S.mvEditor = null;
     const vals = current();
     const ps = S.schema.models[S.model].params;
-    $("dice").hidden = !ps.some((p) => p.section && p.type === "select");
     const reset = document.createElement("button");
-    reset.type = "button"; reset.className = "linkish"; reset.textContent = "Standard"; reset.title = "Alle Werte dieses Modells zurücksetzen";
-    reset.addEventListener("click", () => { delete S.params[S.model]; store.set("params", S.params); renderParams(); schedule(0); });
+    reset.type = "button"; reset.className = "linkish"; reset.textContent = "Zurücksetzen"; reset.title = "Alle Werte dieser Vorlage auf Standard";
+    reset.addEventListener("click", () => { delete S.params[S.model]; store.set("params", S.params); geaendert(); renderParams(); schedule(0); });
     if (!ps.length) {
       const p = document.createElement("p"); p.className = "model-desc";
       p.textContent = "Keine Einstellungen – alles in Standardgröße. Material und Platte stellst du in den Einstellungen ein.";
@@ -1107,6 +1299,13 @@ details.dis .in { padding: 0 0 6px 16px; }
       f.append(h, grp); blocks.set(name, { h, grp });
     }
     blocks.values().next().value.h.append(reset);
+    if (blocks.has("Gestaltung") && ps.some((p) => p.section && p.type === "select")) {
+      const d = document.createElement("button");
+      d.type = "button"; d.className = "linkish"; d.title = "Alle Gestaltungsoptionen zufällig wählen";
+      d.append(icon("dice"), document.createTextNode("Überrasch mich"));
+      d.addEventListener("click", dice);
+      const h = blocks.get("Gestaltung").h; if (h.contains(reset)) d.style.marginLeft = "10px"; h.append(d);
+    }
     const refresh = () => {                              // Sichtbarkeit + „geändert“-Zähler
       const now = current();
       for (const [p, w] of els) w.hidden = !shown(p, now);
@@ -1125,7 +1324,7 @@ details.dis .in { padding: 0 0 6px 16px; }
       const cur = Object.assign({}, S.params[S.model] || {});
       cur[k] = v;
       if (S.model === "fahrzeug" && k === "vehicle") Object.assign(cur, S.schema.vehicle_defaults[v]);
-      S.params[S.model] = cur; store.set("params", S.params);
+      S.params[S.model] = cur; store.set("params", S.params); geaendert();
       if (k === "vehicle") renderParams(); else if (whenKeys.has(k) || sections.size) refresh();
       schedule();
     };
@@ -1178,8 +1377,8 @@ details.dis .in { padding: 0 0 6px 16px; }
   function gravTeile() {
     const seen = new Map();
     for (const a of (S.result && S.result.model === S.model ? S.result.assemblies || [] : []))
-      for (const t of a.teile || []) if (!seen.has(t.name)) seen.set(t.name, t);
-    return [...seen.values()];
+      for (const t of a.teile || []) if (t.w * t.h > 0 && !seen.has(t.name)) seen.set(t.name, t);
+    return [...seen.values()].sort((x, y) => y.w * y.h - x.w * x.h);  // größtes Teil zuerst
   }
   const opt = (lst) => lst.map((o) => (typeof o === "string" ? { value: o, label: o } : o));
   function gravTitle(g) {
@@ -1354,8 +1553,11 @@ details.dis .in { padding: 0 0 6px 16px; }
       const opts = p.options.filter((o) => !["keine", "keins", "keiner", "ohne", "none"].includes(o.value) || Math.random() < 0.15);
       cur[p.key] = opts[Math.floor(Math.random() * opts.length)].value;
     }
-    S.params[S.model] = cur; store.set("params", S.params);
+    S.params[S.model] = cur; store.set("params", S.params); geaendert();
     renderParams(); schedule(0);
+  }
+  function geaendert() {                                 // geöffnetes Projekt weicht jetzt vom Gesicherten ab
+    if (S.projekt && !S.projekt.geaendert) { S.projekt.geaendert = true; subtitle(); }
   }
 
   function renderConfig() {
@@ -1792,12 +1994,38 @@ details.dis .in { padding: 0 0 6px 16px; }
 
   // ------------------------------------------------------------------ Anzeige
   function setPill(kind, text) { const p = $("pill"); p.className = "pill " + (kind || ""); p.textContent = text; }
+  const deNum = (v) => LANG === "de" ? String(v).replace(".", ",") : String(v);
+  function renderStatus() {                              // Statusleiste unter der Platte
+    const d = S.result, asms = (d && d.assemblies) || [];
+    const ok = d && !d.error && asms.length;
+    const parts = asms.reduce((n, a) => n + a.parts, 0), sheets = asms.reduce((n, a) => n + a.sheets.length, 0);
+    const sch = ok ? schSumme(asms) : null;
+    let pt = "";
+    if (ok) {
+      pt = `${parts} Teile · ${sheets} ${sheets === 1 ? "Platte" : "Platten"}`;
+      if (sch && sheets === 1) pt += `, ${sch.ausnutzung} % genutzt`;
+    }
+    $("st-parts").textContent = pt;
+    $("st-parts").hidden = $("st-v1").hidden = !pt;
+    let tt = "";
+    if (sch) {
+      tt = `ca. ${sch.zeit} Laser`;
+      if (sch.kosten != null) tt += ` · ca. ${deNum(sch.kosten.toFixed(2))} € Material`;
+    }
+    $("st-time-t").textContent = tt;
+    $("st-time").hidden = $("st-v2").hidden = !tt;
+    const a = ok && asms[S.asm], sh = a && a.sheets[S.sheet];
+    $("st-file").textContent = sh ? `${sh.file} · ${sh.width} × ${sh.height} mm` : "";
+  }
 
   function render() {
     const d = S.result;
     const asms = d.assemblies || [];
     $("t-export").disabled = !d.ok;
     if (S.schema) subtitle();
+    renderStatus();
+    $("exp-go").disabled = !d.ok;
+    if (!$("sheet-export").hidden) expFacts();
     if (d.error) {
       setPill("bad", "Eingabe prüfen");
       $("stats").textContent = "";
@@ -1808,12 +2036,14 @@ details.dis .in { padding: 0 0 6px 16px; }
       b.append(s, document.createTextNode(d.error));
       $("stage").append(b);
       $("rep-title").textContent = "Eingabe prüfen";
-      $("report").textContent = d.error; $("notes").innerHTML = "<li>–</li>"; $("params").textContent = "";
+      $("rep-lead").textContent = d.error; $("rep-icon").className = "big bad"; $("rep-tbl").hidden = true;
+      $("rep-icon").textContent = ""; $("rep-icon").append(icon("cross"));
+      $("notes").hidden = $("notes-h").hidden = true;
+      $("report").textContent = d.error; $("notes").textContent = ""; $("params").textContent = "";
       return;
     }
     const bad = asms.filter((a) => !a.ok).length;
     setPill(d.ok ? "ok" : "bad", d.ok ? "Schnittfertig" : `Fehler – keine Datei`);
-    $("rep-title").textContent = d.ok ? "Schnittfertig" : "Nicht schnittfertig – es wird keine Datei erzeugt.";
     const parts = asms.reduce((n, a) => n + a.parts, 0);
     const joints = asms.reduce((n, a) => n + a.joints, 0);
     const sheets = asms.reduce((n, a) => n + a.sheets.length, 0);
@@ -1843,7 +2073,7 @@ details.dis .in { padding: 0 0 6px 16px; }
       b.setAttribute("aria-selected", String(ai === S.asm && si === S.sheet));
       const dot = document.createElement("i"); dot.className = "dot" + (ok ? "" : " bad");
       b.append(dot, document.createTextNode(label));
-      b.addEventListener("click", () => { S.asm = ai; S.sheet = si; renderTabs(); renderStage(); renderReport(); });
+      b.addEventListener("click", () => { S.asm = ai; S.sheet = si; renderTabs(); renderStage(); renderReport(); renderStatus(); });
       t.append(b);
     }
   }
@@ -1897,18 +2127,6 @@ details.dis .in { padding: 0 0 6px 16px; }
     const a = S.result.assemblies[S.asm];
     const sh = a && a.sheets[S.sheet];
     if (!a) return;
-    const cap = document.createElement("div"); cap.className = "cap";
-    const left = document.createElement("span");
-    const right = document.createElement("span");
-    if (sh) {
-      left.innerHTML = `<b></b> · Platte <b></b> mm · <b></b> Teile`;
-      const bs = left.querySelectorAll("b");
-      bs[0].textContent = sh.file; bs[1].textContent = `${sh.width} × ${sh.height}`; bs[2].textContent = sh.parts;
-      right.textContent = "Hell = Teil, Holzton = Restplatte";
-    } else {
-      left.textContent = a.name;
-    }
-    cap.append(left, right); st.append(cap);
     if (!a.ok) {
       const e = document.createElement("div"); e.className = "errorbox";
       const s = document.createElement("strong");
@@ -1926,10 +2144,36 @@ details.dis .in { padding: 0 0 6px 16px; }
     if (!sh.checked) { const u = document.createElement("div"); u.className = "unchecked"; u.textContent = "Ungeprüft – nicht lasern"; st.append(u); }
   }
 
+  function teilName(asm, name) {                         // „wichtelhaus_dach_links“ → „Dach links“
+    let s = name.startsWith(asm + "_") ? name.slice(asm.length + 1) : name;
+    s = s.replace(/_/g, " ").trim();
+    return s ? s[0].toUpperCase() + s.slice(1) : name;
+  }
   function renderReport() {
     const a = S.result.assemblies[S.asm];
     const rep = $("report"); rep.textContent = "";
     if (!a) return;
+    const asms = S.result.assemblies;
+    const nParts = asms.reduce((n, x) => n + x.parts, 0), nJoints = asms.reduce((n, x) => n + x.joints, 0);
+    const c = Object.assign(cfgDefaults(), S.config);
+    $("rep-icon").className = "big" + (a.ok ? "" : " bad");
+    $("rep-icon").textContent = ""; $("rep-icon").append(icon(a.ok ? "check" : "cross"));
+    $("rep-title").textContent = a.ok ? "Schnittfertig" : "Nicht schnittfertig";
+    $("rep-lead").textContent = a.ok
+      ? `Alle ${nParts} Teile sind geschlossen, ${nJoints} Steckverbindungen passen bei ${deNum(c.thickness)} mm Material und ${deNum(c.kerf)} mm Kerf.`
+      : "Steckwerk erzeugt keine Datei, solange ein Teil nicht passt. Die Werte im Inspektor anpassen.";
+    const rows = $("rep-rows"); rows.textContent = "";
+    const teile = a.teile || [];
+    $("rep-tbl").hidden = !teile.length;
+    for (const t of teile) {
+      const tr = document.createElement("tr");
+      const n = document.createElement("td"); n.append(mk("span", "pnum", t.nr));
+      const nm = mk("td", "", teilName(a.name, t.name)); nm.dataset.noI18n = ""; nm.title = t.name;
+      const sz = mk("td", "", `${deNum(t.w)} × ${deNum(t.h)} mm`);
+      const st = mk("td", "st" + (t.ok ? "" : " bad")); st.append(icon(t.ok ? "check" : "cross"), document.createTextNode(t.ok ? "passt" : "Fehler"));
+      tr.append(n, nm, sz, st); rows.append(tr);
+    }
+    $("rep-tech").open = !a.ok || $("rep-tech").open;
     const onlyErr = $("only-err").checked;
     for (const line of a.report.split("\n")) {
       const isErr = /FEHLER|^ERROR\b|[1-9]\d* errors/.test(line), isOk = /^\s*OK\b/.test(line);
@@ -1939,9 +2183,10 @@ details.dis .in { padding: 0 0 6px 16px; }
       s.textContent = line + "\n"; rep.append(s);
     }
     if (onlyErr && !rep.textContent) rep.textContent = "Keine Fehler.";
-    const notes = $("notes"); notes.textContent = "";
+    const notes = $("notes"); notes.textContent = ""; notes.hidden = $("notes-h").hidden = false;
+    const pre = new RegExp("^" + a.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ":\\s*");
     for (const n of (a.notes.length ? a.notes : ["Keine besonderen Hinweise."])) {
-      const li = document.createElement("li"); li.textContent = n; notes.append(li);
+      const li = document.createElement("li"); li.textContent = n.replace(pre, ""); notes.append(li);
     }
     const st = schText(a.schaetzung);
     $("params").textContent = (st ? st + "\n" : "") + "Parameter: " + Object.entries(a.params).map(([k, v]) => `${k}=${typeof v === "number" ? +v.toFixed(2) : v}`).join(" · ");
@@ -1981,16 +2226,29 @@ details.dis .in { padding: 0 0 6px 16px; }
       toast("Speichere XCS-Projekt …");
       const d = await (await post("/api/xcs-oeffnen", request())).json();
       toast(d.ok ? d.message : d.error);
+      if (d.ok && $("exp-pdf").checked) {            // Anleitung kommt beim XCS-Weg in den Steckwerk-Ordner
+        const r = await (await post("/api/save", Object.assign(request(), { formate: ["pdf"] }))).json();
+        if (r.ok) toast(d.message + " " + T("Montageanleitung liegt im Steckwerk-Ordner."));
+      }
     } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
   }
 
   // ------------------------------------------------------------------ Projekte
-  async function projekte(body) {
+  async function projekte(body, quiet) {
     try {
       const d = await (await post("/api/projekte", body || { aktion: "liste" })).json();
-      if (!d.ok) { toast(d.error || "Projekte nicht verfügbar"); return; }
-      renderProjekte(d.projekte || []);
-    } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
+      if (!d.ok) { if (!quiet) toast(d.error || "Projekte nicht verfügbar"); return false; }
+      S.projekte = (d.projekte || []).slice().sort((x, y) => (y.geaendert || 0) - (x.geaendert || 0));
+      renderProjekte(S.projekte);
+      if (!$("side-q").value) renderModels();
+      return true;
+    } catch { if (!quiet) toast("Steckwerk antwortet nicht. " + restartHint()); return false; }
+  }
+  function openProjekte() {
+    openOverlay("sheet-proj");
+    $("proj-name").value = S.projekt ? S.projekt.name : "";
+    $("proj-name").focus(); $("proj-name").select();
+    projekte();
   }
   function renderProjekte(list) {
     const box = $("proj-list"); box.textContent = "";
@@ -2004,7 +2262,10 @@ details.dis .in { padding: 0 0 6px 16px; }
       const open = mk("button", "sbtn", "Öffnen"); open.type = "button"; open.disabled = !m;
       open.addEventListener("click", () => ladeProjekt(p));
       const del = mk("button", "linkish", "Löschen"); del.type = "button";
-      del.addEventListener("click", () => projekte({ aktion: "loeschen", name: p.name }));
+      del.addEventListener("click", () => {
+        if (S.projekt && S.projekt.name === p.name) { S.projekt = null; subtitle(); }
+        projekte({ aktion: "loeschen", name: p.name });
+      });
       row.append(t, open, del); box.append(row);
     }
   }
@@ -2014,23 +2275,27 @@ details.dis .in { padding: 0 0 6px 16px; }
     S.config = Object.assign({}, p.config || {}); store.set("config", S.config);
     if (p.profil) store.set("profil", p.profil);
     closeOverlays();
-    if (p.model === S.model) { renderParams(); } else { S.model = null; pickModel(p.model); }
-    renderConfig(); renderProfiles(); matSummary(); schedule(0);
-    toast(`Projekt „${p.name}“ geöffnet`);
+    if (p.model !== S.model) { S.model = null; pickModel(p.model); }
+    S.projekt = { name: p.name, geaendert: false };
+    renderModels(); renderParams(); renderConfig(); renderProfiles(); matSummary(); schedule(0);
   }
-  $("t-proj").addEventListener("click", () => { openOverlay("sheet-proj"); $("proj-name").value = ""; projekte(); });
+  function sichereProjekt(name) {
+    const p = activeProfile();
+    return projekte({ aktion: "speichern", name, projekt: { model: S.model, params: S.params[S.model] || {}, config: S.config, profil: p ? p.id : "" } })
+      .then((ok) => { if (ok) { S.projekt = { name, geaendert: false }; renderModels(); toast(`Projekt „${name}“ gesichert`); } });
+  }
   $("proj-save").addEventListener("click", () => {
     const name = $("proj-name").value.trim();
     if (!name) { $("proj-name").focus(); return; }
-    const p = activeProfile();
-    projekte({ aktion: "speichern", name, projekt: { model: S.model, params: S.params[S.model] || {}, config: S.config, profil: p ? p.id : "" } })
-      .then(() => toast(`Projekt „${name}“ gespeichert`));
+    closeOverlays(); sichereProjekt(name);
   });
+  $("proj-name").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("proj-save").click(); } });
 
   // ------------------------------------------------------------------ Sheets, Einstellungen, Menüs
   let veilEl = null, lastFocus = null;
   function closeOverlays() {
     for (const id of ["sheet-report", "sheet-export", "sheet-bild", "sheet-proj", "settings"]) $(id).hidden = true;
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     document.querySelectorAll(".menu").forEach((n) => n.remove());
     if (veilEl) { veilEl.remove(); veilEl = null; }
     if (lastFocus && lastFocus.isConnected) lastFocus.focus();
@@ -2051,46 +2316,75 @@ details.dis .in { padding: 0 0 6px 16px; }
     if (!S.result) return;
     openOverlay("sheet-report");
   }
+  const xcsMoeglich = () => S.schema && S.schema.mode === "server";
+  function expZiel() { const r = document.querySelector('input[name="exp-ziel"]:checked'); return r ? r.value : "datei"; }
+  function expFacts() {                                  // Kennzahlen im Ausgeben-Blatt
+    const box = $("exp-facts"); box.textContent = "";
+    const asms = (S.result && S.result.assemblies) || [], sch = schSumme(asms);
+    if (!sch) { box.hidden = true; return; }
+    box.hidden = false;
+    const tiles = [[sch.zeit, "Laserzeit"], [deNum(sch.schnitt_m) + " m", "Schnitt"]];
+    if (sch.ritz_m) tiles.push([deNum(sch.ritz_m) + " m", "Ritzen"]);
+    const sheets = asms.reduce((n, a) => n + a.sheets.length, 0);
+    tiles.push([`${sheets} ${sheets === 1 ? "Platte" : "Platten"}`, `${sch.ausnutzung} % genutzt`]);
+    if (sch.kosten != null) tiles.push([deNum(sch.kosten.toFixed(2)) + " €", "Material"]);
+    for (const [v, k] of tiles) { const d = document.createElement("div"); d.append(mk("b", "", v), mk("span", "", k)); box.append(d); }
+  }
   function openExport() {
     const d = S.result;
     if (!d || !d.ok) { openReport(); return; }
     const asms = d.assemblies || [];
     const a = asms[S.asm], sh = a && a.sheets[S.sheet];
     const parts = asms.reduce((n, x) => n + x.parts, 0), sheets = asms.reduce((n, x) => n + x.sheets.length, 0);
-    const c = Object.assign(cfgDefaults(), S.config);
-    $("exp-title").textContent = S.schema.models[S.model].label + " exportieren";
-    $("exp-text").textContent = `${parts} Teile auf ${sheets} ${sheets === 1 ? "Platte" : "Platten"} ${c.sheet_width} × ${c.sheet_height} mm. ` +
-      "Schnitt und Gravur liegen auf eigenen Farben – fertig für xTool Creative Space.";
-    $("exp-sch").textContent = schText(schSumme(asms));
-    $("exp-xcsopen").hidden = S.schema.mode !== "server";
-    const pr = activeProfile();
-    $("exp-lz").hidden = $("exp-lz-hint").hidden = !pr;
+    const c = Object.assign(cfgDefaults(), S.config), pr = activeProfile();
+    const name = S.projekt ? S.projekt.name : S.schema.models[S.model].label;
+    $("exp-title").textContent = xcsMoeglich() ? `„${name}“ ausgeben` : `„${name}“ exportieren`;
+    $("exp-text").textContent = `${parts} Teile auf ${sheets === 1 ? "einer Platte" : sheets + " Platten"} ${c.sheet_width} × ${c.sheet_height} mm` +
+      (pr ? `, ${pr.name}.` : `, ${deNum(c.thickness)} mm Material.`);
+    $("exp-c-xcs").hidden = !xcsMoeglich();
+    const ziel = xcsMoeglich() ? (store.get("expZiel") || "xcs") : "datei";
+    document.querySelector(`input[name="exp-ziel"][value="${ziel}"]`).checked = true;
+    $("exp-num").checked = !!c.part_numbers;
+    $("exp-lz-box").hidden = !pr;
     if (pr) {
       renderLaser($("exp-lz"), pr, false);
       $("exp-lz-hint").textContent = `In XCS: Material „${pr.name}“ · ${LASER[laserKey()]} – Rot auf Schneiden, Blau auf Ritzen stellen. Im .xs-Projekt sind diese Werte schon eingetragen.`;
     }
     const fmt = $("exp-fmt");
     fmt.querySelector('[value="svg"]').disabled = !(a && a.ok && sh);
-    fmt.querySelector('[value="save"]').hidden = S.schema.mode !== "server";
+    fmt.querySelector('[value="save"]').hidden = !xcsMoeglich();
     if (fmt.selectedOptions[0] && (fmt.selectedOptions[0].disabled || fmt.selectedOptions[0].hidden)) fmt.value = "zip";
-    expHint();
+    expFacts(); expHint();
     $("exp-folder").hidden = !isApp();
     openOverlay("sheet-export");
+    $("exp-go").focus();
   }
-  function expHint() {
-    const v = $("exp-fmt").value, a = S.result && S.result.assemblies[S.asm], sh = a && a.sheets[S.sheet];
-    $("exp-hint").textContent = v === "svg" && sh ? sh.file : v === "save" ? "Speichert nach " + S.schema.out_dir : "";
-    $("exp-extra").hidden = $("exp-extra-l").hidden = v === "svg";
+  function expHint() {                                   // Blatt an Ziel und Format anpassen
+    const ziel = expZiel(), v = $("exp-fmt").value, a = S.result && S.result.assemblies[S.asm], sh = a && a.sheets[S.sheet];
+    $("exp-c-xcs").classList.toggle("on", ziel === "xcs");
+    $("exp-c-file").classList.toggle("on", ziel === "datei");
+    $("exp-hint").textContent = v === "svg" && sh ? sh.file : v === "save" ? "Speichert nach " + S.schema.out_dir : "Für andere Programme oder zum Aufheben.";
+    const datei = ziel === "datei";
+    $("exp-r-xcs").hidden = $("exp-r-xs").hidden = !datei || v === "svg";
+    $("exp-r-pdf").hidden = datei && v === "svg";
+    $("exp-go").textContent = !datei ? "In XCS öffnen" : v === "save" ? "Sichern" : "Exportieren";
+    const rows = [...document.querySelectorAll(".optbox .r")].filter((r) => !r.hidden);
+    rows.forEach((r, i) => r.classList.toggle("last", i === rows.length - 1));
   }
+  document.querySelectorAll('input[name="exp-ziel"]').forEach((r) => r.addEventListener("change", () => { store.set("expZiel", expZiel()); expHint(); }));
   $("exp-fmt").addEventListener("change", () => { store.set("expFmt", $("exp-fmt").value); expHint(); });
+  $("exp-fmt").addEventListener("focus", () => { if (expZiel() !== "datei") { $("exp-c-file").querySelector("input").checked = true; store.set("expZiel", "datei"); expHint(); } });
   $("exp-go").addEventListener("click", () => {
-    const v = $("exp-fmt").value; closeOverlays();
-    if (v === "svg") dlSvg(); else if (v === "save") saveDir(); else dlZip();
+    const v = $("exp-fmt").value, ziel = expZiel(); closeOverlays();
+    if (ziel === "xcs") openInXcs(); else if (v === "svg") dlSvg(); else if (v === "save") saveDir(); else dlZip();
   });
   for (const id of ["exp-xcs", "exp-xs", "exp-pdf"]) {
     $(id).addEventListener("change", () => store.set(id, $(id).checked));
   }
-  $("exp-xcsopen").addEventListener("click", () => { closeOverlays(); openInXcs(); });
+  $("exp-num").addEventListener("change", () => {        // Teilenummern ändern die Schnittdatei → neu prüfen
+    S.config.part_numbers = $("exp-num").checked; store.set("config", S.config); renderConfig(); geaendert();
+    $("exp-go").disabled = true; schedule(0);
+  });
   $("t-export").addEventListener("click", openExport);
   $("pill").addEventListener("click", openReport);
 
@@ -2316,9 +2610,9 @@ details.dis .in { padding: 0 0 6px 16px; }
     $("upd-token-del").hidden = !s.token_gesetzt;
   }
   function updBadge(n) {
-    $("upd-btn").hidden = !n; $("upd-n").hidden = !n; $("upd-n").textContent = n || "";
+    $("upd-n").hidden = !n; $("upd-n").textContent = n || "";
     $("upd-n2").hidden = !n; $("upd-n2").textContent = n || "";
-    $("upd-btn").title = n ? n + " Neuerung(en) im Update-Kanal" : "";
+    $("open-settings").title = n ? n + " Neuerung(en) im Update-Kanal" : "⌘,";
   }
   function renderUpdates(err) {
     const body = $("upd-body"); body.textContent = "";
@@ -2411,7 +2705,7 @@ details.dis .in { padding: 0 0 6px 16px; }
   $("upd-set-btn").addEventListener("click", () => { $("upd-set").hidden = !$("upd-set").hidden; updSettings(); });
   $("upd-save").addEventListener("click", () => updSave());
   $("upd-token-del").addEventListener("click", () => updSave({ token: "" }));
-  $("upd-btn").addEventListener("click", () => openSettings("updates"));
+
 
   $("lang").value = LANG;
   $("lang").addEventListener("change", () => {
@@ -2426,13 +2720,17 @@ details.dis .in { padding: 0 0 6px 16px; }
     if ($("live").checked) generate();
   });
   $("only-err").addEventListener("change", renderReport);
-  $("dice").addEventListener("click", dice);
+
   document.addEventListener("keydown", (e) => {
     const mod = e.ctrlKey || e.metaKey;
     if (mod && e.key === "Enter") { e.preventDefault(); generate(); }
     else if (mod && e.key === ",") { e.preventDefault(); openSettings(); }
     else if (mod && (e.key === "k" || e.key === "K" || ((e.key === "f" || e.key === "F") && !e.shiftKey))) { e.preventDefault(); $("side-q").focus(); $("side-q").select(); }
     else if (mod && (e.key === "e" || e.key === "E") && !e.shiftKey) { e.preventDefault(); if (!$("t-export").disabled) openExport(); }
+    else if (mod && (e.key === "s" || e.key === "S") && xcsMoeglich()) {
+      e.preventDefault();
+      if (S.projekt && !e.shiftKey) sichereProjekt(S.projekt.name); else openProjekte();
+    }
     else if (e.key === "Escape" && veilEl) { e.preventDefault(); closeOverlays(); }
   });
 
@@ -2645,7 +2943,7 @@ details.dis .in { padding: 0 0 6px 16px; }
     } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
     finally { $("bw-use").disabled = false; }
   }
-  $("bw-btn").addEventListener("click", openBild);
+
   $("bw-go").addEventListener("click", bwGo);
   $("bw-use").addEventListener("click", bwUse);
   $("bw-set").addEventListener("click", () => openSettings("assistent"));
@@ -2709,8 +3007,8 @@ details.dis .in { padding: 0 0 6px 16px; }
     $("ver").textContent = "Steckwerk " + S.schema.version;
     if (S.schema.app) startApp();
     renderModels(); renderParams(); renderConfig(); renderProfiles(); renderPakete(); renderMotivLib(); kiRender(); bsRender();
-    $("bw-btn").hidden = S.schema.mode !== "server";
-    $("t-proj").hidden = S.schema.mode !== "server";
+    $("t-export-l").textContent = xcsMoeglich() ? "An xTool senden" : "Exportieren …";
+    if (xcsMoeglich()) projekte(null, true);
 
     if (S.schema.mode !== "server") { $("tab-pakete").hidden = true; $("tab-motive").hidden = true; $("tab-updates").hidden = true; $("tab-assistent").hidden = true; }
 

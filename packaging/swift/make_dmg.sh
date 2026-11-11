@@ -19,7 +19,17 @@ trap 'rm -rf "$STAGING"' EXIT
 ditto "$APP" "$STAGING/Steckwerk Desktop.app"
 ln -s /Applications "$STAGING/Programme"
 
-rm -f "$DMG"
-hdiutil create -volname "$VOLUME" -srcfolder "$STAGING" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
-hdiutil verify "$DMG"
-echo "Fertig: $DMG"
+# hdiutil liefert auf ausgelasteten Maschinen gelegentlich ein kaputtes Image („corrupt image“,
+# „Resource busy“) – dann bis zu dreimal neu erzeugen.
+for VERSUCH in 1 2 3; do
+  rm -f "$DMG"
+  if hdiutil create -volname "$VOLUME" -srcfolder "$STAGING" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG" \
+     && hdiutil verify "$DMG"; then
+    echo "Fertig: $DMG"
+    exit 0
+  fi
+  echo "DMG-Versuch $VERSUCH fehlgeschlagen, neuer Anlauf …" >&2
+  sleep $((VERSUCH * 5))
+done
+echo "DMG konnte nicht erzeugt werden" >&2
+exit 1
