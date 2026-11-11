@@ -6,14 +6,17 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 - Neues Themenpaket **Spiele** 1.0.0 (braucht Grundlagen 2.0.0): Mühle mit Steinablage und Spielernamen, rundes Tic-Tac-Toe mit ausgesägten Figuren (zum Beispiel Tanne gegen Stern), Vier in einer Reihe mit Auslöse-Schieber, Kugellabyrinth mit Fallen (jede Nummer ein neuer Irrgarten) und Solitär mit Kugelrinne. Alle Bretter haben zwei Lagen mit Mulden, und alles rechnet in Sekundenbruchteilen.
 - Der Release-Workflow nimmt jetzt auch ganz neue Pakete in den Update-Kanal auf, nicht nur neue Versionen bekannter Pakete.
-
 - Wichtel 1.1.0: edles Wichtelzubehör, alles im Wichtel-Maßstab und in jeder Größe prüfbar schnittfertig:
   - **Wichtelkamin** in zwei Lagen: Korpus zum Stecken (Rückwand mit Mauerwerk, Sockel mit gefliester Herdplatte, Sims mit Zierkante) und filigrane Zierblende mit Fries, kannelierten Pilastern und Schlussstein. Dazu Feuer mit Holzscheiten, Funkengitter mit Rosette, dreiarmige Kerzenleuchter, Kaminuhr, Girlande und Strümpfe mit Namen.
   - **Standuhr** mit Pendelfenster, Pendel und Gewichten, Zierblende mit Rosette, Uhrenkopf mit Zifferblatt und Krone (Bogen, Giebel oder Schwanenhals), auf Wunsch mit Inschrift.
   - **Schaukelstuhl** mit geschwungenen Kufen, Sprossen, schräger Sprossenlehne (Neigung einstellbar) und Armlehnen-Schnecken, dazu Sitzkissen und Strickkorb.
   - **Christbaum** aus zwei gekreuzten Hälften mit Etagen, Schmuck-Ausschnitten, Lichterkette und Stern, dazu Geschenke mit Schleife und Namen.
   - **Schneemann** über Kreuz gesteckt: Gesicht und Zweigarme vorn, Möhrennase und wehender Schal im Profil, Zylinder oder Wollmütze, Besen oder Laterne.
-  - **Wichtelgarten**: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.
+  - **Wichtelgarten**: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.- Weihnachten 2.1.0: neues Modell **Edler Namensanhänger**: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name.
+  - Schriftzug im Kugelring mit Szene auf dem Schneehügel: Winterdorf, Winterwald mit Hirsch, Schneemann mit Laterne, Schlittenfahrt, Adventskranz, Christbaum mit Geschenken, Plätzchen backen, Geschenke packen. Die Jahreszahl steht im Schnee.
+  - Zweilagiges Medaillon (Grundplatte mit gefüllt graviertem Namen, Spitzenrahmen obendrauf) und einlagige Spitze.
+  - Haarstriche werden laserfest verstärkt, i-Punkte, Umlaute und Namen mit Leerzeichen bleiben ein Stück.
+  - Die Schriften sind als Umrisse im Paket (SIL Open Font License), Steckwerk braucht keine Schriftdateien.
 
 ## 2.10.1 – 2026-11-10
 
