@@ -125,8 +125,10 @@ public struct EngineClient: Sendable {
         try await call("api/schema", nil, as: Schema.self)
     }
 
-    public func generate(model: String, params: [String: JSONValue], config: [String: JSONValue]) async throws -> GenerateResponse {
-        let body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+    public func generate(model: String, params: [String: JSONValue], config: [String: JSONValue],
+                         gravuren: [JSONValue] = []) async throws -> GenerateResponse {
+        var body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+        if !gravuren.isEmpty { body["gravuren"] = .array(gravuren) }
         let request = try makeRequest("api/generate", body: body)
         let (data, status) = try await transport.send(request)
         // Ein ungültiges Modell ist kein Netzfehler: die Antwort trägt ok=false und eine Meldung.
@@ -136,8 +138,10 @@ public struct EngineClient: Sendable {
         return try Self.decode(GenerateResponse.self, data: data, status: status)
     }
 
-    public func save(model: String, params: [String: JSONValue], config: [String: JSONValue]) async throws -> SaveResponse {
-        let body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+    public func save(model: String, params: [String: JSONValue], config: [String: JSONValue],
+                     gravuren: [JSONValue] = []) async throws -> SaveResponse {
+        var body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]
+        if !gravuren.isEmpty { body["gravuren"] = .array(gravuren) }
         return try await call("api/save", body, as: SaveResponse.self)
     }
 
@@ -219,5 +223,21 @@ public struct EngineClient: Sendable {
         let body: [String: JSONValue] = ["data": .string(data.base64EncodedString()), "filename": .string(filename),
                                          "name": .string(name), "invert": .bool(false)]
         return try await call("api/motiv-import", body, as: MotivResponse.self)
+    }
+
+    // MARK: Bild-Gravur (Fotos, Logos)
+
+    /// Foto/Logo als PNG in die Bild-Bibliothek. Fehler (z. B. Bild zu klein) kommen als ok=false mit Meldung.
+    public func fotoImport(png: Data, name: String) async throws -> FotoResponse {
+        let body: [String: JSONValue] = ["data": .string(png.base64EncodedString()), "filename": .string(name + ".png"),
+                                         "name": .string(name)]
+        let request = try makeRequest("api/foto-import", body: body, timeout: 120)
+        let (data, status) = try await transport.send(request)
+        if let response = try? JSONDecoder().decode(FotoResponse.self, from: data) { return response }
+        return try Self.decode(FotoResponse.self, data: data, status: status)
+    }
+
+    public func fotoEntfernen(id: String) async throws -> FotoResponse {
+        try await call("api/foto-entfernen", ["id": .string(id)], as: FotoResponse.self)
     }
 }

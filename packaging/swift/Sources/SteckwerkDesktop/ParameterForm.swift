@@ -35,6 +35,7 @@ struct ParameterForm: View {
                     }
                 }
             }
+            GravurSection(modelID: modelID)
             Section {
                 Button("Auf Standardwerte zurücksetzen") {
                     model.resetValues(for: modelID)
