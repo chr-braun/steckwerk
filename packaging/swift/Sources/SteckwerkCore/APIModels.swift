@@ -51,8 +51,10 @@ public struct Assembly: Decodable, Sendable, Identifiable {
     public let joints: Int
     public let errors: [String]
     public let sheets: [SheetResult]
+    /// Laserzeit, Schnittlänge und Plattenbedarf (Schätzung der Engine, ab 2.11).
+    public let schaetzung: Schaetzung?
 
-    enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets }
+    enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets, schaetzung }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -65,6 +67,61 @@ public struct Assembly: Decodable, Sendable, Identifiable {
         joints = try c.decodeIfPresent(Int.self, forKey: .joints) ?? 0
         errors = try c.decodeIfPresent([String].self, forKey: .errors) ?? []
         sheets = try c.decodeIfPresent([SheetResult].self, forKey: .sheets) ?? []
+        schaetzung = try? c.decodeIfPresent(Schaetzung.self, forKey: .schaetzung)
+    }
+}
+
+/// Schätzung für ein Modell: Laserzeit, Schnitt- und Ritzlänge, Platten und (mit Preis) Materialkosten.
+public struct Schaetzung: Decodable, Sendable {
+    public let zeit: String
+    public let sekunden: Double
+    public let schnittM: Double
+    public let ritzM: Double
+    public let platten: Double
+    public let ausnutzung: Int
+    public let kosten: Double?
+
+    enum CodingKeys: String, CodingKey { case zeit, sekunden, platten, ausnutzung, kosten
+        case schnittM = "schnitt_m", ritzM = "ritz_m"
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        zeit = try c.decodeIfPresent(String.self, forKey: .zeit) ?? ""
+        sekunden = try c.decodeIfPresent(Double.self, forKey: .sekunden) ?? 0
+        schnittM = try c.decodeIfPresent(Double.self, forKey: .schnittM) ?? 0
+        ritzM = try c.decodeIfPresent(Double.self, forKey: .ritzM) ?? 0
+        platten = try c.decodeIfPresent(Double.self, forKey: .platten) ?? 0
+        ausnutzung = try c.decodeIfPresent(Int.self, forKey: .ausnutzung) ?? 0
+        kosten = try c.decodeIfPresent(Double.self, forKey: .kosten)
+    }
+
+    /// „Laserzeit ca. 15 min · 2,7 m Schnitt · 0,3 Platten“
+    public var text: String {
+        func de(_ v: Double) -> String { String(format: "%g", v).replacingOccurrences(of: ".", with: ",") }
+        var t = "Laserzeit ca. \(zeit) · \(de(schnittM)) m Schnitt"
+        if ritzM > 0 { t += " · \(de(ritzM)) m Ritzen" }
+        t += " · \(de(platten)) \(platten == 1 ? "Platte" : "Platten")"
+        if let kosten { t += String(format: " · ca. %.2f €", kosten).replacingOccurrences(of: ".", with: ",") }
+        return t
+    }
+}
+
+/// Antwort von POST /api/xcs-oeffnen.
+public struct XcsOeffnenResponse: Decodable, Sendable {
+    public let ok: Bool
+    public let message: String?
+    public let error: String?
+    public let datei: String?
+
+    enum CodingKeys: String, CodingKey { case ok, message, error, datei }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        ok = try c.decodeIfPresent(Bool.self, forKey: .ok) ?? false
+        message = try c.decodeIfPresent(String.self, forKey: .message)
+        error = try c.decodeIfPresent(String.self, forKey: .error)
+        datei = try c.decodeIfPresent(String.self, forKey: .datei)
     }
 }
 

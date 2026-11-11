@@ -77,6 +77,10 @@ def parse_args(argv=None) -> argparse.Namespace:
     g.add_argument("--sheet", help="Blattgröße BxH in mm, z. B. 400x300")
     g.add_argument("--cut-color", help="Farbe Schnitt-Layer (#RRGGBB, Default #000000)")
     g.add_argument("--engrave-color", help="Farbe Gravur-Layer (#RRGGBB, Default #0000FF)")
+    g.add_argument("--xcs", action="store_true", help="zusätzlich .xcs-Projekte für xTool Creative Space (xTool M2)")
+    g.add_argument("--xs", action="store_true", help="zusätzlich .xs-Projekte für xTool Studio (mit Laserwerten)")
+    g.add_argument("--montage", action="store_true", help="Teilenummern gravieren und Montageanleitung (PDF) beilegen")
+    g.add_argument("--laser", choices=["w10", "w20"], default="w10", help="xTool M2 mit 10 oder 20 W (Laserwerte, Schätzung)")
     g = ap.add_argument_group("Maße")
     g.add_argument("--width", type=float, help="Breite in mm (Haus: Giebelseite; Zaun: Länge; Fahrzeug: Breite)")
     g.add_argument("--height", type=float, help="Höhe in mm (Haus: Traufhöhe; Figuren: Gesamthöhe)")
@@ -141,7 +145,8 @@ def parse_args(argv=None) -> argparse.Namespace:
 def make_config(a: argparse.Namespace) -> Config:
     cfg = Config.load(a.config) if a.config else Config()
     over = dict(thickness=a.thickness, kerf=a.kerf, scale=a.scale, openings=a.openings,
-                seed=a.seed, cut_color=a.cut_color, engrave_color=a.engrave_color)
+                seed=a.seed, cut_color=a.cut_color, engrave_color=a.engrave_color,
+                part_numbers=True if getattr(a, "montage", False) else None)
     if a.sheet:
         try:
             w, h = (float(v) for v in a.sheet.lower().split("x"))
@@ -473,7 +478,8 @@ def run(argv=None, inp: Callable[[str], str] = input) -> int:
         return 0
 
     # 2) schreiben
-    written, preview_ok = write_results(results, cfg, a.out, a.preview)
+    formate = [f for f, on in (("xcs", a.xcs), ("xs", a.xs), ("pdf", a.montage)) if on]
+    written, preview_ok = write_results(results, cfg, a.out, a.preview, {"formate": formate, "leistung": a.laser})
     print(f"\n{len(written)} Dateien geschrieben in {os.path.abspath(a.out)} ({time.time() - t0:.1f} s):")
     for w in written:
         print("  " + w)

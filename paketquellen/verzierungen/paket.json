@@ -2,7 +2,7 @@
   "standard": 1,
   "id": "verzierungen",
   "name": "Grundlagen",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "autor": "Christian & Claude",
   "beschreibung": "Die Basis für alle anderen Pakete: Ornamente (Rosetten, Ecken, Ranken, Bordüren, Schleifen, Zweige) als Zierstücke und Zierleisten und der Passungstest, mit dem du in einem Schnitt den richtigen Kerf für dein Holz findest. Wird beim Installieren der anderen Pakete automatisch mitgeladen.",
   "name_en": "Basics",
