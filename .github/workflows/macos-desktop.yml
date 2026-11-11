@@ -91,14 +91,6 @@ jobs:
           mkdir -p "$STECKWERK_HOME"
           "packaging/dist/Steckwerk Desktop.app/Contents/MacOS/SteckwerkDesktop" --snapshot "$RUNNER_TEMP/screenshots"
           ls -la "$RUNNER_TEMP/screenshots"
-          # Verkleinerte Fassung ins Protokoll, damit man die Bilder auch ohne Artefakt-Download ansehen kann.
-          for f in "$RUNNER_TEMP"/screenshots/*.png; do
-            sips -s format jpeg -s formatOptions 72 -Z 1280 "$f" --out "${f%.png}.jpg" >/dev/null
-            echo "BILD-ANFANG $(basename "${f%.png}")"
-            base64 -i "${f%.png}.jpg" | fold -w 4000
-            echo "BILD-ENDE"
-            rm -f "${f%.png}.jpg"
-          done
 
       - name: Bildschirmfotos hochladen
         if: always()
@@ -165,3 +157,18 @@ jobs:
           path: packaging/dist/Steckwerk-Desktop-macOS.zip
           retention-days: 14
           if-no-files-found: error
+
+      # Ganz am Ende: verkleinerte Bildschirmfotos als Base64 ins Protokoll, damit man sie auch ohne
+      # Artefakt-Download ansehen kann (die letzten Zeilen des Protokolls).
+      - name: Bildschirmfotos ins Protokoll
+        if: always()
+        continue-on-error: true
+        run: |
+          for n in 1-hauptfenster-hell 1-hauptfenster-dunkel 2-ausgeben-hell 3-pruefbericht-hell; do
+            f="$RUNNER_TEMP/screenshots/$n.png"
+            [ -f "$f" ] || continue
+            sips -s format jpeg -s formatOptions 55 -Z 1100 "$f" --out "$RUNNER_TEMP/$n.jpg" >/dev/null
+            echo "BILD-ANFANG $n"
+            base64 -i "$RUNNER_TEMP/$n.jpg" | fold -w 8000
+            echo "BILD-ENDE"
+          done
