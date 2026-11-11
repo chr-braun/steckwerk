@@ -22,20 +22,35 @@ schnittfertiges Paket wird übernommen. „Grundlagen“ kommt automatisch mit.
 ## Unsere Pakete
 
 Seit Steckwerk 2.6.0 gibt es **ein Paket je Thema**. Alte Einzelpakete räumt Steckwerk beim Installieren
-selbst weg (Spalte „ersetzt“).
+selbst weg (Spalte „ersetzt“). Die Pakete sind in **Bereiche** geordnet; so stehen sie auch im Paketkatalog
+der App, auf der [Webseite](https://chr-braun.github.io/steckwerk/) und im README.
 
-| Paket (ID) | Version | Was drin ist | ersetzt |
-|---|---|---|---|
-| **Grundlagen** (`verzierungen`) | 2.0.0 | Die Basis für alle anderen Pakete. **Zierstück** und **Zierleiste** mit Rosetten, Ecken, Ranken, Bordüren, Schleifen und Zweigen; **Passungstest**: Kamm mit Schlitzen in verschiedenen Breiten, unter dem Schlitz, in dem das Probestück satt sitzt, steht dein Kerf. Dazu die Ornament-Bibliothek, die alle Pakete nutzen. Kommt automatisch mit. | Verzierungen, Werkstatt |
-| **Wohnen** (`wohnen`) | 1.0.0 | **Bilderrahmen** (9 × 13 bis 15 × 20 cm oder eigenes Maß, schlicht oder filigran, mit Sockel oder Schlüsselloch), **Zierrahmen** mit Schild und graviertem Text, **Türschild** mit Namen. | Umrandungen, Türschild |
-| **Weihnachten** (`weihnacht`) | 2.0.0 | Zierschlitten mit Schnörkelkufen, Steckkrippe (Stall und Figuren), Familienanhänger, Weihnachtsanhänger, **Spitzenschmuck** (mit Muster-Rezepten und Zufallsmustern), **Scherenschnitt-Medaillon**, **Kristall-Schneeflocken**. Filigranes am besten mit den Profilen 1,5 / 2 mm. | Weihnachtsdeko, Filigran |
-| **Halloween** (`halloween`) | 1.3.0 | Spukschloss im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set, Spinnennetz, Skelett (Hampelmann), Fledermausgirlande, Süßigkeitenschale. | – |
-| **Mehrlagig** (`ebenen`) | 1.2.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
-| **Wichtel** (`wichtel`) | 1.1.0 | **Figur:** Schicht-Wichtel aus vier Lagen zum Bemalen. **Haus:** Wichteltür, Wichtelfenster. **Möbel:** Bank, Tisch mit Hockern, Bett. **Zubehör:** Leiter, Wegweiser, Wäscheleine. **Wichtelzimmer** auf Knopfdruck. **Wichtelmarkt:** Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne. **Edles Zubehör (1.1.0):** Kamin mit Zierblende, Feuer und Strümpfen mit Namen, Standuhr, Schaukelstuhl, Christbaum mit Geschenken, Schneemann, Wichtelgarten. Alles im selben Wichtel-Maßstab. | Wichtelmöbel, Wichteltür, Wichtelzubehör, Wichtelwelt, Wichtelfiguren |
-| **Spiele** (`spiele`) | 1.1.0 | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär und neu das **Puzzle**: Bilderpuzzle mit Nasen, rechteckig oder rund, 4–200 Teile, mit detailreichen Szenen oder deinem eigenen Motiv/Logo, auf Wunsch mit Rahmen. | – |
+| Bereich | Paket (ID) | Version | Was drin ist | ersetzt |
+|---|---|---|---|---|
+| Feste und Jahreszeiten | **Weihnachten** (`weihnacht`) | 2.2.0 | Edler **Christbaumschmuck** (zwölf Anhänger in Scherenschnitt-Qualität), **Namensanhänger** in echter Schreibschrift, Zierschlitten mit Schnörkelkufen, Steckkrippe (Stall und Figuren), Familien- und Weihnachtsanhänger, **Spitzenschmuck** (mit Muster-Rezepten und Zufallsmustern), **Scherenschnitt-Medaillon**, **Kristall-Schneeflocken**. Filigranes am besten mit den Profilen 1,5 / 2 mm. | Weihnachtsdeko, Filigran |
+| | **Wichtel** (`wichtel`) | 1.1.0 | **Figur:** Schicht-Wichtel aus vier Lagen zum Bemalen. **Haus:** Wichteltür, Wichtelfenster. **Möbel:** Bank, Tisch mit Hockern, Bett. **Zubehör:** Leiter, Wegweiser, Wäscheleine. **Wichtelzimmer** auf Knopfdruck. **Wichtelmarkt:** Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne. **Edles Zubehör:** Kamin mit Zierblende, Feuer und Strümpfen mit Namen, Standuhr, Schaukelstuhl, Christbaum mit Geschenken, Schneemann, Wichtelgarten. Alles im selben Wichtel-Maßstab. | Wichtelmöbel, Wichteltür, Wichtelzubehör, Wichtelwelt, Wichtelfiguren |
+| | **Halloween** (`halloween`) | 1.4.0 | Spukschloss im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set aus der Motiv-Bibliothek, Spinnennetz, Skelett (Hampelmann), Fledermausgirlande, Süßigkeitenschale. | – |
+| Zuhause und Geschenke | **Wohnen** (`wohnen`) | 1.0.0 | **Bilderrahmen** (9 × 13 bis 15 × 20 cm oder eigenes Maß, schlicht oder filigran, mit Sockel oder Schlüsselloch), **Zierrahmen** mit Schild und graviertem Text, **Türschild** mit Namen. | Umrandungen, Türschild |
+| | **Schmuck** (`schmuck`) | 1.0.0 | **Ohrhänger** als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen, Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil. | – |
+| | **Mehrlagig** (`ebenen`) | 1.2.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
+| Spielen und Bewegen | **Spiele** (`spiele`) | 1.1.0 | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär und das **Puzzle**: Bilderpuzzle mit Nasen, rechteckig oder rund, 4–200 Teile, mit detailreichen Szenen, eigenem Motiv/Logo oder Foto, auf Wunsch mit Rahmen. | – |
+| | **Bewegung** (`bewegung`) | 1.0.0 | Hampelmann (Wichtel, Weihnachtsmann, Rentier, Schneemann, Skelett), Kurbeltier mit Nocken, Turner-Affe, Kreisel, Balancier-Vogel. | – |
+| Formen und Kunst | **Formen** (`formen`) | 1.0.0 | **Steckkörper** (Kugel, Ei, Zwiebelturm, Tanne aus gekreuzten Rippen), **Wellenfläche** als Gitter, gedrehte **Stapelvase**. | – |
+| Laden und Markt | **Verkauf** (`verkauf`) | 1.0.0 | **Flaschenschild**: Preisschild für den Flaschenhals mit Logo, Preis inkl. MwSt. und Grundpreis je Liter, auch als ganze Preisliste. | – |
+| Basis | **Grundlagen** (`verzierungen`) | 2.0.1 | Die Basis für alle anderen Pakete. **Zierstück** und **Zierleiste** mit Rosetten, Ecken, Ranken, Bordüren, Schleifen und Zweigen; **Passungstest**: Kamm mit Schlitzen in verschiedenen Breiten, unter dem Schlitz, in dem das Probestück satt sitzt, steht dein Kerf. Dazu die Ornament-Bibliothek, die alle Pakete nutzen. Kommt automatisch mit. | Verzierungen, Werkstatt |
 
-Alle Paketdateien zum Herunterladen findest du unter [Downloads](Downloads.md). Jedes `.swpaket`
-enthält den kompletten Quellcode – zum Ändern einfach entpacken.
+Die Paketdateien liegen im Update-Kanal (Branch `updates`); in der App installierst du sie mit einem Klick.
+Jedes `.swpaket` enthält den kompletten Quellcode – zum Ändern einfach entpacken. Die Quellen stehen auch im
+Repo unter `paketquellen/`.
+
+### Bereiche
+
+Welches Paket in welchem Bereich steht, regelt eine einzige Datei: `paketquellen/bereiche.json` (Bereich mit
+Namen, englischem Namen, Kurztext und den Paket-ids in Reihenfolge). Der Release-Workflow schreibt die Bereiche in
+den Update-Kanal; ab Steckwerk 2.13.0 gruppieren die Browser-App und Steckwerk Desktop den Paketkatalog danach,
+ältere Versionen zeigen weiter die einfache Liste. Ein neues Themenpaket bekommt dort seinen Platz, sonst steht
+es in der App am Ende ohne Bereich. Ein Test prüft, dass jedes Paket aus `paketquellen/` genau einem Bereich
+zugeordnet ist.
 
 ## Vorschau
 
@@ -106,6 +121,8 @@ Dickeres Holz braucht größere Wichtel: Bei 4 mm ab etwa 60 mm, bei 5 mm ab etw
 die genaue Grenze.
 
 ## Eigenes Paket bauen
+
+Schritt für Schritt mit Beispielcode erklärt es auch die Webseite: [Pakete bauen](https://chr-braun.github.io/steckwerk/pakete-bauen.html).
 
 ```bash
 python3 cli.py --paket-neu krippe --out meine-pakete        # Vorlage mit Beispielmodell

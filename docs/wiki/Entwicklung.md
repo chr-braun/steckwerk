@@ -72,14 +72,34 @@ Unter Linux bauen und testen nur der Kern `SteckwerkCore`; die Oberfläche entst
 
 ## Neue Version veröffentlichen
 
-1. Version und `CHANGELOG.md` / `CHANGELOG.en.md` pflegen, Tests grün.
-2. Auf `main` pushen.
-3. Mac-App bauen: `python3 packaging/build_macos.py --out dist`.
-4. In den [Update-Kanal](Updates.md) stellen.
+1. Version in `steckwerk.py` und `CHANGELOG.md` / `CHANGELOG.en.md` pflegen, Tests grün, auf `main` mergen.
+2. Unter Actions → **Release** → „Run workflow“ auf `main` starten. Der Workflow setzt das Tag aus `steckwerk.py`,
+   legt das GitHub-Release mit Mac-App an, baut Steckwerk Desktop auf einem Mac-Runner, packt alle Pakete, deren
+   Version im Kanal fehlt, und frischt den [Update-Kanal](Updates.md) auf.
+3. Zum Schluss läuft **Aufräumen** (`.github/workflows/aufraeumen.yml`): Auf der Releases-Seite bleiben nur die
+   zwei neuesten Releases stehen, die Git-Tags bleiben. Der Update-Kanal hängt nicht an den Releases, ältere Apps
+   finden ihre Updates weiter.
+4. Danach baut der Workflow **Webseite** die Seite neu.
 
-Ein Tag `v<version>` soll per GitHub Actions die Mac-App bauen und ein Release anlegen
-(`.github/workflows/release.yml`). Aus der Cloud brach der Tag-Push bisher ab, deshalb verteilen wir die
-Versionen über den Update-Kanal und die Zips im Projektordner.
+„Aufräumen“ lässt sich auch von Hand starten (Actions → Aufräumen); dort kann man zusätzlich alte Branches zum
+Löschen angeben. `main`, `updates` und `gh-pages` sind geschützt.
+
+## Webseite
+
+Die Webseite liegt unter <https://chr-braun.github.io/steckwerk/>. Quelle ist der Ordner `webseite/`: die Startseite
+`index.html`, die Seite `pakete-bauen.html` (wie Steckwerk Teile errechnet und wie man ein Paket baut), das gemeinsame
+`stil.css` und Screenshots, ohne Build-Werkzeuge. `python3 packaging/webseite.py --out _site` baut sie:
+Es installiert alle Paketquellen in einen Wegwerf-Ordner, rechnet daraus die Modellbilder (so, wie Steckwerk die
+Teile schneidet) und setzt die Pakete nach Bereichen in die Seite ein. Welches Modell eine Paketkarte zeigt und
+welche Teile die Leiste mit dem Millimeterlineal zeigt, steht oben in `packaging/webseite.py`. Programmversion und
+Download-Link holt die Seite beim Öffnen aus dem Update-Kanal, sie stimmen also immer mit dem letzten Release.
+
+Der Workflow `.github/workflows/pages.yml` baut und veröffentlicht die Seite bei Änderungen an `webseite/`,
+`paketquellen/` oder dem Bauskript und nach jedem Release. Einmalig nötig: Settings → Pages → Source
+**GitHub Actions**.
+
+Gestaltung: ruhig und materialnah. Schnitt = Tinte, Gravur = Blau, wie in jeder Steckwerk-Datei; Systemschriften,
+keine externen Schriften oder Tracker.
 
 ## Ideen und Fehler melden
 

@@ -1,6 +1,6 @@
 # Versionsverlauf
 
-Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
+Alles ist seit dem 9. Oktober 2026 entstanden. Die Details stehen im
 [CHANGELOG](https://github.com/chr-braun/steckwerk/blob/main/CHANGELOG.md).
 
 | Version | Datum | Was dazukam |
@@ -27,6 +27,8 @@ Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
 | 2.9.0 | 21.10. | Steckwerk Desktop: native Mac-App mit eingebauter Engine, aktualisiert sich selbst; ChatGPT als Bildquelle |
 | 2.10.0 | 26.10. | Steckwerk Desktop überarbeitet (Live-Vorschau, größere Motive, Update-Prüfung beim Start, Suche); 19 Motive neu gezeichnet; Halloween 1.4.0 mit Anhängern aus der Motiv-Bibliothek; Weihnachten 2.0.1 (Zuckerstange); Silhouetten gravieren Motivdetails; schnellerer Start auf dem Mac |
 | 2.10.1 | 10.11. | Deutlich schneller auf älteren Rechnern: Prüfung 3- bis 20-mal schneller, großes Ebenenbild 90 s → 9 s, überholte Live-Vorschauen werden verworfen, Speichern nutzt das geprüfte Ergebnis |
+| 2.11.0 | 11.11. | Themenpaket Spiele 1.0.0; Wichtel 1.1.0 mit edlem Zubehör; Weihnachten 2.1.0 mit Namensanhängern in Schreibschrift; Export als .xcs/.xs, „In XCS öffnen“, Schätzung, Montage-PDF, Projekte |
+| 2.12.0 | 11.11. | Neue Oberfläche (Statusleiste, Projekte, Ausgeben-Blatt, Prüfbericht als Teiletabelle); Eigene Gravur mit Fotos, Logos und 18 Mustern; Spiele 1.1.0 mit Puzzle; Weihnachten 2.2.0 mit edlem Christbaumschmuck |
 
 ## Pakete
 
@@ -47,6 +49,10 @@ Alles ist zwischen dem 9. und 26. Oktober 2026 entstanden. Die Details stehen im
 | Wichtelfiguren (jetzt in Wichtel) | 1.0.0 Schicht-Wichtel aus vier Lagen (16.10.) |
 | Werkstatt (jetzt in Grundlagen) | 1.0.0 Passungstest (16.10.) |
 | **Wichtel** | 1.0.0 alle Wichtel in einem Paket, neu mit Wichtelmarkt: Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne (16.10.), 1.0.1 lädt sicher bei parallelen Anfragen (16.10.) |
+| **Formen** | 1.0.0 Steckkörper, Wellenfläche, Stapelvase (16.10.) |
+| **Schmuck** | 1.0.0 Ohrhänger (16.10.) |
+| **Verkauf** | 1.0.0 Flaschenschild (17.10.) |
+| **Bewegung** | 1.0.0 Hampelmann, Kurbeltier, Turner, Kreisel, Balancier-Vogel (17.10.) |
 | **Spiele** | 1.0.0 Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär (11.11.), 1.1.0 mit Bilderpuzzle (11.11.) |
 
 ## Warum „Steckwerk“?

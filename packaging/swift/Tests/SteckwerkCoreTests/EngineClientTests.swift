@@ -141,6 +141,16 @@ final class EngineClientTests: XCTestCase {
         XCTAssertEqual(s.keys, ["openrouter": true, "chatgpt": false])
     }
 
+    func testKanalBereiche() throws {
+        let json = #"{"programm": {"version": "2.13.0"}, "pakete": [{"id": "weihnacht", "bereich": "feste", "bereich_name": "Feste und Jahreszeiten"}, {"id": "wichtel", "bereich": "feste", "bereich_name": "Feste und Jahreszeiten"}, {"id": "verkauf", "bereich": "markt", "bereich_name": "Laden und Markt"}]}"#
+        let check = try JSONDecoder().decode(UpdateCheck.self, from: Data(json.utf8))
+        XCTAssertEqual(check.bereiche.map(\.name), ["Feste und Jahreszeiten", "Laden und Markt"])
+        XCTAssertEqual(check.bereiche[0].pakete.map(\.id), ["weihnacht", "wichtel"])
+        let alt = try JSONDecoder().decode(UpdateCheck.self, from: Data(#"{"programm": {}, "pakete": [{"id": "a"}]}"#.utf8))
+        XCTAssertEqual(alt.bereiche.count, 1)
+        XCTAssertEqual(alt.bereiche[0].name, "")
+    }
+
     func testKanalPaketInstallable() throws {
         let neu = try JSONDecoder().decode(KanalPaket.self, from: Data(#"{"id": "a", "version": "1.0", "installiert": null}"#.utf8))
         let gleich = try JSONDecoder().decode(KanalPaket.self, from: Data(#"{"id": "a", "version": "1.0", "installiert": "1.0"}"#.utf8))

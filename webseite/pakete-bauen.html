@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pakete bauen · Steckwerk</title>
+<meta name="description" content="Wie Steckwerk aus ein paar Maßen schnittfertige Teile errechnet, und wie du selbst ein Themenpaket mit eigenen Modellen baust, prüfst und packst.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="stil.css">
+<style>
+/* Sprachblöcke: lange Texte stehen doppelt im HTML, die Sprachwahl blendet einen aus */
+html[lang="de"] [lang="en"]:not(html), html[lang="en"] [lang="de"]:not(html) { display: none !important; }
+.artikel { max-width: 46rem; }
+.artikel p, .artikel li { color: var(--grau); font-size: 1.04rem; }
+.artikel p + p { margin-top: 14px; }
+.artikel strong { color: var(--tinte); font-weight: 600; }
+.artikel ul { padding-left: 1.2em; margin: 14px 0 0; display: grid; gap: 8px; }
+.einstieg.schmal .rahmen { grid-template-columns: minmax(0, 1fr); }
+.einstieg.schmal p.unter { max-width: 40em; }
+.folge { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; counter-reset: s; }
+.folge > li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 20px; padding: 28px 0; border-top: 1px solid var(--linie); }
+.folge > li:last-child { border-bottom: 1px solid var(--linie); }
+.folge > li::before { counter-increment: s; content: counter(s); font: 600 0.9rem var(--mono); color: var(--gravur); padding-top: 4px; }
+.folge h3 { margin-bottom: 8px; }
+.folge p { color: var(--grau); }
+.folge p + p, .folge p + pre, .folge pre + p { margin-top: 12px; }
+pre.code { margin: 0; background: var(--flaeche); box-shadow: 0 0 0 1px var(--linie); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 0.84rem/1.6 var(--mono); color: var(--tinte); tab-size: 4; }
+pre.code .k { color: var(--grau); }
+code.i { font-family: var(--mono); font-size: 0.88em; background: var(--flaeche); box-shadow: 0 0 0 1px var(--linie); padding: 1px 5px; border-radius: 5px; color: var(--tinte); }
+.zeichnung { background: var(--flaeche); border-radius: 12px; box-shadow: 0 0 0 1px var(--linie); padding: 20px; overflow-x: auto; }
+.zeichnung svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.zeichnung .soll { fill: none; stroke: var(--grau); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.zeichnung .ist { fill: var(--holz); fill-opacity: .55; stroke: var(--tinte); stroke-width: 1.6; fill-rule: evenodd; }
+.zeichnung .mass { stroke: var(--gravur); stroke-width: 1.2; fill: none; }
+.zeichnung text { font: 12px var(--mono); fill: var(--grau); }
+.zeichnung text.blau { fill: var(--gravur); }
+.legende { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 12px; color: var(--grau); font-size: 0.9rem; }
+.legende span { display: inline-flex; align-items: center; gap: 8px; }
+.legende i { display: inline-block; width: 22px; height: 0; border-top: 1.6px solid var(--tinte); }
+.legende i.gestrichelt { border-top: 1.2px dashed var(--grau); }
+.zwei { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+@media (max-width: 860px) { .zwei { grid-template-columns: minmax(0, 1fr); } .folge > li { grid-template-columns: 32px minmax(0, 1fr); gap: 12px; } }
+</style>
+</head>
+<body>
+
+<header class="kopf" id="kopf">
+  <div class="rahmen">
+    <a class="wortmarke" href="index.html">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><path fill="var(--holz)" stroke="var(--tinte)" stroke-width="1.2" stroke-linejoin="round" d="M3 7h5v3h4V7h5v3h4V7h2v16H3z"/><path fill="none" stroke="var(--gravur)" stroke-width="1.2" stroke-linecap="round" d="M7 16h12M7 19.5h8"/></svg>
+      Steckwerk
+    </a>
+    <nav class="nav" aria-label="Seiten">
+      <a href="#rechnen"><span lang="de">So rechnet Steckwerk</span><span lang="en">How it computes</span></a>
+      <a href="#bauen"><span lang="de">Paket bauen</span><span lang="en">Build a package</span></a>
+      <a href="index.html#pakete"><span lang="de">Pakete</span><span lang="en">Packages</span></a>
+      <a href="index.html#laden"><span lang="de">Laden</span><span lang="en">Download</span></a>
+    </nav>
+    <div class="sprache" role="group" aria-label="Sprache">
+      <button type="button" id="sp-de" aria-pressed="true">DE</button>
+      <button type="button" id="sp-en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="einstieg schmal">
+    <div class="rahmen">
+      <div>
+        <p class="marke"><span lang="de">Hinter den Kulissen</span><span lang="en">Behind the scenes</span></p>
+        <h1 style="margin-top:14px"><span lang="de">Wie aus Maßen Teile werden.</span><span lang="en">How measurements become parts.</span></h1>
+        <p class="unter" lang="de">Steckwerk zeichnet nichts von Hand. Jedes Modell ist ein kleines Programm, das aus deinen Werten die Konturen errechnet, die Schnittbreite des Lasers ausgleicht und alles prüft, bevor eine Datei entsteht. Auf dieser Seite siehst du, wie das abläuft, und wie du selbst ein Paket mit eigenen Modellen baust.</p>
+        <p class="unter" lang="en">Steckwerk draws nothing by hand. Every model is a small program that computes the outlines from your values, compensates for the laser’s kerf and checks everything before a file is written. This page shows how that works, and how to build your own package with your own models.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="rahmen"><div class="trenner"></div></div>
+
+  <section class="abschnitt" id="rechnen">
+    <div class="rahmen">
+      <div class="kopfzeile">
+        <h2><span lang="de">So rechnet Steckwerk.</span><span lang="en">How Steckwerk computes.</span></h2>
+        <p lang="de">Fünf Schritte, jedes Mal, wenn du einen Wert änderst. Auf einem neueren Mac dauert das meist weniger als eine Sekunde.</p>
+        <p lang="en">Five steps, every time you change a value. On a recent Mac this usually takes less than a second.</p>
+      </div>
+
+      <ol class="folge">
+        <li>
+          <div>
+            <h3><span lang="de">Werte sammeln</span><span lang="en">Collect the values</span></h3>
+            <p lang="de">Aus dem Formular kommen die Maße des Modells, dazu aus dem Materialprofil die <strong>Materialstärke T</strong> und die <strong>Schnittbreite (Kerf)</strong>, zum Beispiel Pappel 3 mm mit 0,15 mm. Alle Maße sind Millimeter.</p>
+            <p lang="en">The form supplies the model’s sizes, and the material profile adds the <strong>material thickness T</strong> and the <strong>kerf</strong>, for example poplar 3 mm with 0.15 mm. All sizes are millimetres.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Teile konstruieren</span><span lang="en">Construct the parts</span></h3>
+            <p lang="de">Die Funktion <code class="i">build()</code> des Modells zeichnet jedes Teil als Kontur: Außenkante, Löcher, Gravurlinien. Zinken und Schlitze richten sich nach T, damit ein Haus aus 4 mm Holz genauso zusammengeht wie eines aus 3 mm. Verzierungen wie Fenster, Ranken oder Schrift setzt ein Baukasten so, dass sie nie eine Schnittkante berühren.</p>
+            <p lang="en">The model’s <code class="i">build()</code> function draws each part as an outline: outer edge, holes, engraving lines. Tabs and slots follow T, so a house made from 4 mm wood fits together just like one made from 3 mm. Decorations such as windows, scrolls or lettering are placed by a toolkit that keeps them clear of every cut edge.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Schnittbreite ausgleichen</span><span lang="en">Compensate for the kerf</span></h3>
+            <p lang="de">Der Laser brennt eine Fuge von etwa 0,1 bis 0,2 mm weg. Steckwerk verschiebt deshalb jede Kontur um die halbe Schnittbreite nach außen ins Material: Außenkanten werden etwas größer, Löcher und Schlitze etwas kleiner. So sitzen Steckungen nach dem Schneiden stramm.</p>
+            <p lang="en">The laser burns away a gap of about 0.1 to 0.2 mm. Steckwerk therefore moves every outline outwards into the material by half the kerf: outer edges get slightly bigger, holes and slots slightly smaller. That way joints sit tight after cutting.</p>
+            <div class="zeichnung" style="margin-top:18px">
+              <svg viewBox="0 0 640 230" role="img" aria-label="Kerf-Ausgleich an Zinken und Schlitz">
+                <path class="ist" d="M32,198 L32,92 L112,92 L112,52 L188,52 L188,92 L268,92 L268,198 Z"/>
+                <path class="soll" d="M40,190 L40,100 L120,100 L120,60 L180,60 L180,100 L260,100 L260,190 Z"/>
+                <path class="mass" d="M188,40 L188,30 M180,40 L180,30 M172,24 L196,24"/>
+                <text x="200" y="28" class="blau">Kerf/2</text>
+                <text x="40" y="220" lang="de">Zinken: wird breiter</text>
+                <text x="40" y="220" lang="en">Tab: gets wider</text>
+                <path class="ist" d="M352,198 L352,52 L608,52 L608,198 Z M448,98 L448,142 L512,142 L512,98 Z"/>
+                <path class="soll" d="M360,190 L360,60 L600,60 L600,190 Z M440,90 L440,150 L520,150 L520,90 Z"/>
+                <path class="mass" d="M440,78 L440,86 M448,78 L448,86 M434,74 L454,74"/>
+                <text x="458" y="78" class="blau">Kerf/2</text>
+                <text x="360" y="220" lang="de">Schlitz: wird schmaler</text>
+                <text x="360" y="220" lang="en">Slot: gets narrower</text>
+              </svg>
+              <div class="legende">
+                <span><i class="gestrichelt"></i><span lang="de">Sollmaß</span><span lang="en">Nominal size</span></span>
+                <span><i></i><span lang="de">Schnittlinie mit Ausgleich (hier stark vergrößert)</span><span lang="en">Cut line with compensation (exaggerated)</span></span>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Prüfen</span><span lang="en">Check</span></h3>
+            <p lang="de">Der Validator geht jedes Teil durch: Sind alle Konturen geschlossen und kreuzungsfrei? Bleibt zwischen zwei Schnitten mindestens 1 mm Material stehen? Findet jeder Zinken seinen Schlitz, mit passender Breite und Tiefe? Passt alles auf die Platte? Gibt es auch nur einen Fehler, wird nichts geschrieben, und der Prüfbericht sagt, welches Teil wo hakt.</p>
+            <p lang="en">The validator goes through every part: are all outlines closed and free of crossings? Is there at least 1 mm of material between two cuts? Does every tab find its slot, with matching width and depth? Does everything fit on the sheet? If there is a single error, nothing is written, and the check report says which part fails where.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Anordnen und ausgeben</span><span lang="en">Lay out and export</span></h3>
+            <p lang="de">Die Teile werden dicht auf eine oder mehrere Platten verteilt und mit Teilenummern versehen. Heraus kommt eine SVG mit zwei Ebenen, Schnitt in Schwarz und Gravur in Blau, und auf Wunsch ein fertiges Projekt für xTool Creative Space, eine Montageanleitung als PDF und eine Schätzung von Laserzeit und Materialkosten.</p>
+            <p lang="en">The parts are packed tightly onto one or more sheets and numbered. The result is an SVG with two layers, cut in black and engraving in blue, and on request a ready project for xTool Creative Space, an assembly guide as a PDF and an estimate of laser time and material cost.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="rahmen"><div class="trenner"></div></div>
+
+  <section class="abschnitt" id="bauen">
+    <div class="rahmen">
+      <div class="kopfzeile">
+        <h2><span lang="de">Ein eigenes Paket bauen.</span><span lang="en">Build your own package.</span></h2>
+        <p lang="de">Ein Paket ist ein Ordner mit einem Steckbrief und je Modell einer Python-Datei. Du brauchst Python 3.8 oder neuer und das Steckwerk-Repo, sonst nichts.</p>
+        <p lang="en">A package is a folder with a short manifest and one Python file per model. You need Python 3.8 or later and the Steckwerk repo, nothing else.</p>
+      </div>
+
+      <ol class="folge">
+        <li>
+          <div>
+            <h3><span lang="de">Vorlage anlegen</span><span lang="en">Create a template</span></h3>
+            <p lang="de">Steckwerk legt dir einen Ordner mit einem lauffähigen Beispielmodell an.</p>
+            <p lang="en">Steckwerk creates a folder with a working example model for you.</p>
+<pre class="code">python3 cli.py --paket-neu krippe --out meine-pakete
+
+<span class="k">meine-pakete/krippe/
+  paket.json      Steckbrief
+  krippe.py       ein Modell je Datei</span></pre>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Steckbrief ausfüllen</span><span lang="en">Fill in the manifest</span></h3>
+            <p lang="de">In <code class="i">paket.json</code> stehen Name, Version und die Modelle. Wer Ornamente und Steckhelfer der anderen Pakete nutzen will, trägt Grundlagen unter <code class="i">benoetigt</code> ein; Steckwerk installiert es dann mit.</p>
+            <p lang="en"><code class="i">paket.json</code> holds the name, version and models. To use the ornaments and joint helpers of the other packages, list Basics under <code class="i">benoetigt</code>; Steckwerk then installs it along.</p>
+<pre class="code">{
+  "standard": 1,
+  "id": "krippe",
+  "name": "Krippe",
+  "name_en": "Nativity",
+  "version": "1.0.0",
+  "beschreibung": "Stall mit Stern zum Stecken.",
+  "steckwerk": "2.4.0",
+  "benoetigt": {"verzierungen": "2.0.0"},
+  "modelle": ["krippe"]
+}</pre>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Modell schreiben</span><span lang="en">Write the model</span></h3>
+            <p lang="de">Jede Modelldatei hat zwei Teile. <code class="i">INFO</code> beschreibt das Formular, aus dem Steckwerk die Eingabefelder baut. <code class="i">build()</code> bekommt die Werte und gibt die Teile zurück. Koordinaten sind Millimeter, y zeigt nach oben, Außenkonturen laufen gegen den Uhrzeigersinn.</p>
+            <p lang="en">Every model file has two parts. <code class="i">INFO</code> describes the form Steckwerk builds the input fields from. <code class="i">build()</code> receives the values and returns the parts. Coordinates are millimetres, y points up, outer outlines run counter-clockwise.</p>
+<pre class="code">from steckwerk import Assembly, Part, circle, rect
+from models import _deko as dk
+from pakete import num, txt
+
+INFO = dict(
+    label="Türschild", group="Pakete",
+    desc="Hängeschild mit Text und zwei Löchern.",
+    params=[num("width", "Breite", 120, 60, 300),
+            num("height", "Höhe", 60, 30, 200),
+            txt("text", "Text", "Willkommen")])
+
+def build(cfg, name="tuerschild", width=120.0, height=60.0, text="Willkommen"):
+    W, H = cfg.s(width), cfg.s(height)
+    part = Part(name, rect(-W / 2, 0, W, H))
+    for x in (-W / 2 + 8, W / 2 - 8):                 <span class="k"># Aufhängelöcher</span>
+        part.add_hole(circle(x, H - 8, 2.0, cfg.arc_tolerance))
+    cv = dk.Canvas(part, margin=2.0)                  <span class="k"># Gravur, die nie einen Schnitt berührt</span>
+    if dk.sign(cv, text, "holz", [(-W / 2 + 14, 4, W / 2 - 14, H - 14)],
+               "normal", "gross", min_h=3.0, anchor="mitte") is None:
+        raise ValueError("Der Text passt nicht aufs Schild.")
+    asm = Assembly(name)
+    asm.parts.append(part)
+    asm.notes.append("Schild an einer Kordel aufhängen.")
+    return asm</pre>
+            <p lang="de">Was nicht geht, meldest du mit <code class="i">ValueError</code> und einem verständlichen Satz; der erscheint genau so in der App. Was in <code class="i">asm.notes</code> steht, landet als Montagehinweis im Prüfbericht. Steckverbindungen zwischen Teilen beschreibst du mit <code class="i">JointFeature</code> und <code class="i">asm.connect()</code>, dann prüft der Validator auch Passung und Kerf.</p>
+            <p lang="en">Report what isn’t possible with <code class="i">ValueError</code> and a plain sentence; it appears exactly like that in the app. Whatever goes into <code class="i">asm.notes</code> ends up in the check report as an assembly note. Describe joints between parts with <code class="i">JointFeature</code> and <code class="i">asm.connect()</code>, and the validator checks fit and kerf too.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Prüfen</span><span lang="en">Check</span></h3>
+            <p lang="de">Steckwerk baut jedes Modell mit seinen Standardwerten und lässt den Validator darüber laufen. Erst wenn alles schnittfertig ist, geht es weiter. Zum Ausprobieren mit anderen Werten installierst du den Ordner direkt und startest die Browser-Oberfläche.</p>
+            <p lang="en">Steckwerk builds every model with its default values and runs the validator over it. Only when everything is cut-ready do you move on. To try other values, install the folder directly and start the browser version.</p>
+<pre class="code">python3 cli.py --paket-pruefen meine-pakete/krippe
+python3 cli.py --paket-installieren meine-pakete/krippe
+python3 webui.py</pre>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3><span lang="de">Packen und weitergeben</span><span lang="en">Pack and share</span></h3>
+            <p lang="de">Heraus kommt eine <code class="i">.swpaket</code>-Datei. Die lädst du in Steckwerk unter Einstellungen → Pakete → Paket laden, oder du gibst sie weiter. Bei jeder Änderung die Version erhöhen.</p>
+            <p lang="en">The result is a <code class="i">.swpaket</code> file. Load it in Steckwerk under Settings → Packages → Load package, or pass it on. Raise the version with every change.</p>
+<pre class="code">python3 cli.py --paket-packen meine-pakete/krippe --out .
+<span class="k">→ krippe-1.0.0.swpaket</span></pre>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="rahmen"><div class="trenner"></div></div>
+
+  <section class="abschnitt">
+    <div class="rahmen zwei">
+      <div class="artikel">
+        <h2><span lang="de">Für die offiziellen Pakete.</span><span lang="en">For the official packages.</span></h2>
+        <p lang="de" style="margin-top:16px">Die Themenpakete im Update-Kanal entstehen genauso. Ihre Quellen liegen im Repo unter <code class="i">paketquellen/</code>.</p>
+        <p lang="en" style="margin-top:16px">The theme packages in the update channel are made the same way. Their sources live in the repo under <code class="i">paketquellen/</code>.</p>
+        <ul lang="de">
+          <li><strong>Ein Paket je Thema.</strong> Neue Modelle kommen in das passende Themenpaket, nicht in ein eigenes.</li>
+          <li><strong>Bereich eintragen.</strong> Ein neues Paket bekommt in <code class="i">paketquellen/bereiche.json</code> seinen Platz im Katalog.</li>
+          <li><strong>Version erhöhen, Release starten.</strong> Der Release-Workflow packt jedes Paket, dessen Version im Kanal noch fehlt, und stellt es in den Update-Kanal. Steckwerk bietet es dann allen an.</li>
+          <li><strong>Gemeinsame Werkzeuge nutzen.</strong> Mit <code class="i">pakete.bibliothek("verzierungen")</code> stehen Rosetten, Ranken, Bordüren und Steckhelfer aus Grundlagen bereit.</li>
+        </ul>
+        <ul lang="en">
+          <li><strong>One package per theme.</strong> New models go into the matching theme package, not into a package of their own.</li>
+          <li><strong>Assign an area.</strong> A new package gets its place in the catalogue in <code class="i">paketquellen/bereiche.json</code>.</li>
+          <li><strong>Raise the version, start a release.</strong> The release workflow packs every package whose version is missing from the channel and puts it into the update channel. Steckwerk then offers it to everyone.</li>
+          <li><strong>Use the shared tools.</strong> <code class="i">pakete.bibliothek("verzierungen")</code> gives you rosettes, scrolls, borders and joint helpers from Basics.</li>
+        </ul>
+      </div>
+      <div class="artikel">
+        <h2><span lang="de">Alles im Detail.</span><span lang="en">All the details.</span></h2>
+        <p lang="de" style="margin-top:16px">Der vollständige Paket-Standard mit allen Feldern, Formular-Bausteinen, Motiven, Übersetzungen und Regeln für schnittfertige Teile steht im Repo.</p>
+        <p lang="en" style="margin-top:16px">The full package standard with every field, form building block, motifs, translations and rules for cut-ready parts lives in the repo (German).</p>
+        <div class="aktion">
+          <a class="knopf" href="https://github.com/chr-braun/steckwerk/blob/main/PAKETE.md"><span lang="de">Paket-Standard lesen</span><span lang="en">Read the package standard</span></a>
+          <a class="knopf leise" href="https://github.com/chr-braun/steckwerk/tree/main/beispiel-pakete/tuerschild"><span lang="de">Beispielpaket</span><span lang="en">Example package</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <span>Steckwerk · <span lang="de">MIT-Lizenz</span><span lang="en">MIT licence</span></span>
+    <nav aria-label="Weitere Links">
+      <a href="index.html"><span lang="de">Startseite</span><span lang="en">Home</span></a>
+      <a href="https://github.com/chr-braun/steckwerk"><span lang="de">Quellcode</span><span lang="en">Source code</span></a>
+      <a href="https://github.com/chr-braun/steckwerk/blob/main/CHANGELOG.md"><span lang="de">Was ist neu</span><span lang="en">What’s new</span></a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var sprache = "";
+  try { sprache = localStorage.getItem("steckwerk-sprache") || ""; } catch (e) {}
+  if (sprache !== "de" && sprache !== "en") sprache = /^de\b/i.test(navigator.language || "de") ? "de" : "en";
+  function setze(neu) {
+    sprache = neu;
+    try { localStorage.setItem("steckwerk-sprache", neu); } catch (e) {}
+    document.documentElement.lang = neu;
+    document.getElementById("sp-de").setAttribute("aria-pressed", neu === "de");
+    document.getElementById("sp-en").setAttribute("aria-pressed", neu === "en");
+  }
+  document.getElementById("sp-de").addEventListener("click", function () { setze("de"); });
+  document.getElementById("sp-en").addEventListener("click", function () { setze("en"); });
+  var kopf = document.getElementById("kopf");
+  addEventListener("scroll", function () { kopf.classList.toggle("gerollt", scrollY > 8); }, { passive: true });
+  setze(sprache);
+})();
+</script>
+</body>
+</html>

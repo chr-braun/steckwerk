@@ -50,36 +50,23 @@ struct PackagesView: View {
                 .disabled(busy)
             }
 
-            Section {
-                if let kanal {
-                    if kanal.pakete.isEmpty {
+            if let kanal {
+                if kanal.pakete.isEmpty {
+                    Section("Aus dem Kanal") {
                         Text("Der Kanal bietet keine Pakete an.").foregroundStyle(.secondary)
                     }
-                    ForEach(kanal.pakete) { paket in
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(paket.name).fontWeight(.medium)
-                                Text(paket.beschreibung)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(3)
-                                Text(versionText(paket))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            if paket.installable {
-                                Button(paket.installiert == nil ? "Installieren" : "Aktualisieren") {
-                                    run { try await $0.kanalPaketInstallieren(id: paket.id) }
-                                }
-                                .disabled(busy)
-                            } else {
-                                Label("aktuell", systemImage: "checkmark")
-                                    .foregroundStyle(Theme.ok)
-                                    .font(.caption)
-                            }
+                }
+                ForEach(Array(kanal.bereiche.enumerated()), id: \.offset) { _, gruppe in
+                    Section(gruppe.name.isEmpty ? "Aus dem Kanal" : gruppe.name) {
+                        ForEach(gruppe.pakete) { paket in
+                            kanalZeile(paket)
                         }
                     }
+                }
+            }
+
+            Section {
+                if let kanal {
                     if kanal.pakete.contains(where: \.installable) {
                         Button("Alle installieren und aktualisieren") {
                             run { try await $0.alleKanalPaketeInstallieren() }
@@ -97,7 +84,7 @@ struct PackagesView: View {
                 }
                 .disabled(busy)
             } header: {
-                Text("Aus dem Kanal")
+                if kanal == nil { Text("Aus dem Kanal") }
             }
 
             if busy || message != nil {
@@ -125,6 +112,32 @@ struct PackagesView: View {
                     run { try await $0.paketEntfernen(id: paket.id) }
                 }
                 removing = nil
+            }
+        }
+    }
+
+    private func kanalZeile(_ paket: KanalPaket) -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(paket.name).fontWeight(.medium)
+                Text(paket.beschreibung)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(3)
+                Text(versionText(paket))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if paket.installable {
+                Button(paket.installiert == nil ? "Installieren" : "Aktualisieren") {
+                    run { try await $0.kanalPaketInstallieren(id: paket.id) }
+                }
+                .disabled(busy)
+            } else {
+                Label("aktuell", systemImage: "checkmark")
+                    .foregroundStyle(Theme.ok)
+                    .font(.caption)
             }
         }
     }

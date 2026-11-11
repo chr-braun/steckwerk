@@ -2,6 +2,12 @@
 
 Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the full history.
 
+## Unreleased
+
+- **Package catalogue by area:** the browser app and Steckwerk Desktop now group the theme packages under *Seasons and holidays*, *Home and gifts*, *Play and motion*, *Shapes and art*, *Shop and market* and *Basics*. The grouping lives in `paketquellen/bereiche.json` and arrives through the update channel.
+- New **website** at chr-braun.github.io/steckwerk with download, packages by area and model pictures computed straight from the packages.
+- The releases page keeps only the two newest versions; the README is short, the full reference moved to the wiki page *Kommandozeile*.
+
 ## 2.12.0 – 2026-11-11
 
 - **New interface** in the browser UI, Mac app and Steckwerk Desktop: only material and the main button **Send to xTool** at the top, a **status bar** below the sheet (check status, parts, sheets, laser time, material cost), **Recent** projects in the sidebar (save with ⌘S), an **Export sheet** with two clear paths and the **check report** as a parts table.
