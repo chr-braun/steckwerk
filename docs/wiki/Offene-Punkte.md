@@ -4,6 +4,7 @@ Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Entscheidungen für dich
 
+- **Bild-Gravur in XCS testen:** Fotos stecken als eingebettetes PNG in der SVG-Ebene „Bild“. Bitte einmal in xTool Creative Space importieren und prüfen, ob Lage und Größe stimmen. Falls XCS das Bild nicht übernimmt, liegt jedes Bild zusätzlich als PNG mit Maß im Dateinamen daneben. Der direkte .xcs/.xs-Export nimmt Bilder noch nicht mit.
 - **Repo-Sichtbarkeit:** Das Repo `chr-braun/steckwerk` ist derzeit öffentlich. Ob es so bleibt, entscheidest du.
 - **Steckwerk 2.10.0 nach `main` bringen und veröffentlichen:** Der Pull Request mit 2.10.0 (Branch
   `claude/implement-swift-app-spec-a43ysx` nach `main`) wartet auf dich. Nach dem Merge unter Actions → Release →

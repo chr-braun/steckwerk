@@ -1,4 +1,6 @@
 import AppKit
+import ImageIO
+import UniformTypeIdentifiers
 import SteckwerkCore
 import SwiftUI
 
@@ -44,6 +46,9 @@ final class AppModel: ObservableObject {
     }
     private var openingProject = false
     @Published private(set) var values: [String: [String: JSONValue]] = [:]
+    /// Eigene Gravuren (Foto, Motiv, Muster) je Modell – bleiben über Neustarts erhalten.
+    @Published private(set) var gravuren: [String: [GravurEintrag]] = [:]
+    @Published private(set) var bilder: [BildInfo] = []
     @Published private(set) var material: [String: JSONValue] = [:]
     @Published private(set) var result: GenerateResponse?
     @Published private(set) var resultModelID: String?
@@ -91,6 +96,7 @@ final class AppModel: ObservableObject {
     private var previewTask: Task<Void, Never>?
     private var buildSerial = 0
     private static let materialDefaultsKey = "material"
+    private static let gravurDefaultsKey = "gravuren"
     static let autoUpdateKey = "updatesBeimStart"
 
     nonisolated static var appVersion: String {
@@ -101,6 +107,10 @@ final class AppModel: ObservableObject {
         if let data = UserDefaults.standard.data(forKey: Self.materialDefaultsKey),
            let saved = try? JSONDecoder().decode([String: JSONValue].self, from: data) {
             material = saved
+        }
+        if let data = UserDefaults.standard.data(forKey: Self.gravurDefaultsKey),
+           let saved = try? JSONDecoder().decode([String: [GravurEintrag]].self, from: data) {
+            gravuren = saved
         }
     }
 
@@ -285,6 +295,7 @@ final class AppModel: ObservableObject {
 
     func apply(schema: Schema) {
         self.schema = schema
+        bilder = schema.bilder
         for p in schema.config where material[p.key] == nil {
             material[p.key] = p.defaultValue
         }
@@ -394,7 +405,8 @@ final class AppModel: ObservableObject {
             }
         }
         do {
-            let response = try await client.generate(model: id, params: body.params, config: body.config)
+            let response = try await client.generate(model: id, params: body.params, config: body.config,
+                                                     gravuren: gravurJSON(for: id))
             guard serial == buildSerial else { return }
             let engraveColor = body.config["engrave_color"]?.stringValue ?? "#0000FF"
             let sheets = response.assemblies.flatMap(\.sheets)
@@ -443,7 +455,7 @@ final class AppModel: ObservableObject {
         guard let client, let id = selectedModelID, let body = requestBody(for: id) else { return }
         do {
             let saved = try await client.save(model: id, params: body.params, config: body.config,
-                                              formate: Array(exportFormate).sorted())
+                                              formate: Array(exportFormate).sorted(), gravuren: gravurJSON(for: id))
             statusMessage = "\(saved.files.count) Dateien gespeichert"
         } catch {
             show(error, title: "Speichern fehlgeschlagen")
@@ -612,5 +624,152 @@ final class AppModel: ObservableObject {
 
     func show(_ error: Error, title: String) {
         alert = AppAlert(title: title, message: error.localizedDescription)
+    }
+
+    // MARK: Eigene Gravur
+
+    func gravurListe(for modelID: String) -> [GravurEintrag] {
+        gravuren[modelID] ?? []
+    }
+
+    func setGravuren(_ list: [GravurEintrag], for modelID: String) {
+        gravuren[modelID] = list.isEmpty ? nil : list
+        if let data = try? JSONEncoder().encode(gravuren) {
+            UserDefaults.standard.set(data, forKey: Self.gravurDefaultsKey)
+        }
+        if resultModelID == modelID { resultIsStale = true }
+        schedulePreview()
+    }
+
+    /// Nur vollständige, eingeschaltete Einträge gehen an die Engine.
+    func gravurJSON(for modelID: String) -> [JSONValue] {
+        let motive = Set(schema?.motive.map(\.id) ?? [])
+        let fotos = Set(bilder.map(\.id))
+        return gravurListe(for: modelID).filter { g in
+            guard g.aktiv else { return false }
+            switch g.quelle {
+            case "bild": return fotos.contains(g.bild)
+            case "motiv": return motive.contains(g.motiv)
+            default: return true
+            }
+        }.map { $0.json() }
+    }
+
+    /// Bauteile des letzten Ergebnisses (für „Auf Teil“).
+    func teile(for modelID: String) -> [TeilInfo] {
+        guard resultModelID == modelID, let result else { return [] }
+        var seen = Set<String>()
+        return result.assemblies.flatMap(\.teile)
+            .filter { $0.w * $0.h > 0 && seen.insert($0.name).inserted }
+            .sorted { $0.w * $0.h > $1.w * $1.h }
+    }
+
+    /// Foto oder Logo wählen, auf höchstens 1600 Pixel verkleinern und als PNG in die Bibliothek legen.
+    /// Jedes Format, das macOS öffnen kann (JPG, HEIC vom iPhone, PNG, TIFF …). Liefert die neue ID.
+    func importFoto() async -> String? {
+        guard let client else { return nil }
+        let panel = NSOpenPanel()
+        panel.title = "Foto oder Logo für die Gravur wählen"
+        panel.prompt = "Importieren"
+        panel.allowedContentTypes = [.image]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return nil }
+        guard let png = Self.pngFuerImport(url) else {
+            alert = AppAlert(title: "Bild lässt sich nicht öffnen", message: "Bitte ein Foto oder Logo (JPG, PNG, HEIC) wählen.")
+            return nil
+        }
+        do {
+            let name = url.deletingPathExtension().lastPathComponent
+            let response = try await client.fotoImport(png: png, name: String(name.prefix(40)))
+            guard response.ok, let id = response.id else {
+                alert = AppAlert(title: "Import fehlgeschlagen", message: response.error ?? "Unbekannter Fehler")
+                return nil
+            }
+            bilder = response.bilder
+            statusMessage = response.message
+            return id
+        } catch {
+            show(error, title: "Import fehlgeschlagen")
+            return nil
+        }
+    }
+
+    func entferneFoto(_ id: String) async {
+        guard let client else { return }
+        do {
+            let response = try await client.fotoEntfernen(id: id)
+            if response.ok { bilder = response.bilder }
+            schedulePreview()
+        } catch {
+            show(error, title: "Löschen fehlgeschlagen")
+        }
+    }
+
+    nonisolated static func pngFuerImport(_ url: URL, maxSeite: CGFloat = 1600) -> Data? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,          // Handyfotos richtig herum
+            kCGImageSourceThumbnailMaxPixelSize: maxSeite,
+        ]
+        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        let rep = NSBitmapImageRep(cgImage: image)
+        return rep.representation(using: .png, properties: [:])
+    }
+}
+
+/// Eine eigene Gravur – Felder wie in gravur.py (Engine).
+struct GravurEintrag: Codable, Identifiable, Hashable {
+    var id = UUID()
+    var quelle = "bild"
+    var teil = "auto"
+    var groesse = 0.0
+    var x = 0.0
+    var y = 0.0
+    var drehung = 0.0
+    var spiegeln = false
+    var rand = 1.5
+    var aktiv = true
+    // Foto
+    var bild = ""
+    var modus = "fehlerstreuung"
+    var form = "rechteck"
+    var helligkeit = 0.0
+    var kontrast = 0.0
+    var gamma = 1.0
+    var invertieren = false
+    var aufloesung = 10.0
+    // Motiv
+    var motiv = "stern"
+    var art = "raster"
+    var schraffur = 0.2
+    // Muster
+    var muster = "mandala"
+    var abstand = 6.0
+    var bereich = "rechteck"
+    var seed = 1
+
+    init(quelle: String) {
+        self.quelle = quelle
+    }
+
+    func json() -> JSONValue {
+        var o: [String: JSONValue] = [
+            "quelle": .string(quelle), "teil": .string(teil), "groesse": .double(groesse), "x": .double(x),
+            "y": .double(y), "drehung": .double(drehung), "spiegeln": .bool(spiegeln), "rand": .double(rand),
+        ]
+        switch quelle {
+        case "bild":
+            o["bild"] = .string(bild); o["modus"] = .string(modus); o["form"] = .string(form)
+            o["helligkeit"] = .double(helligkeit); o["kontrast"] = .double(kontrast); o["gamma"] = .double(gamma)
+            o["invertieren"] = .bool(invertieren); o["aufloesung"] = .double(aufloesung)
+        case "motiv":
+            o["motiv"] = .string(motiv); o["art"] = .string(art); o["schraffur"] = .double(schraffur)
+            o["aufloesung"] = .double(aufloesung)
+        default:
+            o["muster"] = .string(muster); o["abstand"] = .double(abstand); o["form"] = .string(bereich)
+            o["seed"] = .int(seed)
+        }
+        return .object(o)
     }
 }

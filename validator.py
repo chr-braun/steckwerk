@@ -190,6 +190,16 @@ def check_part(part: Part, cfg: Config, label: str = "") -> List[str]:
         for l, hj in enumerate(part.holes):
             if k != l and point_in_polygon(hi[0], hj):
                 errs.append(pre + f"Innenschnitt {k} liegt in Innenschnitt {l} (Doppelschnitt)")
+    # Bild-Gravur: Rechteck darf nicht über das Teil hinausragen (sonst läge es im Layout auf Nachbarteilen)
+    if part.images:
+        bx0, by0, bx1, by1 = bbox(part.outline)
+        for k, im in enumerate(part.images):
+            a, b, c = im.corners
+            d = (b[0] + c[0] - a[0], b[1] + c[1] - a[1])
+            if any(q[0] < bx0 - 0.5 or q[0] > bx1 + 0.5 or q[1] < by0 - 0.5 or q[1] > by1 + 0.5 for q in (a, b, c, d)):
+                errs.append(pre + f"{im.label} ragt über das Teil hinaus – kleiner machen oder zur Mitte schieben")
+            if len(im.png) < 60 or im.png[:8] != b"\x89PNG\r\n\x1a\n":
+                errs.append(pre + f"{im.label}: Bilddaten fehlen oder sind beschädigt")
     # Gravur
     for k, s in enumerate(part.engrave):
         if len(s.points) < 2:

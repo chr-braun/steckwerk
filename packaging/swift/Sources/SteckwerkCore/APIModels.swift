@@ -53,7 +53,7 @@ public struct Assembly: Decodable, Sendable, Identifiable {
     public let sheets: [SheetResult]
     /// Laserzeit, Schnittlänge und Plattenbedarf (Schätzung der Engine, ab 2.11).
     public let schaetzung: Schaetzung?
-    /// Teileliste mit Nummer, Größe und Prüfergebnis (ab Oberfläche 3; ältere Engines liefern keine).
+    /// Teileliste mit Nummer, Größe und Prüfergebnis – für den Prüfbericht und die Auswahl „Auf Teil“ der Gravur.
     public let teile: [TeilInfo]
 
     enum CodingKeys: String, CodingKey { case name, ok, summary, report, notes, parts, joints, errors, sheets, schaetzung, teile }
@@ -441,4 +441,23 @@ public struct MotivResponse: Decodable, Sendable {
     public let ok: Bool
     public let message: String?
     public let id: String?
+}
+
+public struct FotoResponse: Decodable, Sendable {
+    public let ok: Bool
+    public let message: String?
+    public let error: String?
+    public let id: String?
+    public let bilder: [BildInfo]
+
+    enum CodingKeys: String, CodingKey { case ok, message, error, id, bilder }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        ok = try c.decodeIfPresent(Bool.self, forKey: .ok) ?? false
+        message = try c.decodeIfPresent(String.self, forKey: .message)
+        error = try c.decodeIfPresent(String.self, forKey: .error)
+        id = try c.decodeIfPresent(String.self, forKey: .id)
+        bilder = (try? c.decodeIfPresent([BildInfo].self, forKey: .bilder)) ?? []
+    }
 }

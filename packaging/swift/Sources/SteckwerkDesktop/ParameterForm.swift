@@ -35,6 +35,7 @@ struct ParameterForm: View {
                     }
                 }
             }
+            GravurSection(modelID: modelID)
             Section {
                 HStack {
                     Button("Zurücksetzen") {

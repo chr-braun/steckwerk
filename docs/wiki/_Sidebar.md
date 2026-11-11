@@ -15,6 +15,7 @@
 - [Material und Laser](Material-und-Laser.md)
 - [Gestaltung](Gestaltung-und-Beschriftung.md)
 - [Eigene Motive](Eigene-Motive.md)
+- [Eigene Gravur](Eigene-Gravur.md)
 - [Pakete](Pakete.md)
 - [KI-Funktionen](KI-Funktionen.md)
 

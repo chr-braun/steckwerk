@@ -46,6 +46,7 @@ fertige SVG werden kontrolliert. Gibt es auch nur einen Fehler, wird nichts gesc
 - [Material und Laser](Material-und-Laser.md) – xTool M2, Materialprofile, Kerf, Montage
 - [Gestaltung und Beschriftung](Gestaltung-und-Beschriftung.md) – Fenster, Gravuren, Schriften
 - [Eigene Motive](Eigene-Motive.md) – eingebaute und eigene Motive, importieren und platzieren
+- [Eigene Gravur](Eigene-Gravur.md) – Fotos, Logos, Motive und 18 Muster auf jedem Teil
 - [Pakete](Pakete.md) – Erweiterungspakete, alle bisherigen Pakete, eigene bauen
 - [KI-Funktionen](KI-Funktionen.md) – Assistent, „Motiv zeichnen“ mit Ollama, OpenRouter oder ChatGPT
 

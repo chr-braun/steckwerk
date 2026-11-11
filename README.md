@@ -372,7 +372,7 @@ und Silhouette. Eigene Motive lädst du in der App unter **Einstellungen → Mot
 - **SVG** (am besten): gefüllte Flächen werden zu Konturen, Weiß gilt als Loch, Linien ohne Füllung als
   Gravur. Text bitte vorher in Pfade umwandeln.
 - **PNG**: wird nachgezeichnet. Dunkel = Motiv, hell oder transparent = Hintergrund. Ist es
-  andersherum, „Farben umkehren“ anhaken. JPG geht nicht, vorher als PNG speichern.
+  andersherum, „Farben umkehren“ anhaken. JPG und HEIC werden genauso nachgezeichnet.
 
 In der Vorschau ziehst du ein Motiv mit der Maus an seinen Platz, die Ecke ändert die Größe, der Punkt
 oben dreht es (mit Shift in 15°-Schritten), Pfeiltasten schieben fein, Entf entfernt. Je Motiv wählst
@@ -388,6 +388,22 @@ python3 cli.py --model motiv_schild -O 'motive=[{"id": "herz", "y": 10, "groesse
 
 Eigene Motive liegen unter `~/Library/Application Support/Steckwerk/Motive` (Mac) bzw.
 `~/.steckwerk/motive`, oder im Ordner aus `$STECKWERK_MOTIVE`.
+
+## Eigene Gravur: Fotos, Logos und Muster
+
+Auf **jedes Teil jedes Modells** setzt du im Inspektor unter **Eigene Gravur** ein Foto, ein Logo, ein
+Motiv oder eines von 18 Mustern (Mandala, Blume des Lebens, Spitze, Ranken, Schneeflocken, Waben …).
+Fotos (JPG, PNG, HEIC) werden zur Bild-Ebene im SVG – als feine Fotogravur, Graustufen für XCS,
+Schwarzweiß-Logo oder Skizze, in Rechteck, Oval, Kreis, Herz oder mit weichem Rand. Gravuren laufen nie
+über Schnitte oder Steckverbindungen. Mehr im Wiki: [Eigene Gravur](docs/wiki/Eigene-Gravur.md).
+
+![Muster](docs/wiki/medien/gravur-muster.png)
+
+```bash
+python3 cli.py --bild-import oma.jpg
+python3 cli.py --model ornament --gravur '{"quelle": "bild", "bild": "oma-3f2a1c", "form": "oval"}' --out out
+python3 cli.py --model wichtelhaus --gravur '{"quelle": "muster", "muster": "ranken", "teil": "alle"}' --out out
+```
 
 ## Assistent und Motive zeichnen (ab 2.3.0)
 

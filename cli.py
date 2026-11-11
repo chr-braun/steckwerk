@@ -22,6 +22,9 @@ Beispiele
   python cli.py --motiv-import katze.svg       (eigenes Motiv in die Motiv-Bibliothek, auch PNG)
   python cli.py --model motiv_aufsteller -O motive='[{"id": "stern", "x": 0, "y": 10, "groesse": 60}]' --out out
   python cli.py --model motiv_silhouette -O motiv=katze --height 150 --out out
+  python cli.py --bild-import oma.jpg            (Foto/Logo für die Bild-Gravur)
+  python cli.py --model ornament --gravur '{"quelle": "bild", "bild": "oma-3f2a1c", "form": "oval"}' --out out
+  python cli.py --model wichtelhaus --gravur '{"quelle": "muster", "muster": "ranken", "teil": "alle"}' --out out
   python cli.py --konfigurator                 (fragt alles Schritt für Schritt ab)
   python webui.py                              (Weboberfläche im Browser)
   python cli.py --config meine_config.yaml --model alle --preview --out out
@@ -29,6 +32,7 @@ Beispiele
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shlex
 import sys
@@ -120,6 +124,14 @@ def parse_args(argv=None) -> argparse.Namespace:
     g.add_argument("--motiv-name", metavar="NAME", default="", help="Name des importierten Motivs")
     g.add_argument("--motiv-umkehren", action="store_true", help="PNG: helles Motiv auf dunklem Grund")
     g.add_argument("--motiv-entfernen", metavar="ID", help="eigenes Motiv aus der Bibliothek löschen")
+    g = ap.add_argument_group("Eigene Gravuren: Fotos, Logos, Motive, Muster – auf jedem Modell")
+    g.add_argument("--gravur", action="append", default=[], metavar="JSON",
+                   help='Gravur hinzufügen, mehrfach möglich, z. B. \'{"quelle": "muster", "muster": "mandala"}\' '
+                        'oder \'{"quelle": "bild", "bild": "oma-3f2a1c", "form": "oval"}\'')
+    g.add_argument("--bilder", action="store_true", help="Bild-Bibliothek (Fotos/Logos) und Muster auflisten")
+    g.add_argument("--bild-import", metavar="DATEI", help="Foto oder Logo (PNG, JPG, HEIC …) in die Bild-Bibliothek")
+    g.add_argument("--bild-name", metavar="NAME", default="", help="Name des importierten Bilds")
+    g.add_argument("--bild-entfernen", metavar="ID", help="Bild aus der Bibliothek löschen")
     g = ap.add_argument_group("Erweiterungspakete (siehe PAKETE.md)")
     g.add_argument("--pakete", action="store_true", help="installierte Pakete auflisten")
     g.add_argument("--paket-installieren", metavar="DATEI", help="Paket (.swpaket oder Ordner) prüfen und installieren")
@@ -327,6 +339,33 @@ def konfigurator(inp: Callable[[str], str] = input, out: Callable[[str], None] =
 # Hauptablauf
 # ---------------------------------------------------------------------------
 
+def bild_command(a) -> Optional[int]:
+    """--bilder / --bild-*: Bild-Bibliothek für Bild-Gravuren verwalten. None = kein Bildbefehl."""
+    import bilder
+    from models import _muster
+    try:
+        if a.bilder:
+            for b in bilder.library():
+                print(f"  {b['id']:<30} {b['name']:<24} {b['w']}×{b['h']} px")
+            print(f"Eigene Bilder liegen in: {bilder.user_dir()}")
+            print("Muster: " + ", ".join(k for k, _ in _muster.MUSTER))
+            print("Rastermodi: " + ", ".join(k for k, _ in bilder.MODI) + " · Formen: " + ", ".join(k for k, _ in bilder.FORMEN))
+            return 0
+        if a.bild_import:
+            b = bilder.import_file(a.bild_import, a.bild_name)
+            print(f"Bild „{b['name']}“ importiert als {b['id']} ({b['w']}×{b['h']} Pixel)")
+            print(f"Verwenden: python3 cli.py --model ornament --gravur '{{\"quelle\": \"bild\", \"bild\": \"{b['id']}\"}}' --out out")
+            return 0
+        if a.bild_entfernen:
+            bilder.remove(a.bild_entfernen)
+            print(f"Entfernt: {a.bild_entfernen}")
+            return 0
+    except (bilder.BildFehler, OSError) as e:
+        print(f"FEHLER: {e}", file=sys.stderr)
+        return 2
+    return None
+
+
 def motiv_command(a) -> Optional[int]:
     """--motive / --motiv-*: Motiv-Bibliothek verwalten. None = kein Motivbefehl."""
     import motive
@@ -450,6 +489,9 @@ def run(argv=None, inp: Callable[[str], str] = input) -> int:
     mot = motiv_command(a)
     if mot is not None:
         return mot
+    bld = bild_command(a)
+    if bld is not None:
+        return bld
     if a.check_svg:
         cfg = make_config(a)
         ok = True
@@ -462,6 +504,16 @@ def run(argv=None, inp: Callable[[str], str] = input) -> int:
     try:
         cfg = make_config(a)
         assemblies = build_assemblies(model_from_args(a), params_from_args(a), cfg)
+        if a.gravur:
+            import gravur
+            specs = []
+            for g in a.gravur:
+                try:
+                    v = json.loads(g)
+                except ValueError:
+                    raise ValueError(f"--gravur: kein gültiges JSON: {g}")
+                specs.extend(v if isinstance(v, list) else [v])
+            assemblies = gravur.anwenden(assemblies, specs)
     except (ConfigError, ValueError) as e:
         print(f"FEHLER  [Parameter] {e}", file=sys.stderr)
         return 2
