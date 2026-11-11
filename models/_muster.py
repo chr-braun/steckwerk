@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 import random
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 from steckwerk import Point, dist
 from models import _deko as dk

@@ -34,7 +34,7 @@ import tempfile
 import threading
 import zlib
 from collections import OrderedDict
-from typing import Callable, Dict, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import motive as mt
 
@@ -700,6 +700,11 @@ def _rechnen(b: dict, W: int, H: int, ppmm: float, modus: str, helligkeit: float
     if al is not None:
         for i, a in enumerate(al):
             if a < 128:
+                px[i] = 255
+                a_out[i] = 0
+    if weich is not None:
+        for i, f in enumerate(weich):
+            if f == 0:
                 px[i] = 255
                 a_out[i] = 0
     return png_bytes(W, H, bytes(px), bytes(a_out), ppmm)

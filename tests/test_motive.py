@@ -151,6 +151,8 @@ def test_library_import_list_remove(bib):
     with pytest.raises(mt.MotivFehler, match="gibt es nicht"):
         mt.load("../etc/passwd")
     with pytest.raises(mt.MotivFehler, match="Nur SVG"):
+        mt.import_bytes(b"kein bild", "x.bin")
+    with pytest.raises(mt.MotivFehler):                    # kaputtes GIF: verständliche Meldung statt Absturz
         mt.import_bytes(b"GIF89a", "x.gif")
 
 
