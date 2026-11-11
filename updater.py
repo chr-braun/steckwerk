@@ -194,6 +194,13 @@ def fetch(url: str, limit: int = MAX_DATEI, token: Optional[str] = None) -> byte
         with urllib.request.urlopen(req, timeout=30, context=_ssl_context() if url.startswith("https") else None) as r:
             data = r.read(limit + 1)
     except urllib.error.HTTPError as e:
+        if "Authorization" in headers and e.code in (401, 403, 404):
+            # Das Repo ist öffentlich: ein alter oder abgelaufener Schlüssel (aus der Zeit, als es privat war)
+            # lässt GitHub mit 404 antworten. Dann ohne Schlüssel noch einmal versuchen.
+            try:
+                return fetch(url, limit, token="")
+            except UpdateFehler:
+                pass
         if e.code == 404:
             hint = (" Ist das Repo privat? Dann unter „Updates → Einstellungen“ einen Lese-Schlüssel eintragen."
                     if host in GITHUB_HOSTS and not tok else "")
