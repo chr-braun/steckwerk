@@ -29,8 +29,8 @@
     ],
     "mac": {
       "datei": "Steckwerk-2.12.0-macOS.zip",
-      "sha256": "55d73fa460dcadebc563659e9c04b56f3b99ce0f5c368ee64acec25926ade16d",
-      "groesse": 551146
+      "sha256": "6c6cefa310e8177aca744c4ac4bb08f5ad84b24976cf0ddf552de1174d483b7f",
+      "groesse": 535101
     }
   },
   "pakete": [
@@ -390,6 +390,73 @@
       ]
     }
   ],
+  "bereiche": [
+    {
+      "id": "feste",
+      "name": "Feste und Jahreszeiten",
+      "name_en": "Seasons and holidays",
+      "text": "Für Advent, Weihnachten und Halloween.",
+      "text_en": "For Advent, Christmas and Halloween.",
+      "pakete": [
+        "weihnacht",
+        "wichtel",
+        "halloween"
+      ]
+    },
+    {
+      "id": "zuhause",
+      "name": "Zuhause und Geschenke",
+      "name_en": "Home and gifts",
+      "text": "Rahmen, Schmuck und Bilder zum Verschenken.",
+      "text_en": "Frames, jewellery and pictures to give away.",
+      "pakete": [
+        "wohnen",
+        "schmuck",
+        "ebenen"
+      ]
+    },
+    {
+      "id": "spielen",
+      "name": "Spielen und Bewegen",
+      "name_en": "Play and motion",
+      "text": "Holzspiele und Spielzeug, das sich bewegt.",
+      "text_en": "Wooden games and toys that move.",
+      "pakete": [
+        "spiele",
+        "bewegung"
+      ]
+    },
+    {
+      "id": "formen",
+      "name": "Formen und Kunst",
+      "name_en": "Shapes and art",
+      "text": "Berechnete Skulpturen.",
+      "text_en": "Computed sculptures.",
+      "pakete": [
+        "formen"
+      ]
+    },
+    {
+      "id": "markt",
+      "name": "Laden und Markt",
+      "name_en": "Shop and market",
+      "text": "Für den Verkauf im Laden oder am Stand.",
+      "text_en": "For selling in a shop or at a stall.",
+      "pakete": [
+        "verkauf"
+      ]
+    },
+    {
+      "id": "basis",
+      "name": "Basis",
+      "name_en": "Basics",
+      "text": "Kommt mit jedem Paket.",
+      "text_en": "Comes with every package.",
+      "pakete": [
+        "verzierungen"
+      ]
+    }
+  ],
   "desktop": {
     "version": "2.12.0",
     "datum": "2026-11-11",
@@ -411,8 +478,8 @@
     ],
     "mac": {
       "datei": "Steckwerk-Desktop-2.12.0-macOS.zip",
-      "sha256": "92ee1760564e923b68286f10aecfd0dac6108926f878f7cbd5119b50609c8855",
-      "groesse": 2453866
+      "sha256": "b59cd8392f345771cd1fc3dff68eed34cd820d748afa17a6104b10f2843214ea",
+      "groesse": 2446573
     }
   }
 }
