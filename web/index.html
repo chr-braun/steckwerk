@@ -222,6 +222,9 @@ details.dis .in { padding: 0 0 6px 16px; }
 .mthumb svg path { fill: var(--ink); fill-rule: evenodd; }
 .mthumb svg polyline { fill: none; stroke: var(--ink); stroke-width: 0.03; }
 .mthumb span { font-size: 10.5px; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mthumb.foto img { width: 100%; height: 40px; object-fit: contain; display: block; }
+.grav-add { margin: 8px 0 4px; gap: 6px; }
+.linkish.danger { color: var(--bad); }
 .mthumb .x { position: absolute; top: 1px; right: 3px; font-size: 13px; color: var(--ink3); background: none; border: 0; padding: 0 2px; }
 .mthumb .x:hover { color: var(--bad); }
 .mv-stage { border: 1px solid var(--sep); border-radius: 7px; background: var(--content); touch-action: none; margin-top: 4px; }
@@ -865,7 +868,7 @@ details.dis .in { padding: 0 0 6px 16px; }
   }
   const S = {
     schema: null, model: store.get("model") || "wichtelhaus", params: store.get("params") || {},
-    config: store.get("config") || {}, result: null, asm: 0, sheet: 0, timer: null, ctrl: null, seq: 0,
+    config: store.get("config") || {}, grav: store.get("gravuren") || {}, result: null, asm: 0, sheet: 0, timer: null, ctrl: null, seq: 0,
   };
 
   // ------------------------------------------------------------------ Formular
@@ -892,7 +895,7 @@ details.dis .in { padding: 0 0 6px 16px; }
     }
     const wrap = document.createElement("div");
     wrap.className = "field" + (p.type === "text" && !onChange.cfg ? " wide" : "");
-    const id = "f-" + (onChange.cfg ? "cfg-" : "") + p.key;
+    const id = "f-" + (onChange.cfg ? "cfg-" : "") + (onChange.prefix || "") + p.key;
     if (!shown(p, values)) wrap.hidden = true;
     const row = document.createElement("div"); row.className = "r";
     const lab = document.createElement("label");
@@ -1067,7 +1070,7 @@ details.dis .in { padding: 0 0 6px 16px; }
     if (!ps.length) {
       const p = document.createElement("p"); p.className = "model-desc";
       p.textContent = "Keine Einstellungen – alles in Standardgröße. Material und Platte stellst du in den Einstellungen ein.";
-      f.append(p); return;
+      f.append(p); gravurBlock(f); return;
     }
     const els = [], sections = new Map(), blocks = new Map();
     const whenKeys = new Set(ps.flatMap((p) => Object.keys(p.when || {})));
@@ -1125,6 +1128,200 @@ details.dis .in { padding: 0 0 6px 16px; }
       sec.inner.append(el); sec.ps.push(p);
     }
     refresh();
+    gravurBlock(f);
+  }
+
+  // ------------------------------------------------------------------ Eigene Gravur (Foto, Motiv, Muster)
+  // Für jedes Modell: Liste in S.grav[model]; der Server setzt sie auf das gewählte Teil (gravur.py).
+  function gravList() { const l = S.grav[S.model]; return Array.isArray(l) ? l : []; }
+  function gravSave(list, rerender) {
+    S.grav[S.model] = list; store.set("gravuren", S.grav);
+    if (rerender !== false) renderParams();
+    schedule();
+  }
+  function gravReady(g) {
+    return g.quelle === "muster" || (g.quelle === "bild" && g.bild && (S.schema.bilder || []).some((b) => b.id === g.bild))
+      || (g.quelle === "motiv" && g.motiv && motifById(g.motiv));
+  }
+  function gravForRequest() { return gravList().filter((g) => g.aktiv !== false && gravReady(g)); }
+  function gravNew(q) {
+    const g = { quelle: q, teil: "auto", groesse: 0, x: 0, y: 0, drehung: 0, spiegeln: false, rand: 1.5 };
+    if (q === "bild") Object.assign(g, { bild: ((S.schema.bilder || [])[0] || {}).id || "", modus: "fehlerstreuung", form: "rechteck",
+      helligkeit: 0, kontrast: 0, gamma: 1, invertieren: false, aufloesung: 10 });
+    if (q === "motiv") Object.assign(g, { motiv: "stern", art: "raster", schraffur: 0.2, aufloesung: 10 });
+    if (q === "muster") Object.assign(g, { muster: "mandala", abstand: 6, form: "rechteck", seed: 1 });
+    return g;
+  }
+  function gravTeile() {
+    const seen = new Map();
+    for (const a of (S.result && S.result.model === S.model ? S.result.assemblies || [] : []))
+      for (const t of a.teile || []) if (!seen.has(t.name)) seen.set(t.name, t);
+    return [...seen.values()];
+  }
+  const opt = (lst) => lst.map((o) => (typeof o === "string" ? { value: o, label: o } : o));
+  function gravTitle(g) {
+    const o = S.schema.gravur;
+    if (g.quelle === "bild") { const b = (S.schema.bilder || []).find((x) => x.id === g.bild); return "Foto · " + (b ? b.name : "bitte wählen"); }
+    if (g.quelle === "motiv") { const m = motifById(g.motiv); return "Motiv · " + (m ? m.name : "bitte wählen"); }
+    const m = o.muster.find((x) => x.value === g.muster); return "Muster · " + (m ? m.label : g.muster);
+  }
+  function fotoTile(b, pressed, onClick, onDelete) {
+    const t = document.createElement("div");
+    t.className = "mthumb foto"; t.tabIndex = 0; t.setAttribute("role", "button"); t.title = `${b.name} (${b.w} × ${b.h} Pixel)`;
+    t.setAttribute("aria-pressed", String(!!pressed));
+    const img = document.createElement("img"); img.src = b.vorschau; img.alt = "";
+    const n = document.createElement("span"); n.textContent = b.name;
+    t.append(img, n);
+    t.addEventListener("click", () => onClick(b));
+    t.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(b); } });
+    if (onDelete) {
+      const x = document.createElement("button"); x.type = "button"; x.className = "x"; x.textContent = "×"; x.title = "Bild löschen";
+      x.addEventListener("click", (e) => { e.stopPropagation(); onDelete(b); });
+      t.append(x);
+    }
+    return t;
+  }
+  async function fotoRemove(b) {
+    if (S.confirmDel !== b.id) { S.confirmDel = b.id; toast(`Nochmal auf × tippen, um „${b.name}“ zu löschen`); setTimeout(() => (S.confirmDel = null), 4000); return; }
+    S.confirmDel = null;
+    try {
+      const d = await (await post("/api/foto-entfernen", { id: b.id })).json();
+      if (!d.ok) { toast(d.error || "Fehler"); return; }
+      S.schema.bilder = d.bilder; toast(d.message); renderParams(); schedule(0);
+    } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
+  }
+  // Foto im Browser in PNG umwandeln (JPG, HEIC, WebP … – was der Rechner anzeigen kann) und verkleinern:
+  // spart Upload und macht das Einlesen auch auf alten Rechnern schnell.
+  async function fotoAsPng(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image(); img.src = url; await img.decode();
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+      const ctx = c.getContext("2d"); ctx.imageSmoothingQuality = "high"; ctx.drawImage(img, 0, 0, c.width, c.height);
+      return c.toDataURL("image/png").split(",")[1] || "";
+    } catch { return null; } finally { URL.revokeObjectURL(url); }
+  }
+  async function fotoUpload(file, idx) {
+    if (!file) return;
+    if (/svg/i.test(file.type) || /\.svg$/i.test(file.name)) { toast("SVG bitte unter „Motiv“ hinzufügen – Vektorgrafiken bleiben gestochen scharf"); return; }
+    if (file.size > 25 * 1024 * 1024) { toast("Datei zu groß (höchstens 25 MB)"); return; }
+    toast("Bild wird eingelesen …");
+    try {
+      let data = await fotoAsPng(file), filename = file.name.replace(/\.[^.]+$/, "") + ".png";
+      if (data === null) {                                      // Browser kann es nicht anzeigen: Server versucht es
+        data = await new Promise((res, rej) => { const rd = new FileReader(); rd.onload = () => res(String(rd.result).split(",")[1] || ""); rd.onerror = rej; rd.readAsDataURL(file); });
+        filename = file.name;
+      }
+      const d = await (await post("/api/foto-import", { filename, name: file.name.replace(/\.[^.]+$/, ""), data })).json();
+      if (!d.ok) { toast(d.error || "Import fehlgeschlagen"); return; }
+      S.schema.bilder = d.bilder; toast(d.message);
+      const list = gravList().slice();
+      if (idx != null && list[idx] && list[idx].quelle === "bild") list[idx] = Object.assign({}, list[idx], { bild: d.id });
+      else { const g = gravNew("bild"); g.bild = d.id; list.push(g); S.gravOpen = list.length - 1; }
+      gravSave(list);
+    } catch { toast("Steckwerk antwortet nicht. " + restartHint()); }
+  }
+  function fotoPicker(idx) {
+    const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*,.heic,.heif"; inp.hidden = true;
+    inp.addEventListener("change", () => { const f = inp.files[0]; inp.remove(); fotoUpload(f, idx); });
+    document.body.append(inp); inp.click();
+  }
+
+  function gravurBlock(f) {
+    if (!S.schema.gravur) return;
+    const o = S.schema.gravur, list = gravList();
+    const h = document.createElement("h5"); h.textContent = "Eigene Gravur";
+    const grp = document.createElement("div"); grp.className = "grp grav";
+    f.append(h, grp);
+    list.forEach((g, i) => grp.append(gravEntry(g, i, o)));
+    const bar = document.createElement("div"); bar.className = "row grav-add";
+    for (const [q, t] of [["bild", "+ Foto/Logo"], ["motiv", "+ Motiv"], ["muster", "+ Muster"]]) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "btn ghost small"; b.textContent = t;
+      b.disabled = list.length >= (o.max || 8);
+      b.addEventListener("click", () => {
+        if (q === "bild" && !(S.schema.bilder || []).length) { fotoPicker(null); return; }
+        const l = gravList().slice(); l.push(gravNew(q)); S.gravOpen = l.length - 1; gravSave(l);
+      });
+      bar.append(b);
+    }
+    const help = document.createElement("div"); help.className = "help";
+    help.textContent = list.length ? "Fotos werden als Bild-Ebene graviert, Motive und Muster als Linien – nie über Schnitte oder Steckverbindungen."
+      : "Eigenes Foto, Logo, Motiv oder Muster auf ein Teil gravieren – geht bei jedem Modell.";
+    grp.append(bar, help);
+  }
+
+  function gravEntry(g, i, o) {
+    const d = document.createElement("details"); d.className = "dis";
+    d.open = S.gravOpen === i;
+    d.addEventListener("toggle", () => { if (d.open) S.gravOpen = i; else if (S.gravOpen === i) S.gravOpen = null; });
+    const sm = document.createElement("summary");
+    const sum = document.createElement("span"); sum.className = "sum";
+    sum.textContent = g.aktiv === false ? "aus" : (g.teil === "auto" ? "größtes Teil" : g.teil === "alle" ? "alle Teile" : g.teil);
+    sm.append(document.createTextNode(`${i + 1} · ${gravTitle(g)}`), sum);
+    const inner = document.createElement("div"); inner.className = "in";
+    d.append(sm, inner);
+    const set = (k, v) => {
+      const l = gravList().slice(); l[i] = Object.assign({}, l[i], { [k]: v });
+      const re = ["quelle", "art", "teil", "form", "modus", "aktiv"].includes(k);
+      gravSave(l, re);
+      if (!re) sm.firstChild.textContent = `${i + 1} · ${gravTitle(l[i])}`;
+    };
+    set.prefix = `grav${i}-`;
+    const F = (p) => inner.append(fieldEl(p, g[p.key] ?? p.default, set, g));
+    // Quelle
+    if (g.quelle === "bild") {
+      const wrap = document.createElement("div"); wrap.className = "field wide";
+      const grid = document.createElement("div"); grid.className = "mgrid";
+      for (const b of S.schema.bilder || [])
+        grid.append(fotoTile(b, b.id === g.bild, (bb) => { set("bild", bb.id); renderParams(); }, fotoRemove));
+      const up = document.createElement("button"); up.type = "button"; up.className = "linkish"; up.textContent = "Foto oder Logo hinzufügen …";
+      up.addEventListener("click", () => fotoPicker(i));
+      wrap.append(grid, up); inner.append(wrap);
+      F({ key: "modus", label: "Gravur", type: "select", options: o.modi, default: "fehlerstreuung" });
+      F({ key: "form", label: "Bildform", type: "select", options: o.formen, default: "rechteck" });
+      F({ key: "helligkeit", label: "Helligkeit", type: "number", min: -100, max: 100, step: 5, default: 0 });
+      F({ key: "kontrast", label: "Kontrast", type: "number", min: -100, max: 100, step: 5, default: 0 });
+      F({ key: "gamma", label: "Gamma", type: "number", min: 0.3, max: 3, step: 0.1, default: 1, help: "kleiner = dunkler in den Mitteltönen" });
+      F({ key: "invertieren", label: "Umkehren (Negativ)", type: "bool", default: false });
+      F({ key: "aufloesung", label: "Auflösung", type: "select", default: 10,
+          options: o.aufloesungen.map((v) => ({ value: v, label: `${String(v).replace(".", ",")} Punkte/mm (${Math.round(v * 25.4)} dpi)` })) });
+    } else if (g.quelle === "motiv") {
+      const wrap = document.createElement("div"); wrap.className = "field wide";
+      const grid = document.createElement("div"); grid.className = "mgrid";
+      for (const m of motifs()) grid.append(motifTile(m, m.id === g.motiv, (mm) => { set("motiv", mm.id); renderParams(); }));
+      const up = document.createElement("label"); up.className = "linkish"; up.htmlFor = "motiv-file"; up.textContent = "Eigenes Motiv hochladen (SVG, PNG) …";
+      wrap.append(grid, up); inner.append(wrap);
+      F({ key: "art", label: "Gravur", type: "select", options: o.motiv_arten, default: "raster" });
+      if (g.art === "flaeche") F({ key: "schraffur", label: "Linienabstand", type: "number", min: 0.08, max: 3, step: 0.05, unit: "mm", default: 0.2 });
+    } else {
+      F({ key: "muster", label: "Muster", type: "select", options: o.muster, default: "mandala" });
+      F({ key: "abstand", label: "Rapport", type: "number", min: 1.5, max: 60, step: 0.5, unit: "mm", default: 6, help: "kleiner = feiner und detailreicher" });
+      F({ key: "seed", label: "Variante", type: "number", min: 0, max: 99999, step: 1, default: 1 });
+    }
+    // Lage
+    const teile = gravTeile();
+    const tOpts = [{ value: "auto", label: "größtes Teil" }, { value: "alle", label: "alle Teile" }]
+      .concat(teile.map((t) => ({ value: t.name, label: `${t.name} (${Math.round(t.w)} × ${Math.round(t.h)})` })));
+    if (!tOpts.some((x) => x.value === g.teil)) tOpts.push({ value: g.teil, label: g.teil });
+    F({ key: "teil", label: "Auf Teil", type: "select", options: tOpts, default: "auto" });
+    F({ key: "groesse", label: g.quelle === "muster" ? "Bereich" : "Größe", type: "number", min: 0, max: 1000, step: 1, unit: "mm", default: 0,
+        help: g.quelle === "muster" ? "0 = ganze Fläche" : "längere Seite; 0 = passend" });
+    if (g.quelle === "muster" && g.groesse > 0) F({ key: "form", label: "Bereichsform", type: "select", options: o.bereiche, default: "rechteck" });
+    F({ key: "x", label: "nach rechts", type: "number", min: -1000, max: 1000, step: 1, unit: "mm", default: 0 });
+    F({ key: "y", label: "nach oben", type: "number", min: -1000, max: 1000, step: 1, unit: "mm", default: 0 });
+    F({ key: "drehung", label: "Drehung", type: "number", min: -360, max: 360, step: 5, unit: "°", default: 0 });
+    if (g.quelle !== "muster") F({ key: "spiegeln", label: "Spiegeln", type: "bool", default: false });
+    F({ key: "rand", label: "Randabstand", type: "number", min: 0, max: 20, step: 0.5, unit: "mm", default: 1.5 });
+    const row = document.createElement("div"); row.className = "row"; row.style.margin = "6px 0";
+    const onoff = document.createElement("button"); onoff.type = "button"; onoff.className = "linkish";
+    onoff.textContent = g.aktiv === false ? "Einschalten" : "Ausschalten";
+    onoff.addEventListener("click", () => set("aktiv", g.aktiv === false));
+    const del = document.createElement("button"); del.type = "button"; del.className = "linkish danger"; del.textContent = "Entfernen";
+    del.addEventListener("click", () => { const l = gravList().slice(); l.splice(i, 1); S.gravOpen = null; gravSave(l); });
+    row.append(onoff, del); inner.append(row);
+    return d;
   }
 
   function dice() {                                      // Gestaltung zufällig wählen
@@ -1495,7 +1692,12 @@ details.dis .in { padding: 0 0 6px 16px; }
     fetch(path, Object.assign({ method: "POST", headers: HEADERS, body: JSON.stringify(Object.assign({ lang: LANG }, body || {})) }, extra || {}));
   const isApp = () => !!(S.schema && S.schema.app);
   const restartHint = () => isApp() ? "Starte die Steckwerk-App neu." : "Läuft python3 webui.py noch?";
-  function request() { return { model: S.model, params: current(), config: Object.assign(cfgDefaults(), S.config) }; }
+  function request() {
+    const r = { model: S.model, params: current(), config: Object.assign(cfgDefaults(), S.config) };
+    const g = S.schema ? gravForRequest() : [];
+    if (g.length) r.gravuren = g;
+    return r;
+  }
 
   function schedule(delay) {
     if (!$("live").checked && delay !== 0) return;
@@ -1525,6 +1727,8 @@ details.dis .in { padding: 0 0 6px 16px; }
       if (S.asm >= (data.assemblies || []).length) S.asm = 0;
       S.sheet = 0;
       render();
+      const tk = JSON.stringify(gravTeile().map((t) => t.name));
+      if (gravList().length && tk !== S.gravTeileKey && !document.activeElement?.closest?.("#fields")) { S.gravTeileKey = tk; renderParams(); }
     } catch (e) {
       if (e.name === "AbortError") return;
       S.result = { ok: false, error: "Steckwerk antwortet nicht. " + restartHint(), assemblies: [] };
