@@ -126,9 +126,11 @@ def test_garten_ohne_platte_und_einzeln(mods):
 
 
 def test_rechenzeit(mods):
-    """Auch auf schwachen Rechnern flott: alle sechs zusammen bauen hier deutlich unter drei Sekunden."""
+    """Auch auf schwachen Rechnern flott: alle sechs zusammen bauen lokal in rund zwei Sekunden.
+    Die Grenze lässt Luft für langsame CI-Läufer (Python 3.9 auf GitHub brauchte 4,7 s) und fängt
+    trotzdem jeden groben Rückschritt ab."""
     cfg = Config(thickness=3.0)
     t = time.perf_counter()
     for n in NEU:
         mods[n].build(cfg, **_std(mods[n]))
-    assert time.perf_counter() - t < 3.0
+    assert time.perf_counter() - t < 8.0
