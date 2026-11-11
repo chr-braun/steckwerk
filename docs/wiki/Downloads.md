@@ -1,35 +1,23 @@
 # Downloads
 
-Hier liegt alles zum Herunterladen, Stand 26.10.2026.
-
 ## Programm
 
-| Datei | Was |
+| Was | Wo |
 |---|---|
-| [Steckwerk-2.6.0-macOS.zip](dateien/Steckwerk-2.6.0-macOS.zip) | Mac-App, aktuelle Version. Installieren: siehe [Installation](Installation.md). |
+| **Steckwerk Desktop** (empfohlen, ab macOS 14, Apple-Chip und Intel) | Unter [Releases](https://github.com/chr-braun/steckwerk/releases/latest) die Datei `Steckwerk-Desktop-<Version>-macOS.zip`. Anleitung: [Steckwerk Desktop](Steckwerk-Desktop.md). |
+| Mac-App im Browser-Stil | Im selben Release `Steckwerk-<Version>-macOS.zip`. Installieren: siehe [Installation](Installation.md). |
+| Browser-Oberfläche für Windows, Linux und ältere Macs | Repo laden und `python3 webui.py` starten, siehe [Installation](Installation.md). |
 
-Ältere Versionen brauchst du nicht: Die App aktualisiert sich selbst über [Updates](Updates.md).
-
-## Steckwerk Desktop (native App)
-
-Die App ohne Browser wird bei jedem Push automatisch gebaut. Auf GitHub unter
-[Actions → macOS Desktop](https://github.com/chr-braun/steckwerk/actions/workflows/macos-desktop.yml)
-den neuesten erfolgreichen Lauf öffnen und das Artefakt **Steckwerk-Desktop-macOS-dmg** laden
-(GitHub-Anmeldung nötig, 14 Tage verfügbar). Anleitung: [Steckwerk Desktop](Steckwerk-Desktop.md).
+Auf der Releases-Seite stehen immer die zwei neuesten Versionen. Ältere brauchst du nicht: Die App
+aktualisiert sich selbst über [Updates](Updates.md). Jede alte Version bleibt als Git-Tag im Quellcode
+auffindbar. Die [Webseite](https://chr-braun.github.io/steckwerk/) hat einen Download-Knopf, der immer auf die
+neueste Version zeigt.
 
 ## Pakete
 
-Laden in der App unter Einstellungen → Pakete → **Paket laden …**
-
-| Datei | Paket |
-|---|---|
-| [verzierungen-2.0.0.swpaket](dateien/verzierungen-2.0.0.swpaket) | Grundlagen 2.0.0 (zuerst laden, alle anderen brauchen es) |
-| [wohnen-1.0.0.swpaket](dateien/wohnen-1.0.0.swpaket) | Wohnen 1.0.0 |
-| [weihnacht-2.0.0.swpaket](dateien/weihnacht-2.0.0.swpaket) | Weihnachten 2.0.0 |
-| [halloween-1.3.0.swpaket](dateien/halloween-1.3.0.swpaket) | Halloween 1.3.0 |
-| [ebenen-1.2.0.swpaket](dateien/ebenen-1.2.0.swpaket) | Mehrlagig 1.2.0 |
-| [wichtel-1.0.1.swpaket](dateien/wichtel-1.0.1.swpaket) | Wichtel 1.0.1 |
-
-Über [Updates](Updates.md) geht es einfacher: Unter Einstellungen → Pakete siehst du alle Pakete mit Beschreibung und kannst sie mit einem Klick installieren; „Grundlagen“ kommt automatisch mit.
+In der App unter Einstellungen → **Pakete**: Dort stehen alle Themenpakete nach Bereichen, mit Beschreibung und
+**Installieren**-Knopf; „Grundlagen“ kommt automatisch mit. Die Dateien selbst liegen im
+[Update-Kanal](https://github.com/chr-braun/steckwerk/tree/updates/pakete) und lassen sich über
+**Paket laden …** auch von Hand installieren.
 
 Mehr zu den Paketen: [Pakete](Pakete.md).

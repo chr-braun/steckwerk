@@ -405,6 +405,9 @@ details.tech .in { padding-top: 6px; }
 .pk-h { margin: 6px 0 0; font-size: 12px; font-weight: 600; color: var(--ink2); }
 .upd-row .m { color: var(--ink2); font-size: 11px; margin-top: 2px; }
 .upd-row .acts { display: flex; gap: 8px; align-items: center; }
+.pk-bereich { margin: 14px 0 2px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--ink2); }
+.pk-bereich:first-child { margin-top: 2px; }
+.pk-bereich + .upd-row { border-top: 0; }
 .upd-set { border-top: 1px solid var(--sep); padding-top: 12px; display: grid; gap: 10px; }
 .upd-set input[type=password], .upd-set input[type=url] { width: 100%; font-family: var(--mono); font-size: 12px; }
 .upd-set .form > .l { align-self: center; }
@@ -2524,7 +2527,9 @@ details.tech .in { padding-top: 6px; }
     const kanal = (U.data && U.data.pakete) || [];
     const imKanal = Object.fromEntries(kanal.map((k) => [k.id, k]));
     if (!ps.length) box.append(mk("div", "upd-row", "Noch keine Pakete installiert."));
-    for (const p of ps) {
+    const rang = Object.fromEntries(kanal.map((k, i) => [k.id, i]));          // Reihenfolge wie im Katalog (nach Bereich)
+    const sortiert = ps.slice().sort((a, b) => (rang[a.id] ?? 999) - (rang[b.id] ?? 999));
+    for (const p of sortiert) {
       if (p.fehler) {
         const row = mk("div", "upd-row"), t = mk("div", "t");
         const neu = p.ersatz && imKanal[p.ersatz], da = p.ersatz && ps.some((q) => q.id === p.ersatz && !q.fehler);
@@ -2557,7 +2562,12 @@ details.tech .in { padding-top: 6px; }
     // Was es im Kanal sonst noch gibt – mit Beschreibung und Inhalt, direkt installierbar
     const frei = kanal.filter((k) => k.status === "neu" || k.status === "zu_neu" || (k.status === "update" && !ps.some((p) => p.id === k.id)));
     const kb = $("paket-kanal"); kb.textContent = "";
+    let bereich = null;
     for (const k of frei) {
+      if (k.bereich_name && k.bereich !== bereich) {      // Kanal ab 2.13.0: nach Bereichen gruppiert
+        bereich = k.bereich;
+        const h = mk("div", "pk-bereich", (LANG === "en" && k.bereich_name_en) || k.bereich_name); h.dataset.noI18n = ""; kb.append(h);
+      }
       const inhalt = (LANG === "en" && k.inhalt_en && k.inhalt_en.length) ? k.inhalt_en : k.inhalt;
       const alt = (k.ersetzt || []).map((id) => { const q = ps.find((p) => p.id === id); return q ? pkName(q) : id; });
       const ers = alt.length ? { tag: "update", tagText: "ersetzt " + alt.join(", ") } : null;

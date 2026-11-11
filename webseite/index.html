@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Steckwerk</title>
+<meta name="description" content="Steckwerk rechnet Lasercut-Vorlagen passend für dein Holz und deinen Laser: Wichtelhäuser, Christbaumschmuck, Spiele und mehr. Jede Datei wird vor dem Schneiden geprüft. Für den xTool M2 und jeden anderen Laser.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="stil.css">
+</head>
+<body>
+
+<header class="kopf" id="kopf">
+  <div class="rahmen">
+    <a class="wortmarke" href="#">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><path fill="var(--holz)" stroke="var(--tinte)" stroke-width="1.2" stroke-linejoin="round" d="M3 7h5v3h4V7h5v3h4V7h2v16H3z"/><path fill="none" stroke="var(--gravur)" stroke-width="1.2" stroke-linecap="round" d="M7 16h12M7 19.5h8"/></svg>
+      Steckwerk
+    </a>
+    <nav class="nav" aria-label="Seiten">
+      <a href="#ablauf" data-t="nav_ablauf">So geht’s</a>
+      <a href="#pakete" data-t="nav_pakete">Pakete</a>
+      <a href="#pruefung" data-t="nav_pruefung">Prüfung</a>
+      <a href="#laden" data-t="nav_laden">Laden</a>
+      <a href="pakete-bauen.html" data-t="nav_bauen">Pakete bauen</a>
+      <a href="https://github.com/chr-braun/steckwerk/tree/main/docs/wiki/Home.md" data-t="nav_anleitung">Anleitung</a>
+    </nav>
+    <div class="sprache" role="group" aria-label="Sprache">
+      <button type="button" id="sp-de" aria-pressed="true">DE</button>
+      <button type="button" id="sp-en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="einstieg">
+    <div class="rahmen">
+      <div>
+        <p class="marke" data-t="eyebrow">Lasercut-Vorlagen für den Mac</p>
+        <h1 data-t="h1" style="margin-top:14px">Vorlagen, die auf dein Holz passen.</h1>
+        <p class="unter" data-t="unter">Steckwerk rechnet Wichtelhäuser, Christbaumschmuck, Spiele und vieles mehr genau für deine Materialstärke und deinen Laser. Jede Datei wird geprüft, bevor sie geschrieben wird. Was durchgeht, passt beim ersten Schnitt.</p>
+        <div class="aktion">
+          <a class="knopf" id="laden-oben" href="https://github.com/chr-braun/steckwerk/releases/latest">
+            <svg viewBox="0 0 18 18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 2.5v9m-4-4 4 4 4-4M3 15.5h12"/></svg>
+            <span data-t="laden_mac">Für macOS laden</span>
+          </a>
+          <a class="knopf leise" href="#pakete" data-t="pakete_ansehen">Pakete ansehen</a>
+        </div>
+        <p class="version mono"><span data-t="version">Version</span> <span class="v-nr">{{VERSION}}</span> · macOS 14+ · <span data-t="kostenlos">kostenlos, MIT-Lizenz</span></p>
+      </div>
+      <div class="fenster">
+        <img src="bilder/app.webp" width="1600" height="1000" alt="Steckwerk Desktop mit einem Wichtelhaus auf der Platte, rechts die Maße, unten der Status Schnittfertig" data-t-alt="alt_app">
+      </div>
+    </div>
+  </section>
+
+  <div class="leiste" aria-label="Beispiele im echten Größenverhältnis" data-t-aria="leiste_aria">
+    <div class="rahmen">
+      <div class="stuecke" id="stuecke"></div>
+      <div class="lineal" aria-hidden="true"></div>
+      <div class="lineal-text mono" aria-hidden="true"><span>0</span><span data-t="lineal">alle Teile im Maßstab zueinander · Teilung 10 mm</span></div>
+    </div>
+  </div>
+
+  <section class="abschnitt" id="ablauf">
+    <div class="rahmen">
+      <div class="kopfzeile">
+        <h2 data-t="ablauf_h">Vom Einfall zur fertigen Schnittdatei.</h2>
+        <p data-t="ablauf_p">Kein CAD, keine Zinken von Hand. Du stellst ein, was du haben willst, Steckwerk zeichnet und prüft alle Teile und reicht sie an xTool Creative Space weiter.</p>
+      </div>
+      <div class="ablauf">
+        <div class="schritt">
+          <div class="fenster"><img src="bilder/app.webp" alt="" loading="lazy" style="--fokus: 100% 20%"></div>
+          <h3 data-t="s1_h">Vorlage wählen und einstellen</h3>
+          <p data-t="s1_p">Maße, Fenster, Gravuren und Namen ändern. Die Vorschau zeigt sofort, wie die Teile auf der Platte liegen.</p>
+        </div>
+        <div class="schritt">
+          <div class="fenster"><img src="bilder/pruefbericht.webp" alt="" loading="lazy"></div>
+          <h3 data-t="s2_h">Prüfbericht lesen</h3>
+          <p data-t="s2_p">Jedes Teil mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt.</p>
+        </div>
+        <div class="schritt">
+          <div class="fenster"><img src="bilder/ausgeben.webp" alt="" loading="lazy"></div>
+          <h3 data-t="s3_h">An xTool senden</h3>
+          <p data-t="s3_p">Als fertiges Projekt in xTool Creative Space öffnen, mit Ebenen für Schneiden und Ritzen. Oder SVG für jeden anderen Laser sichern.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rahmen"><div class="trenner"></div></div>
+
+  <section class="abschnitt" id="pakete">
+    <div class="rahmen">
+      <div class="kopfzeile">
+        <h2 data-t="pakete_h">Ein Paket je Thema.</h2>
+        <p data-t="pakete_p">Pakete installierst du in Steckwerk unter Einstellungen → Pakete mit einem Klick. Neue Versionen meldet Steckwerk von selbst.</p>
+      </div>
+      <div id="bereiche"></div>
+    </div>
+  </section>
+
+  <div class="rahmen"><div class="trenner"></div></div>
+
+  <section class="abschnitt" id="pruefung">
+    <div class="rahmen pruefung">
+      <div>
+        <h2 data-t="pruef_h">Geprüft, bevor der Laser startet.</h2>
+        <p data-t="pruef_p" style="color:var(--grau);font-size:1.08rem;margin-top:16px">Bei einem einzigen Fehler schreibt Steckwerk gar nichts. So landet keine Datei auf dem Laser, die du hinterher wegwirfst.</p>
+        <ul class="pruefliste">
+          <li><span class="mono" data-t="p1_k">Steckungen</span><span data-t="p1">Jeder Zinken findet seinen Schlitz, Breite und Tiefe passen zur Materialstärke.</span></li>
+          <li><span class="mono">Kerf</span><span data-t="p2">Die Schnittbreite ist eingerechnet, damit Steckungen stramm sitzen und nicht wackeln.</span></li>
+          <li><span class="mono" data-t="p3_k">Stege</span><span data-t="p3">Zu dünne Stellen, die beim Schneiden brechen oder verbrennen würden, fallen auf.</span></li>
+          <li><span class="mono" data-t="p4_k">Konturen</span><span data-t="p4">Jede Schnittlinie ist geschlossen und schneidet sich nicht selbst.</span></li>
+          <li><span class="mono" data-t="p5_k">Platte</span><span data-t="p5">Alles passt auf die Arbeitsfläche, sonst verteilt Steckwerk die Teile auf mehrere Platten.</span></li>
+        </ul>
+      </div>
+      <div class="fenster"><img src="bilder/pruefbericht.webp" width="1600" height="1000" loading="lazy" alt="Prüfbericht in Steckwerk mit Teiletabelle" data-t-alt="alt_pruef"></div>
+    </div>
+  </section>
+
+  <div class="rahmen"><div class="trenner"></div></div>
+
+  <section class="abschnitt" id="laden">
+    <div class="rahmen">
+      <div class="kopfzeile">
+        <h2 data-t="laden_h">Laden und loslegen.</h2>
+        <p data-t="laden_p">Steckwerk läuft komplett auf deinem Rechner, ohne Konto und ohne Cloud, auch auf älteren Macs.</p>
+      </div>
+      <div class="wege">
+        <div class="weg haupt">
+          <p class="marke" data-t="w1_m">Empfohlen</p>
+          <h3>Steckwerk Desktop</h3>
+          <p data-t="w1_p">Die native Mac-App. Ab macOS 14, für Apple-Chips und Intel. Updates für Programm und Pakete kommen direkt in der App.</p>
+          <a class="knopf" id="laden-unten" href="https://github.com/chr-braun/steckwerk/releases/latest"><span data-t="laden_mac">Für macOS laden</span></a>
+        </div>
+        <div class="weg">
+          <p class="marke" data-t="w2_m">Im Browser</p>
+          <h3 data-t="w2_h">Browser-Oberfläche</h3>
+          <p data-t="w2_p">Für Windows, Linux und ältere Macs. Braucht Python 3.8 oder neuer und startet mit <code>python3 webui.py</code>.</p>
+          <a class="knopf leise" href="https://github.com/chr-braun/steckwerk/blob/main/docs/wiki/Installation.md" data-t="w2_a">Anleitung</a>
+        </div>
+        <div class="weg">
+          <p class="marke" data-t="w3_m">Selbst bauen</p>
+          <h3 data-t="w3_h">Eigene Pakete</h3>
+          <p data-t="w3_p">Ein Paket ist ein Ordner mit etwas Python. Schritt für Schritt vom ersten Modell bis zum fertigen Paket.</p>
+          <a class="knopf leise" href="pakete-bauen.html" data-t="w3_a">So baust du ein Paket</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="fuss">
+  <div class="rahmen">
+    <span>Steckwerk · <span data-t="lizenz">MIT-Lizenz</span></span>
+    <nav aria-label="Weitere Links">
+      <a href="pakete-bauen.html" data-t="nav_bauen">Pakete bauen</a>
+      <a href="https://github.com/chr-braun/steckwerk" data-t="f_code">Quellcode</a>
+      <a href="https://github.com/chr-braun/steckwerk/blob/main/CHANGELOG.md" data-t="f_neu">Was ist neu</a>
+      <a href="https://github.com/chr-braun/steckwerk/tree/main/docs/wiki/Home.md" data-t="nav_anleitung">Anleitung</a>
+      <a href="https://github.com/chr-braun/steckwerk/issues/new/choose" data-t="f_fehler">Fehler melden</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var REPO = "https://github.com/chr-braun/steckwerk";
+  var FEED = "https://raw.githubusercontent.com/chr-braun/steckwerk/updates/feed.json";
+
+  // Paketübersicht nach Bereichen und Modellbilder: beim Bauen eingesetzt (packaging/webseite.py)
+  var DATEN = /*DATEN*/null;
+  DATEN.version = "{{VERSION}}";
+
+  var EN = {
+    nav_ablauf: "How it works", nav_pakete: "Packages", nav_pruefung: "Checks", nav_laden: "Download", nav_bauen: "Build packages", nav_anleitung: "Guide",
+    eyebrow: "Laser-cut templates for the Mac",
+    h1: "Templates that fit your wood.",
+    unter: "Steckwerk draws elf houses, Christmas ornaments, games and much more for your exact material thickness and laser. Every file is checked before it is written. What passes fits on the first cut.",
+    laden_mac: "Download for macOS", pakete_ansehen: "See packages", version: "Version", kostenlos: "free, MIT licence",
+    lineal: "all parts to scale · 10 mm divisions",
+    ablauf_h: "From idea to finished cut file.",
+    ablauf_p: "No CAD, no hand-drawn finger joints. You set what you want, Steckwerk draws and checks every part and hands it over to xTool Creative Space.",
+    s1_h: "Pick a template and adjust it", s1_p: "Change sizes, windows, engravings and names. The preview shows right away how the parts sit on the sheet.",
+    s2_h: "Read the check report", s2_p: "Every part with number, size and result, plus step-by-step assembly.",
+    s3_h: "Send to xTool", s3_p: "Open as a finished project in xTool Creative Space with layers for cutting and scoring. Or save SVG for any other laser.",
+    pakete_h: "One package per theme.",
+    pakete_p: "Install packages in Steckwerk under Settings → Packages with one click. Steckwerk tells you about new versions on its own.",
+    pruef_h: "Checked before the laser starts.",
+    pruef_p: "If there is a single error, Steckwerk writes nothing. No file reaches your laser that you would throw away afterwards.",
+    p1_k: "Joints", p1: "Every tab finds its slot, and width and depth match the material thickness.",
+    p2: "The kerf is compensated so joints sit tight and don’t wobble.",
+    p3_k: "Bridges", p3: "Spots too thin to survive cutting, or likely to burn, are flagged.",
+    p4_k: "Outlines", p4: "Every cut line is closed and never crosses itself.",
+    p5_k: "Sheet", p5: "Everything fits the work area, otherwise Steckwerk spreads the parts over several sheets.",
+    laden_h: "Download and get started.",
+    laden_p: "Steckwerk runs entirely on your computer, with no account and no cloud, older Macs included.",
+    w1_m: "Recommended", w1_p: "The native Mac app. macOS 14 or later, Apple silicon and Intel. Program and package updates arrive inside the app.",
+    w2_m: "In the browser", w2_h: "Browser version", w2_p: "For Windows, Linux and older Macs. Needs Python 3.8 or later and starts with <code>python3 webui.py</code>.", w2_a: "Guide",
+    w3_m: "Build your own", w3_h: "Your own packages", w3_p: "A package is a folder with a little Python. Step by step from your first model to a finished package.", w3_a: "How to build a package",
+    lizenz: "MIT licence", f_code: "Source code", f_neu: "What’s new", f_fehler: "Report a bug",
+    alt_app: "Steckwerk Desktop with an elf house on the sheet, sizes on the right and the status Ready to cut at the bottom",
+    alt_pruef: "Check report in Steckwerk with a table of parts",
+    leiste_aria: "Examples at true relative size", modelle: "models", modell: "model"
+  };
+  var DE = {};
+  document.querySelectorAll("[data-t]").forEach(function (el) { DE[el.dataset.t] = el.innerHTML; });
+  document.querySelectorAll("[data-t-alt]").forEach(function (el) { DE[el.dataset.tAlt] = el.alt; });
+  document.querySelectorAll("[data-t-aria]").forEach(function (el) { DE[el.dataset.tAria] = el.getAttribute("aria-label"); });
+  DE.modelle = "Modelle"; DE.modell = "Modell";
+
+  var sprache = "de";
+  try { sprache = localStorage.getItem("steckwerk-sprache") || ""; } catch (e) { sprache = ""; }
+  if (sprache !== "de" && sprache !== "en") sprache = /^de\b/i.test(navigator.language || "de") ? "de" : "en";
+
+  function t(k) { return (sprache === "en" ? EN : DE)[k] || DE[k] || k; }
+  function feld(o, k) { return (sprache === "en" && o[k + "_en"]) || o[k]; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function zeichneStuecke() {
+    var box = document.getElementById("stuecke");
+    var platz = box.clientWidth || 1000, summe = 0;
+    DATEN.leiste.forEach(function (s) { summe += s.mm + 14; });
+    var mm = Math.max(1.1, Math.min(2.2, platz / (summe - 14)));
+    document.documentElement.style.setProperty("--mm", mm.toFixed(3) + "px");
+    box.innerHTML = DATEN.leiste.map(function (s) {
+      return '<div class="stueck"><img src="bilder/' + esc(s.bild) + '" alt="" style="width:' + (s.mm * mm).toFixed(1) + 'px">' +
+        '<span class="mono">' + esc(feld(s, "name")) + "<br>" + Math.round(s.mm) + " mm</span></div>";
+    }).join("");
+  }
+
+  function zeichnePakete() {
+    var html = DATEN.bereiche.map(function (b) {
+      var karten = b.pakete.filter(function (id) { return DATEN.pakete[id]; }).map(function (id) {
+        var p = DATEN.pakete[id];
+        return '<article class="karte"><div class="bild"><img src="bilder/' + esc(p.bild) + '" alt="' + esc(feld(p, "masse")) + '" loading="lazy"></div>' +
+          '<div class="text"><div class="zeile"><h3>' + esc(feld(p, "name")) + '</h3><span class="mono" style="color:var(--grau)">' + esc(p.version) + "</span></div>" +
+          "<p>" + esc(feld(p, "text")) + "</p>" +
+          '<span class="masse mono">' + esc([feld(p, "masse"), feld(p, "groesse")].filter(Boolean).join(" · ")) + " · " + p.modelle + " " + t(p.modelle === 1 ? "modell" : "modelle") + "</span></div></article>";
+      }).join("");
+      return '<div class="bereich" style="--n:' + b.pakete.filter(function (id) { return DATEN.pakete[id]; }).length + '"><div class="bereich-name"><h3>' + esc(feld(b, "name")) + "</h3><p>" + esc(feld(b, "text")) + "</p></div>" +
+        '<div class="karten">' + karten + "</div></div>";
+    }).join("");
+    document.getElementById("bereiche").innerHTML = html;
+  }
+
+  function setzeSprache(neu) {
+    sprache = neu;
+    try { localStorage.setItem("steckwerk-sprache", neu); } catch (e) {}
+    document.documentElement.lang = neu;
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.innerHTML = t(el.dataset.t); });
+    document.querySelectorAll("[data-t-alt]").forEach(function (el) { el.alt = t(el.dataset.tAlt); });
+    document.querySelectorAll("[data-t-aria]").forEach(function (el) { el.setAttribute("aria-label", t(el.dataset.tAria)); });
+    document.getElementById("sp-de").setAttribute("aria-pressed", neu === "de");
+    document.getElementById("sp-en").setAttribute("aria-pressed", neu === "en");
+    zeichneStuecke(); zeichnePakete();
+  }
+  document.getElementById("sp-de").addEventListener("click", function () { setzeSprache("de"); });
+  document.getElementById("sp-en").addEventListener("click", function () { setzeSprache("en"); });
+
+  function setzeVersion(v) {
+    if (!/^\d+\.\d+\.\d+$/.test(v)) return;
+    DATEN.version = v;
+    document.querySelectorAll(".v-nr").forEach(function (el) { el.textContent = v; });
+    var url = REPO + "/releases/download/v" + v + "/Steckwerk-Desktop-" + v + "-macOS.zip";
+    document.getElementById("laden-oben").href = url;
+    document.getElementById("laden-unten").href = url;
+  }
+
+  // Veröffentlichte Versionen und Download-Link live aus dem Update-Kanal
+  function holen(url) { return fetch(url, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw r; return r.json(); }); }
+  holen(FEED).then(function (f) {
+    if (f.programm && f.programm.version) setzeVersion(f.programm.version);
+    (f.pakete || []).forEach(function (p) { if (DATEN.pakete[p.id]) DATEN.pakete[p.id].version = p.version; });
+    zeichnePakete();
+  }).catch(function () {});
+
+  addEventListener("resize", zeichneStuecke);
+  var kopf = document.getElementById("kopf");
+  addEventListener("scroll", function () { kopf.classList.toggle("gerollt", scrollY > 8); }, { passive: true });
+
+  setzeSprache(sprache);
+  setzeVersion(DATEN.version);
+})();
+</script>
+</body>
+</html>

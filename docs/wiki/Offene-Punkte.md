@@ -1,17 +1,12 @@
 # Offene Punkte
 
-Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
+Stand 11.11.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Entscheidungen für dich
 
 - **Bild-Gravur in XCS testen:** Fotos stecken als eingebettetes PNG in der SVG-Ebene „Bild“. Bitte einmal in xTool Creative Space importieren und prüfen, ob Lage und Größe stimmen. Falls XCS das Bild nicht übernimmt, liegt jedes Bild zusätzlich als PNG mit Maß im Dateinamen daneben. Der direkte .xcs/.xs-Export nimmt Bilder noch nicht mit.
 - **Repo-Sichtbarkeit:** Das Repo `chr-braun/steckwerk` ist derzeit öffentlich. Ob es so bleibt, entscheidest du.
-- **Steckwerk 2.10.0 nach `main` bringen und veröffentlichen:** Der Pull Request mit 2.10.0 (Branch
-  `claude/implement-swift-app-spec-a43ysx` nach `main`) wartet auf dich. Nach dem Merge unter Actions → Release →
-  „Run workflow“ auf `main` starten; dann kommen Mac-App, Steckwerk Desktop, Halloween 1.4.0 und Weihnachten 2.0.1
-  in den Update-Kanal.
 - **Wichtelanhänger** sind noch nicht überarbeitet. Die Weihnachtsanhänger sind in Ordnung.
-- **Mac-Zip im Download-Ordner** ist noch 2.6.0. Die neue Desktop-App gibt es als Artefakt aus dem CI.
 - **Steckwerk Desktop von Hand ersetzen, falls du noch die DMG 2.8.0 aus dem CI hast:** Die kennt das
   Selbst-Update noch nicht. Die Desktop-App 2.9.0 aus `main` aktualisiert sich dagegen von selbst auf 2.10.0.
 
@@ -38,9 +33,11 @@ Stand 26.10.2026. Was noch ansteht oder auf deine Entscheidung wartet.
 
 ## Auf GitHub
 
+- **Webseite einschalten:** einmal Settings → Pages → Source **GitHub Actions** wählen, dann veröffentlicht der
+  Workflow „Webseite“ die Seite unter <https://chr-braun.github.io/steckwerk/>.
+- **Repo-Beschreibung und Topics:** rechts oben auf der Repo-Seite beim Zahnrad neben „About“ eintragen
+  (Text steht im Thread „GitHub-Seite von Steckwerk aufräumen“). Das geht nur mit Admin-Rechten, nicht aus der Cloud.
 - **Repo-Sichtbarkeit:** siehe oben. Das Repo ist derzeit öffentlich, der Update-Kanal braucht damit keinen Lese-Schlüssel.
-- **Releases:** Der Tag-Push für automatische GitHub-Releases hat aus der Cloud nicht geklappt. Wenn du
-  Releases auf GitHub haben willst, kannst du einen Tag `v2.6.0` selbst setzen.
 - **Markenrecherche:** Eine Prüfung in TMview (Klassen 9 und 42) für „Steckwerk“ stand noch aus.
 - **Wiki:** Diese Seiten liegen im Repo unter `docs/wiki/`. Wenn du das GitHub-Wiki einschaltest, lassen
   sie sich dorthin übernehmen.
