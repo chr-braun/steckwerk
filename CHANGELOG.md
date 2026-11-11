@@ -18,6 +18,15 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
   - Zweilagiges Medaillon (Grundplatte mit gefüllt graviertem Namen, Spitzenrahmen obendrauf) und einlagige Spitze.
   - Haarstriche werden laserfest verstärkt, i-Punkte, Umlaute und Namen mit Leerzeichen bleiben ein Stück.
   - Die Schriften sind als Umrisse im Paket (SIL Open Font License), Steckwerk braucht keine Schriftdateien.
+- **Direkt für den xTool M2:** Beim Export legt Steckwerk auf Wunsch neben jede SVG ein `.xcs`-Projekt für xTool Creative Space (Ebenen „Schneiden“ rot und „Ritzen“ blau, Gerät M2) und ein `.xs`-Projekt für xTool Studio ab 1.7, in dem Leistung, Tempo und Durchgänge aus dem Materialprofil schon eingetragen sind. Die Formate sind nicht offen dokumentiert und nach öffentlichen Beispielen geschrieben – beim ersten Mal in XCS kurz prüfen.
+- **„In XCS öffnen“:** speichert die Platte als `.xcs` und öffnet sie gleich in xTool Creative Space (oder xTool Studio). Browser-Oberfläche, Mac-App und Steckwerk Desktop.
+- **Schnittzeit und Material:** Für jedes Modell schätzt Steckwerk Laserzeit, Schnitt- und Ritzlänge, Plattenbedarf und Ausnutzung; mit einem Preis je Platte (Einstellungen → Material) auch die Materialkosten. Zu sehen im Inspektor, im Export-Fenster und in Steckwerk Desktop neben dem Prüfstatus.
+- **Teilenummern und Montageanleitung:** „Teilenummern gravieren“ (Material) schreibt jedem Teil eine kleine, geprüfte Nummer an die Stelle mit dem meisten Platz. „Montageanleitung (PDF)“ legt die Anleitung mit Blattübersicht, Teileliste und Zusammenbau-Schritten dazu.
+- **Projekte:** Modell, Werte und Material unter einem Namen merken und mit einem Klick wieder öffnen (Knopf „Projekte“, gespeichert in `~/.steckwerk/projekte.json`).
+- **Enger verschachteln:** Braucht ein Modell mehrere Platten, versucht Steckwerk eine dichtere Anordnung mit gedrehten Teilen und nimmt sie, wenn sie eine Platte spart. Passt alles auf eine Platte, bleibt die Datei genau wie bisher.
+- **Schneller auf älteren Macs (Grundlagen 2.0.1):** Mehrlagige Bilder merken sich die Durchbrüche unveränderter Ebenen. Ändert man Text, Rückwand, Abstand oder Rahmen, ist ein Ebenenbild statt in rund 4 in gut 1 Sekunde neu gerechnet.
+- Kommandozeile: `--xcs`, `--xs`, `--montage` und `--laser w10|w20`.
+- README: Anleitung für xTool Creative Space statt LightBurn.
 
 ## 2.10.1 – 2026-11-10
 

@@ -53,6 +53,13 @@ struct BuildView: View {
 
             if let result {
                 StatusPill(result: result, stale: model.resultIsStale)
+                if result.assemblies.count == 1, let s = result.assemblies.first?.schaetzung {
+                    Text(s.text)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .help("Geschätzt für den xTool M2 mit den Startwerten des passenden Materialprofils")
+                }
             }
 
             Spacer()
@@ -72,6 +79,19 @@ struct BuildView: View {
                     Task { await model.saveToEngineFolder() }
                 }
                 .disabled(!model.canExport)
+                Button("In xTool Creative Space öffnen") {
+                    Task { await model.openInXCS() }
+                }
+                .disabled(!model.canExport)
+                Divider()
+                Section("Beim Speichern zusätzlich") {
+                    Toggle("XCS-Projekt (.xcs)", isOn: Binding(get: { model.exportFormate.contains("xcs") },
+                                                               set: { _ in model.toggleFormat("xcs") }))
+                    Toggle("xTool Studio (.xs, mit Laserwerten)", isOn: Binding(get: { model.exportFormate.contains("xs") },
+                                                                             set: { _ in model.toggleFormat("xs") }))
+                    Toggle("Montageanleitung (PDF)", isOn: Binding(get: { model.exportFormate.contains("pdf") },
+                                                                set: { _ in model.toggleFormat("pdf") }))
+                }
                 Divider()
                 Button("Steckwerk-Ordner öffnen") {
                     Task { await model.openFolder() }
