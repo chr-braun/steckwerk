@@ -12,7 +12,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
   - **Schaukelstuhl** mit geschwungenen Kufen, Sprossen, schräger Sprossenlehne (Neigung einstellbar) und Armlehnen-Schnecken, dazu Sitzkissen und Strickkorb.
   - **Christbaum** aus zwei gekreuzten Hälften mit Etagen, Schmuck-Ausschnitten, Lichterkette und Stern, dazu Geschenke mit Schleife und Namen.
   - **Schneemann** über Kreuz gesteckt: Gesicht und Zweigarme vorn, Möhrennase und wehender Schal im Profil, Zylinder oder Wollmütze, Besen oder Laterne.
-  - **Wichtelgarten**: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.- Weihnachten 2.1.0: neues Modell **Edler Namensanhänger**: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name.
+  - **Wichtelgarten**: Wiesenplatte mit Trittsteinen und Beet, dazu Schubkarre, Gießkanne, Vogelhaus, Blumen, Fliegenpilze und Kürbisse zum Einstecken.
+- Weihnachten 2.1.0: neues Modell **Edler Namensanhänger**: Namen in echter Schreibschrift (elegant, schwungvoll, rund und kräftig), ein Anhänger je Name.
   - Schriftzug im Kugelring mit Szene auf dem Schneehügel: Winterdorf, Winterwald mit Hirsch, Schneemann mit Laterne, Schlittenfahrt, Adventskranz, Christbaum mit Geschenken, Plätzchen backen, Geschenke packen. Die Jahreszahl steht im Schnee.
   - Zweilagiges Medaillon (Grundplatte mit gefüllt graviertem Namen, Spitzenrahmen obendrauf) und einlagige Spitze.
   - Haarstriche werden laserfest verstärkt, i-Punkte, Umlaute und Namen mit Leerzeichen bleiben ein Stück.
