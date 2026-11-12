@@ -126,4 +126,34 @@ final class SchemaTests: XCTestCase {
         XCTAssertTrue(schema.config.isEmpty)
         XCTAssertEqual(schema.sidebarGroups.first?.models.first?.id, "x")
     }
+
+    func testBereicheGroupModelsByTheme() throws {
+        let json = #"""
+        {"models": {
+           "a": {"label": "Anhänger", "group": "Weihnachten", "desc": "d", "params": []},
+           "b": {"label": "Haus", "group": "Häuser", "desc": "d", "params": []},
+           "c": {"label": "Baum", "group": "Zubehör", "desc": "d", "params": []},
+           "d": {"label": "Puzzle", "group": "Spiele", "desc": "d", "params": []}},
+         "bereiche": [
+           {"id": "feste", "name": "Feste", "themen": [
+              {"id": "weihnachten", "name": "Weihnachten", "gruppen": ["Weihnachten"]},
+              {"id": "winterdorf", "name": "Winterdorf", "gruppen": ["Häuser", "Zubehör"]}]},
+           {"id": "spielen", "name": "Spielen", "themen": [
+              {"id": "spiele", "name": "Spiele", "gruppen": ["Spiele"]}]}]}
+        """#
+        let schema = try JSONDecoder().decode(Schema.self, from: Data(json.utf8))
+        XCTAssertEqual(schema.bereiche.map(\.id), ["feste", "spielen"])
+        let feste = try XCTUnwrap(schema.bereiche.first)
+        XCTAssertEqual(schema.anzahl(in: feste), 3)
+        XCTAssertEqual(schema.modelle(in: feste.themen[1]).map(\.id), ["c", "b"])
+        XCTAssertEqual(schema.thema(for: ModelEntry(id: "d", info: try XCTUnwrap(schema.models["d"])))?.id, "spiele")
+        XCTAssertEqual(Schema.filter(schema.alleModelle, matching: " PUZZLE ").map(\.id), ["d"])
+        XCTAssertEqual(Schema.filter(schema.alleModelle, matching: "").count, 4)
+    }
+
+    func testMissingBereicheDecodeEmpty() throws {
+        let json = #"{"models": {"x": {"label": "X", "params": []}}}"#
+        let schema = try JSONDecoder().decode(Schema.self, from: Data(json.utf8))
+        XCTAssertTrue(schema.bereiche.isEmpty)
+    }
 }

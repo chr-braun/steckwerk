@@ -43,7 +43,8 @@ enum Snapshot {
             model.selection = .model(vorlage)
             await model.saveProject(named: name)
         }
-        if let lena = model.projekte.first(where: { $0.name == "Wichtelhaus für Lena" }) { model.openProject(lena) }
+        let lena = model.projekte.first(where: { $0.name == "Wichtelhaus für Lena" })
+        if let lena { model.openProject(lena) }
         guard await waitForResult(model) else {
             FileHandle.standardError.write(Data("SNAPSHOT FEHLER · keine Vorschau\n".utf8))
             return 1
@@ -53,6 +54,11 @@ enum Snapshot {
 
         for (suffix, appearance) in [("hell", NSAppearance(named: .aqua)), ("dunkel", NSAppearance(named: .darkAqua))] {
             NSApp.appearance = appearance
+            model.selection = .alle
+            await pause(3.5)  // Galerie: Vorschaubilder laden
+            save(window, to: dir.appendingPathComponent("0-galerie-\(suffix).png"))
+            if let lena { model.openProject(lena) }
+            _ = await waitForResult(model)
             await pause(1.2)
             save(window, to: dir.appendingPathComponent("1-hauptfenster-\(suffix).png"))
             model.showExport = true

@@ -4,6 +4,7 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+- **Aufgeräumte Seitenleiste in Steckwerk Desktop:** nur noch *Alle Vorlagen*, *Zuletzt*, sechs Bereiche (*Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt*, *Basis*), die *Bibliothek* (Motive und Fotos, Pakete) und unten *Einstellungen* mit Material und Updates. Die Vorlage wählst du rechts in einer **Galerie mit Vorschaubildern der Platte**, nach Themen gegliedert und filterbar; die Suche zeigt ihre Treffer ebenfalls dort. Die Zuordnung steht in `themen.json`, die Bilder in `vorschau/` (für neue Vorlagen `python3 packaging/vorschaubilder.py` laufen lassen; fehlt ein Bild, rechnet die Engine es beim ersten Öffnen selbst).
 - **Paketkatalog nach Bereichen:** In der Browser-App und in Steckwerk Desktop stehen die Themenpakete jetzt geordnet unter *Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt* und *Basis*. Die Zuordnung steht in `paketquellen/bereiche.json` und kommt über den Update-Kanal.
 - Neue **Webseite** unter chr-braun.github.io/steckwerk mit Download, Paketen nach Bereichen und Modellbildern, die direkt aus den Paketen gerechnet werden.
 - Auf der Releases-Seite bleiben nur noch die zwei neuesten Versionen stehen; das README ist kurz und übersichtlich, die ausführliche Referenz steht im Wiki unter *Kommandozeile*.
