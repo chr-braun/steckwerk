@@ -1,36 +1,25 @@
 {
   "standard": 1,
-  "erstellt": "2026-11-11",
+  "erstellt": "2026-11-12",
   "programm": {
-    "version": "2.12.0",
-    "datum": "2026-11-11",
+    "version": "2.13.0",
+    "datum": "2026-11-12",
     "hinweise": [
-      "Neue Oberfläche in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf An xTool senden, unten eine Statusleiste mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.",
-      "Seitenleiste mit Zuletzt (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit ⌘S, der Titel zeigt *gesichert* oder *geändert*.",
-      "Ausgeben-Blatt mit zwei klaren Wegen: *In xTool Creative Space öffnen* (empfohlen) oder *Dateien sichern*. Teilenummern und Montageanleitung sind Schalter, die Schätzung steht in Kacheln darunter.",
-      "Prüfbericht als Teiletabelle mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt. Der technische Rohbericht steht eingeklappt darunter. „Überrasch mich“ ersetzt den Würfel.",
-      "Steckwerk Desktop: Werte im Inspektor rechts (⌥⌘I), Platte in Holzoptik, Systemakzentfarbe, Prüfbericht mit ⌘R.",
-      "Eigene Gravur auf jedem Modell: Fotos, Logos, Motive und Muster lassen sich auf jedes Teil gravieren (größtes Teil, alle Teile oder ein bestimmtes), in der Browser-App, in Steckwerk Desktop und auf der Kommandozeile (--gravur, --bild-import). Gravuren laufen nie über Schnitte, Durchbrüche oder Steckverbindungen.",
-      "Fotos und Logos als Bild-Gravur: JPG, PNG und HEIC importieren; Fotogravur (fein gerastert), Graustufen für XCS, Schwarzweiß-Logo oder Skizze; Bildform Rechteck, abgerundet, Oval, Kreis, Herz oder weicher Rand; Helligkeit, Kontrast, Gamma, Umkehren, Auflösung bis 12,7 Punkte je mm. Die Bilder kommen als eigene Ebene „Bild“ ins SVG und zusätzlich als PNG-Datei daneben. Fertige Bilder werden zwischengespeichert, damit es auch auf älteren Rechnern flott bleibt.",
-      "Motive als gestochen scharfe Bild-Gravur: flächige Logos ohne Schraffurlinien.",
-      "18 neue Flächenmuster: Rautengitter, Karo, Waben, Schuppen, Fischgrät, Wellen, Holzmaserung, Streifen, Punkte, Blume des Lebens, Mandala, Strahlen, Spitze, Ranken, Sternenhimmel, Schneeflocken, Herzen, Tannenwald – mit einstellbarem Rapport, auf Wunsch nur in einem Bereich; Zierrahmen und vorhandene Gravuren bleiben frei.",
-      "Motive lassen sich jetzt auch aus JPG und HEIC importieren.",
-      "Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.",
-      "Spiele 1.1.0 mit neuem Modell Puzzle: Bilderpuzzle mit Nasen (klassisch, verspielt oder gerade für Kleinkinder), rechteckig oder rund, 4 bis 200 Teile, jede Nummer ein neues Schnittmuster, auf Wunsch mit Rahmen und Boden zum Hineinlegen. Das Bild läuft über alle Teile und bleibt an jedem Schnittrand sauber frei: fünf detailreiche Szenen (Winterdorf bei Nacht, Christbaum mit Geschenken, Mandala, Sternenhimmel über dem Wald, Waldlichtung mit Eule und Igel) oder dein eigenes Motiv bzw. Logo aus der Motiv-Bibliothek, flächig oder als Umriss, mit Hintergrundmuster (Sterne, Schneeflocken, Rauten, Wellen, Punkte). Beschriftung auf einem Schriftband oder auf dem Rahmen, Zierrand, einstellbares Spiel zwischen den Teilen. Auch 200 Teile rechnen in unter einer Sekunde. Fotopuzzle: Bild „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen; es wird einmal über alle Teile gelegt (gleiche Fotogravur-Punkte über die Fugen hinweg), jedes Teil bekommt seinen Ausschnitt.",
-      "Weihnachten 2.2.0 mit neuem Modell Edler Christbaumschmuck: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set. - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel. - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf. - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz. - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.",
-      "Die Updateprüfung klappt wieder, auch wenn noch ein alter Zugangsschlüssel aus der Zeit gespeichert ist, als das Repo privat war."
+      "Aufgeräumte Seitenleiste in Steckwerk Desktop: nur noch *Alle Vorlagen*, *Zuletzt*, sechs Bereiche (*Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt*, *Basis*), die *Bibliothek* (Motive und Fotos, Pakete) und unten *Einstellungen* mit Material und Updates. Die Vorlage wählst du rechts in einer Galerie mit Vorschaubildern der Platte, nach Themen gegliedert und filterbar; die Suche zeigt ihre Treffer ebenfalls dort. Die Zuordnung steht in themen.json, die Bilder in vorschau/ (für neue Vorlagen python3 packaging/vorschaubilder.py laufen lassen; fehlt ein Bild, rechnet die Engine es beim ersten Öffnen selbst).",
+      "Paketkatalog nach Bereichen: In der Browser-App und in Steckwerk Desktop stehen die Themenpakete jetzt geordnet unter *Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt* und *Basis*. Die Zuordnung steht in paketquellen/bereiche.json und kommt über den Update-Kanal.",
+      "Neue Webseite unter chr-braun.github.io/steckwerk mit Download, Paketen nach Bereichen und Modellbildern, die direkt aus den Paketen gerechnet werden.",
+      "Auf der Releases-Seite bleiben nur noch die zwei neuesten Versionen stehen; das README ist kurz und übersichtlich, die ausführliche Referenz steht im Wiki unter *Kommandozeile*."
     ],
     "hinweise_en": [
-      "New interface in the browser UI, Mac app and Steckwerk Desktop: only material and the main button Send to xTool at the top, a status bar below the sheet (check status, parts, sheets, laser time, material cost), Recent projects in the sidebar (save with ⌘S), an Export sheet with two clear paths and the check report as a parts table.",
-      "Custom engraving on every model: photos, logos, motifs and 18 new area patterns on any part.",
-      "Games 1.1.0 with the new Jigsaw puzzle model: picture puzzle with tabs (classic, playful or straight for toddlers), rectangular or round, 4 to 200 pieces, a new cut pattern for every number, optional frame with base. The picture runs across all pieces: five detailed scenes (winter village at night, Christmas tree with presents, mandala, starry sky, forest clearing with owl and hedgehog) or your own motif or logo from the motif library, filled or outlined, with a background pattern. Lettering on a ribbon or on the frame, decorative border, adjustable play between pieces. Even 200 pieces compute in under a second. Photo puzzle: choose picture “photo” and add a photo under custom engraving; it is laid once across all pieces and each piece gets its own section.",
-      "Christmas 2.2.0 with the new model Fine tree ornaments: twelve richly detailed ornaments in paper-cut quality, single or as a set: angel with feathered wings, faceted star, bauble with starry sky and winter scene, bell with bow, pine cone, decorated tree, snowman with top hat, heart with tree of life, sleeping moon, candle with fir sprigs, present and Santa boot. - Cut-out windows, feathers, scales and lace edges plus fine engraving: faces, quills, needles, facets, pearl borders, folds. - Optionally a name in script lettering. All motifs pass the laser check in 2, 3 and 4 mm.",
-      "The update check works again even if an old access key from the time the repo was private is still stored."
+      "Tidier sidebar in Steckwerk Desktop: just *All templates*, *Recent*, six areas, the *Library* (motifs and photos, packages) and *Settings* at the bottom with material and updates. You pick a template on the right in a gallery with plate thumbnails, grouped and filterable by theme; search results show up there too. The grouping lives in themen.json, the pictures in vorschau/ (rerun python3 packaging/vorschaubilder.py for new templates; a missing picture is computed by the engine on first view).",
+      "Package catalogue by area: the browser app and Steckwerk Desktop now group the theme packages under *Seasons and holidays*, *Home and gifts*, *Play and motion*, *Shapes and art*, *Shop and market* and *Basics*. The grouping lives in paketquellen/bereiche.json and arrives through the update channel.",
+      "New website at chr-braun.github.io/steckwerk with download, packages by area and model pictures computed straight from the packages.",
+      "The releases page keeps only the two newest versions; the README is short, the full reference moved to the wiki page *Kommandozeile*."
     ],
     "mac": {
-      "datei": "Steckwerk-2.12.0-macOS.zip",
-      "sha256": "6c6cefa310e8177aca744c4ac4bb08f5ad84b24976cf0ddf552de1174d483b7f",
-      "groesse": 535101
+      "datei": "Steckwerk-2.13.0-macOS.zip",
+      "sha256": "a15731292e21a140102c364f778335f45839fb75cfe33adcf0adccd34dc6a7c0",
+      "groesse": 935229
     }
   },
   "pakete": [
@@ -458,28 +447,18 @@
     }
   ],
   "desktop": {
-    "version": "2.12.0",
-    "datum": "2026-11-11",
+    "version": "2.13.0",
+    "datum": "2026-11-12",
     "hinweise": [
-      "Neue Oberfläche in Browser-Oberfläche, Mac-App und Steckwerk Desktop: aufgeräumt und für Einsteiger klarer. Oben nur noch Material und der Hauptknopf An xTool senden, unten eine Statusleiste mit Prüfstatus (Klick öffnet den Prüfbericht), Teilen, Platten, Ausnutzung, Laserzeit und Materialkosten.",
-      "Seitenleiste mit Zuletzt (deine Projekte) und allen Vorlagen nach Thema mit eigenen Symbolen statt Sonderzeichen. Projekte sicherst du mit ⌘S, der Titel zeigt *gesichert* oder *geändert*.",
-      "Ausgeben-Blatt mit zwei klaren Wegen: *In xTool Creative Space öffnen* (empfohlen) oder *Dateien sichern*. Teilenummern und Montageanleitung sind Schalter, die Schätzung steht in Kacheln darunter.",
-      "Prüfbericht als Teiletabelle mit Nummer, Größe und Ergebnis, dazu der Zusammenbau Schritt für Schritt. Der technische Rohbericht steht eingeklappt darunter. „Überrasch mich“ ersetzt den Würfel.",
-      "Steckwerk Desktop: Werte im Inspektor rechts (⌥⌘I), Platte in Holzoptik, Systemakzentfarbe, Prüfbericht mit ⌘R.",
-      "Eigene Gravur auf jedem Modell: Fotos, Logos, Motive und Muster lassen sich auf jedes Teil gravieren (größtes Teil, alle Teile oder ein bestimmtes), in der Browser-App, in Steckwerk Desktop und auf der Kommandozeile (--gravur, --bild-import). Gravuren laufen nie über Schnitte, Durchbrüche oder Steckverbindungen.",
-      "Fotos und Logos als Bild-Gravur: JPG, PNG und HEIC importieren; Fotogravur (fein gerastert), Graustufen für XCS, Schwarzweiß-Logo oder Skizze; Bildform Rechteck, abgerundet, Oval, Kreis, Herz oder weicher Rand; Helligkeit, Kontrast, Gamma, Umkehren, Auflösung bis 12,7 Punkte je mm. Die Bilder kommen als eigene Ebene „Bild“ ins SVG und zusätzlich als PNG-Datei daneben. Fertige Bilder werden zwischengespeichert, damit es auch auf älteren Rechnern flott bleibt.",
-      "Motive als gestochen scharfe Bild-Gravur: flächige Logos ohne Schraffurlinien.",
-      "18 neue Flächenmuster: Rautengitter, Karo, Waben, Schuppen, Fischgrät, Wellen, Holzmaserung, Streifen, Punkte, Blume des Lebens, Mandala, Strahlen, Spitze, Ranken, Sternenhimmel, Schneeflocken, Herzen, Tannenwald – mit einstellbarem Rapport, auf Wunsch nur in einem Bereich; Zierrahmen und vorhandene Gravuren bleiben frei.",
-      "Motive lassen sich jetzt auch aus JPG und HEIC importieren.",
-      "Steckwerk Desktop zeigt Bild-Gravuren in der Vorschau.",
-      "Spiele 1.1.0 mit neuem Modell Puzzle: Bilderpuzzle mit Nasen (klassisch, verspielt oder gerade für Kleinkinder), rechteckig oder rund, 4 bis 200 Teile, jede Nummer ein neues Schnittmuster, auf Wunsch mit Rahmen und Boden zum Hineinlegen. Das Bild läuft über alle Teile und bleibt an jedem Schnittrand sauber frei: fünf detailreiche Szenen (Winterdorf bei Nacht, Christbaum mit Geschenken, Mandala, Sternenhimmel über dem Wald, Waldlichtung mit Eule und Igel) oder dein eigenes Motiv bzw. Logo aus der Motiv-Bibliothek, flächig oder als Umriss, mit Hintergrundmuster (Sterne, Schneeflocken, Rauten, Wellen, Punkte). Beschriftung auf einem Schriftband oder auf dem Rahmen, Zierrand, einstellbares Spiel zwischen den Teilen. Auch 200 Teile rechnen in unter einer Sekunde. Fotopuzzle: Bild „Foto“ wählen und unter „Eigene Gravur“ ein Foto hinzufügen; es wird einmal über alle Teile gelegt (gleiche Fotogravur-Punkte über die Fugen hinweg), jedes Teil bekommt seinen Ausschnitt.",
-      "Weihnachten 2.2.0 mit neuem Modell Edler Christbaumschmuck: zwölf detailreiche Anhänger in Scherenschnitt-Qualität, einzeln oder als Set. - Engel mit Federflügeln, Facettenstern, Christbaumkugel mit Sternenhimmel und Winterszene, Glocke mit Schleife, Tannenzapfen, geschmückter Tannenbaum, Schneemann mit Zylinder, Herz mit Lebensbaum, schlafender Mond, Kerze im Tannengrün, Geschenk und Nikolausstiefel. - Ausgeschnittene Fenster, Federn, Schuppen und Spitzenkanten, dazu feine Gravuren: Gesichter, Federkiele, Nadeln, Facetten, Perlenränder, Faltenwurf. - Auf Wunsch ein Name in Schreibschrift; die Zier an der Stelle macht dem Namen Platz. - Alle Motive bestehen die Laserprüfung in 2, 3 und 4 mm.",
-      "Die Updateprüfung klappt wieder, auch wenn noch ein alter Zugangsschlüssel aus der Zeit gespeichert ist, als das Repo privat war."
+      "Aufgeräumte Seitenleiste in Steckwerk Desktop: nur noch *Alle Vorlagen*, *Zuletzt*, sechs Bereiche (*Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt*, *Basis*), die *Bibliothek* (Motive und Fotos, Pakete) und unten *Einstellungen* mit Material und Updates. Die Vorlage wählst du rechts in einer Galerie mit Vorschaubildern der Platte, nach Themen gegliedert und filterbar; die Suche zeigt ihre Treffer ebenfalls dort. Die Zuordnung steht in themen.json, die Bilder in vorschau/ (für neue Vorlagen python3 packaging/vorschaubilder.py laufen lassen; fehlt ein Bild, rechnet die Engine es beim ersten Öffnen selbst).",
+      "Paketkatalog nach Bereichen: In der Browser-App und in Steckwerk Desktop stehen die Themenpakete jetzt geordnet unter *Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt* und *Basis*. Die Zuordnung steht in paketquellen/bereiche.json und kommt über den Update-Kanal.",
+      "Neue Webseite unter chr-braun.github.io/steckwerk mit Download, Paketen nach Bereichen und Modellbildern, die direkt aus den Paketen gerechnet werden.",
+      "Auf der Releases-Seite bleiben nur noch die zwei neuesten Versionen stehen; das README ist kurz und übersichtlich, die ausführliche Referenz steht im Wiki unter *Kommandozeile*."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.12.0-macOS.zip",
-      "sha256": "b59cd8392f345771cd1fc3dff68eed34cd820d748afa17a6104b10f2843214ea",
-      "groesse": 2446573
+      "datei": "Steckwerk-Desktop-2.13.0-macOS.zip",
+      "sha256": "49bb4e7524cbdee86106183780e6a694d10de194e2845c70d8e32b49503c7a04",
+      "groesse": 2979426
     }
   }
 }
