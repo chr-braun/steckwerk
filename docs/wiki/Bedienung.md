@@ -11,10 +11,11 @@
 Die Weboberfläche sieht aus wie eine Mac-App, hell oder dunkel wie dein System, und lädt nichts aus dem
 Internet.
 
-- **Seitenleiste links:** oben ein Suchfeld (⌘K oder ⌘F), darunter **Zuletzt** mit deinen Projekten.
-  Unter **Vorlagen** stehen alle Gruppen mit eigenem Symbol und ihrer Anzahl, eingebaute und aus Paketen
-  gemeinsam. *Neues Motiv zeichnen …* steckt bei den eigenen Motiven. Unten nur **Einstellungen** (mit der
-  Zahl neuer Updates), in der App auch Ordner öffnen und Beenden.
+- **Seitenleiste links (Steckwerk Desktop):** oben ein Suchfeld, darunter **Alle Vorlagen**, **Zuletzt** mit
+  deinen Projekten und die sechs **Bereiche** mit Anzahl. Ein Klick zeigt rechts die **Galerie**: jede Vorlage
+  als Kachel mit Vorschaubild der Platte, nach Themen gegliedert (bei einem Bereich mit mehreren Themen oben
+  filterbar); ein Klick auf die Kachel öffnet sie. In der **Bibliothek** liegen *Motive und Fotos* und
+  *Pakete*. Unten steht **Einstellungen** mit Material und Updates (und der Zahl neuer Updates).
 - **Werkzeugleiste oben:** Projekt- oder Vorlagenname, das **Material-Menü** und der Hauptknopf
   **An xTool senden** (im reinen Browser *Exportieren …*).
 - **Mitte:** maßstäbliche Vorschau je Platte mit mm-Lineal. Holz = Restplatte, hell = Teile, blau = Gravur.

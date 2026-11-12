@@ -86,65 +86,119 @@ private struct MainSplitView: View {
 @MainActor
 private struct SidebarView: View {
     @EnvironmentObject var model: AppModel
-    @State var suche = ""
-    @AppStorage("offeneGruppen") private var offenRaw = ""
 
-    private var offen: Set<String> { Set(offenRaw.split(separator: "\n").map(String.init)) }
+    private var projektTreffer: [Projekt] {
+        let q = model.suche.trimmingCharacters(in: .whitespaces).lowercased()
+        return q.isEmpty ? Array(model.projekte.prefix(3)) : []
+    }
 
-    private func istOffen(_ group: ModelGroup) -> Binding<Bool> {
+    /// Was in der Liste markiert ist: Einstellungen für beide Reiter, bei einer offenen Vorlage nichts.
+    private var markiert: Binding<SidebarItem?> {
         Binding(
             get: {
-                !suche.isEmpty || offen.contains(group.id) || group.models.contains { model.selectedModelID == $0.id }
+                switch model.selection {
+                case .updates: return .material
+                case .model: return nil
+                default: return model.selection
+                }
             },
-            set: { neu in
-                var s = offen
-                if neu { s.insert(group.id) } else { s.remove(group.id) }
-                offenRaw = s.sorted().joined(separator: "\n")
-            }
+            set: { if let neu = $0 { model.selection = neu } }
         )
     }
 
-    private var projektTreffer: [Projekt] {
-        let q = suche.trimmingCharacters(in: .whitespaces).lowercased()
-        return q.isEmpty ? Array(model.projekte.prefix(4)) : model.projekte.filter { $0.name.lowercased().contains(q) }
-    }
-
     var body: some View {
-        List(selection: $model.selection) {
-            if !projektTreffer.isEmpty {
-                Section("Zuletzt") {
-                    ForEach(projektTreffer) { p in
-                        ProjektZeile(projekt: p)
+        List(selection: markiert) {
+            if let schema = model.schema {
+                Label("Alle Vorlagen", systemImage: "square.grid.2x2")
+                    .badge(schema.models.count)
+                    .tag(SidebarItem.alle)
+                if !projektTreffer.isEmpty {
+                    Section("Zuletzt") {
+                        ForEach(projektTreffer) { p in
+                            ProjektZeile(projekt: p)
+                        }
                     }
                 }
-            }
-            if let schema = model.schema {
                 Section("Vorlagen") {
-                    ForEach(schema.sidebarGroups(matching: suche)) { group in
-                        DisclosureGroup(isExpanded: istOffen(group)) {
-                            ForEach(group.models) { entry in
-                                Text(entry.info.label)
-                                    .tag(SidebarItem.model(entry.id))
-                                    .help(entry.info.desc)
-                            }
-                        } label: {
-                            Label(group.label, systemImage: GroupSymbol.name(for: group.id))
-                                .badge(istOffen(group).wrappedValue ? 0 : group.models.count)
+                    ForEach(schema.bereiche) { bereich in
+                        let n = schema.anzahl(in: bereich)
+                        if n > 0 {
+                            Label(bereich.name, systemImage: BereichSymbol.name(for: bereich.id))
+                                .badge(n)
+                                .tag(SidebarItem.bereich(bereich.id))
                         }
                     }
                 }
             }
-            Section("Werkstatt") {
-                Label("Material", systemImage: "ruler").tag(SidebarItem.material)
+            Section("Bibliothek") {
+                Label("Motive und Fotos", systemImage: "photo.on.rectangle.angled").tag(SidebarItem.ki)
                 Label("Pakete", systemImage: "shippingbox").tag(SidebarItem.pakete)
-                Label("Assistent und Motive", systemImage: "wand.and.stars").tag(SidebarItem.ki)
-                Label("Updates", systemImage: "arrow.down.circle")
-                    .badge(model.updateCount)
-                    .tag(SidebarItem.updates)
             }
         }
         .listStyle(.sidebar)
-        .searchable(text: $suche, placement: .sidebar, prompt: "Suchen")
+        .searchable(text: $model.suche, placement: .sidebar, prompt: "Vorlagen suchen")
+        .onChange(of: model.suche) { _, neu in
+            // Wer sucht, will die Treffer sehen – egal wo er gerade ist.
+            guard !neu.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+            switch model.selection {
+            case .alle, .bereich: break
+            default: model.selection = .alle
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            EinstellungenZeile()
+        }
+    }
+}
+
+/// „Einstellungen“ fest am unteren Rand der Seitenleiste, mit Abzeichen bei verfügbaren Updates.
+@MainActor
+private struct EinstellungenZeile: View {
+    @EnvironmentObject var model: AppModel
+
+    private var aktiv: Bool { model.selection == .material || model.selection == .updates }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Divider()
+            Button {
+                model.selection = model.updateCount > 0 ? .updates : .material
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "gearshape").frame(width: 18)
+                    Text("Einstellungen")
+                    Spacer()
+                    if model.updateCount > 0 {
+                        Text("\(model.updateCount)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6).padding(.vertical, 1)
+                            .background(Theme.accent, in: Capsule())
+                    }
+                }
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .background(aktiv ? Color.primary.opacity(0.1) : .clear, in: RoundedRectangle(cornerRadius: 6))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .padding(8)
+        }
+        .background(.bar)
+    }
+}
+
+/// Linien-Symbole der Bereiche in der Seitenleiste.
+enum BereichSymbol {
+    static func name(for id: String) -> String {
+        switch id {
+        case "feste": return "snowflake"
+        case "zuhause": return "house"
+        case "spielen": return "die.face.5"
+        case "formen": return "square.on.circle"
+        case "markt": return "tag"
+        case "basis": return "ruler"
+        default: return "shippingbox"
+        }
     }
 }
 
@@ -204,12 +258,14 @@ private struct DetailView: View {
             PackagesView()
         case .ki:
             KIView()
-        case .material:
-            MaterialView()
-        case .updates:
-            AppUpdateView()
+        case .material, .updates:
+            EinstellungenView()
+        case .alle:
+            GalerieView(bereichID: nil)
+        case .bereich(let id):
+            GalerieView(bereichID: id)
         case nil:
-            placeholder("Links eine Vorlage wählen.")
+            GalerieView(bereichID: nil)
         }
     }
 

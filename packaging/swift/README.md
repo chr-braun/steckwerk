@@ -25,8 +25,9 @@ Geometrie, Validator, Pakete, Updates und KI bleiben vollständig in Python; Swi
 
 ## Bedienung
 
-- **Seitenleiste:** Suchfeld, **Zuletzt** mit deinen Projekten, **Vorlagen** nach Thema mit Symbol und Anzahl,
-  darunter *Werkstatt* mit Material, Pakete, Assistent und Motive sowie Updates.
+- **Seitenleiste:** Suchfeld, *Alle Vorlagen*, **Zuletzt** mit deinen Projekten, sechs **Bereiche** mit Anzahl,
+  **Bibliothek** (Motive und Fotos, Pakete) und unten **Einstellungen** (Material, Updates). Die Vorlage wählst du
+  rechts in der **Galerie** mit Platten-Vorschaubildern (`GalerieView`, Bilder über `GET /api/vorschau`).
 - **Mitte:** die Platte in Holzoptik (Teile hell, Gravur blau); zoomen mit Pinch oder den Lupen, verschieben durch
   Ziehen, Doppelklick setzt zurück. Jede Änderung wird sofort neu gerechnet und geprüft.
 - **Statusleiste unten:** *Schnittfertig* oder *Fehler* (Klick oder ⌘R öffnet den Prüfbericht mit Teiletabelle und

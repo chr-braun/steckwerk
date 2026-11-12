@@ -11,6 +11,10 @@ enum EngineState: Equatable {
 }
 
 enum SidebarItem: Hashable {
+    /// Galerie aller Vorlagen
+    case alle
+    /// Galerie eines Bereichs (Kennung aus `Schema.bereiche`)
+    case bereich(String)
     case model(String)
     case pakete
     case ki
@@ -45,6 +49,10 @@ final class AppModel: ObservableObject {
         }
     }
     private var openingProject = false
+    /// Suchtext der Seitenleiste; die Galerie zeigt dann die Treffer.
+    @Published var suche = ""
+    /// Vorschaubilder der Vorlagen (Platte als Geometrie); bewusst nicht veröffentlicht, damit nicht jede Kachel neu zeichnet.
+    private var vorschauAufgaben: [String: Task<SheetGeometry?, Never>] = [:]
     @Published private(set) var values: [String: [String: JSONValue]] = [:]
     /// Eigene Gravuren (Foto, Motiv, Muster) je Modell – bleiben über Neustarts erhalten.
     @Published private(set) var gravuren: [String: [GravurEintrag]] = [:]
@@ -295,6 +303,7 @@ final class AppModel: ObservableObject {
 
     func apply(schema: Schema) {
         self.schema = schema
+        vorschauAufgaben.removeAll()
         bilder = schema.bilder
         for p in schema.config where material[p.key] == nil {
             material[p.key] = p.defaultValue
@@ -303,9 +312,21 @@ final class AppModel: ObservableObject {
             selection = nil
         }
         if selection == nil {
-            let preferred = schema.models["wichtelhaus"] != nil ? "wichtelhaus" : schema.sidebarGroups.first?.models.first?.id
-            selection = preferred.map(SidebarItem.model)
+            selection = .alle
         }
+    }
+
+    /// Vorschaubild einer Vorlage: aus der Engine geholt und gemerkt; nil, wenn es keines gibt.
+    func vorschau(for id: String) async -> SheetGeometry? {
+        if let aufgabe = vorschauAufgaben[id] { return await aufgabe.value }
+        guard let client else { return nil }
+        let aufgabe = Task<SheetGeometry?, Never> {
+            guard let svg = try? await client.vorschau(id: id) else { return nil }
+            let geometrie = await Task.detached { SheetGeometry.parse(svg: svg) }.value
+            return geometrie.width > 0 && geometrie.height > 0 ? geometrie : nil
+        }
+        vorschauAufgaben[id] = aufgabe
+        return await aufgabe.value
     }
 
     func values(for modelID: String) -> [String: JSONValue] {

@@ -154,6 +154,13 @@ class Handler(BaseHTTPRequestHandler):
                  lang=getattr(self, "lang", "de"), sprachen=[dict(value=v, label=l) for v, l in i18n.SPRACHEN])
         if "group_labels" not in s:
             s["group_labels"] = {g: g for g in s.get("groups", [])}
+        english = getattr(self, "lang", "de") == "en"
+        for b in s.get("bereiche", []):
+            if english:
+                b["name"] = b.get("name_en") or b["name"]
+            for t in b.get("themen", []):
+                if english:
+                    t["name"] = t.get("name_en") or t["name"]
         return s
 
     def _assistent(self, path: str, req: dict) -> None:
@@ -272,6 +279,13 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, fh.read(), "text/html; charset=utf-8")
         elif path == "/api/schema":
             self._json(self._schema())
+        elif path == "/api/vorschau":
+            import vorschau
+            text = vorschau.svg((parse_qs(query).get("id") or [""])[0])
+            if text is None:
+                self._json({"error": "keine Vorschau"}, 404)
+            else:
+                self._send(200, text.encode("utf-8"), "image/svg+xml")
         elif path in ("/favicon.ico", "/favicon.png", "/icon.png"):
             if os.path.exists(ICON):
                 with open(ICON, "rb") as fh:

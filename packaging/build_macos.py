@@ -32,7 +32,7 @@ from steckwerk import __version__  # noqa: E402
 APP = "Steckwerk"
 BUNDLE_ID = "app.steckwerk.werkbank"
 CODE_FILES = ["steckwerk.py", "validator.py", "service.py", "cli.py", "webui.py", "preview.py",
-              "steckwerk_app.py", "steckwerk.yaml", "README.md", "PAKETE.md", "pakete.py", "motive.py", "updater.py", "i18n.py", "assistent.py", "bildgen.py", "laser.py", "montage.py", "projekte.py", "bilder.py", "gravur.py",
+              "steckwerk_app.py", "steckwerk.yaml", "README.md", "PAKETE.md", "pakete.py", "motive.py", "updater.py", "i18n.py", "assistent.py", "bildgen.py", "laser.py", "montage.py", "projekte.py", "bilder.py", "gravur.py", "vorschau.py", "themen.json",
               "laserforge.py", "README.en.md", "web/index.html",
               "web/icon.png"]
 
@@ -40,6 +40,7 @@ CODE_FILES = ["steckwerk.py", "validator.py", "service.py", "cli.py", "webui.py"
 def code_files() -> List[str]:
     files = CODE_FILES + sorted(os.path.relpath(p, ROOT) for p in glob.glob(os.path.join(ROOT, "models", "*.py")))
     files += sorted(os.path.relpath(p, ROOT) for p in glob.glob(os.path.join(ROOT, "motive", "*.json")))
+    files += sorted(os.path.relpath(p, ROOT) for p in glob.glob(os.path.join(ROOT, "vorschau", "*.svg")))
     missing = [f for f in files if not os.path.exists(os.path.join(ROOT, f))]
     if missing:
         raise SystemExit(f"Fehlende Dateien: {missing}")

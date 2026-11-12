@@ -125,6 +125,21 @@ public struct EngineClient: Sendable {
         try await call("api/schema", nil, as: Schema.self)
     }
 
+    /// Vorschaubild (kompaktes SVG der ersten Platte) einer Vorlage; nil, wenn es keines gibt.
+    public func vorschau(id: String) async throws -> String? {
+        guard var parts = URLComponents(url: baseURL.appendingPathComponent("api/vorschau"), resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        parts.queryItems = [URLQueryItem(name: "id", value: id)]
+        guard let url = parts.url else { return nil }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 60
+        let (data, status) = try await transport.send(request)
+        guard status == 200 else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
     public func generate(model: String, params: [String: JSONValue], config: [String: JSONValue],
                          gravuren: [JSONValue] = []) async throws -> GenerateResponse {
         var body: [String: JSONValue] = ["model": .string(model), "params": .object(params), "config": .object(config)]

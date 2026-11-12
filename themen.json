@@ -1,0 +1,39 @@
+{
+  "standard": 1,
+  "beschreibung": "Ordnet die Vorlagen (Modellgruppen) in Bereiche und Themen. Gilt für die Seitenleiste und die Galerie in Steckwerk Desktop. Eine Gruppe ohne Eintrag landet unter „Weitere“.",
+  "bereiche": [
+    {"id": "feste", "name": "Feste und Jahreszeiten", "name_en": "Seasons and holidays",
+     "themen": [
+       {"id": "weihnachten", "name": "Weihnachten", "name_en": "Christmas", "gruppen": ["Weihnachten"]},
+       {"id": "winterdorf", "name": "Winterdorf", "name_en": "Winter village", "gruppen": ["Häuser", "Zubehör"]},
+       {"id": "wichtel", "name": "Wichtel", "name_en": "Gnomes", "gruppen": ["Wichtel"]},
+       {"id": "halloween", "name": "Halloween", "name_en": "Halloween", "gruppen": ["Halloween"]}
+     ]},
+    {"id": "zuhause", "name": "Zuhause und Geschenke", "name_en": "Home and gifts",
+     "themen": [
+       {"id": "wohnen", "name": "Wohnen", "name_en": "Living", "gruppen": ["Wohnen"]},
+       {"id": "schmuck", "name": "Schmuck", "name_en": "Jewellery", "gruppen": ["Schmuck"]},
+       {"id": "mehrlagig", "name": "Mehrlagig", "name_en": "Layered", "gruppen": ["Mehrlagig"]},
+       {"id": "motive", "name": "Eigene Motive", "name_en": "Own motifs", "gruppen": ["Eigene Motive"]}
+     ]},
+    {"id": "spielen", "name": "Spielen und Bewegen", "name_en": "Play and motion",
+     "themen": [
+       {"id": "spiele", "name": "Spiele", "name_en": "Games", "gruppen": ["Spiele"]},
+       {"id": "bewegung", "name": "Bewegung", "name_en": "Motion", "gruppen": ["Bewegung"]},
+       {"id": "fahrzeuge", "name": "Fahrzeuge", "name_en": "Vehicles", "gruppen": ["Fahrzeuge"]}
+     ]},
+    {"id": "formen", "name": "Formen und Kunst", "name_en": "Shapes and art",
+     "themen": [
+       {"id": "formen", "name": "Formen", "name_en": "Shapes", "gruppen": ["Formen"]}
+     ]},
+    {"id": "markt", "name": "Laden und Markt", "name_en": "Shop and market",
+     "themen": [
+       {"id": "verkauf", "name": "Verkauf", "name_en": "Sales", "gruppen": ["Verkauf"]}
+     ]},
+    {"id": "basis", "name": "Basis", "name_en": "Basics",
+     "themen": [
+       {"id": "grundlagen", "name": "Grundlagen", "name_en": "Basics", "gruppen": ["Grundlagen"]},
+       {"id": "komplett", "name": "Komplett", "name_en": "Complete", "gruppen": ["Komplett"]}
+     ]}
+  ]
+}

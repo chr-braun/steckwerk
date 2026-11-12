@@ -700,6 +700,32 @@ def extra_files(results: List[Result], cfg: Config, req: Dict[str, Any]) -> List
 # Web-API
 # ---------------------------------------------------------------------------
 
+def bereiche(groups: List[str]) -> List[Dict[str, Any]]:
+    """Bereiche und Themen für Seitenleiste und Galerie (themen.json). Gruppen ohne Eintrag kommen unter „Weitere“."""
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "themen.json"), encoding="utf-8") as fh:
+            roh = json.load(fh).get("bereiche") or []
+    except (OSError, ValueError):
+        roh = []
+    out, benutzt = [], set()
+    for b in roh:
+        themen = []
+        for t in b.get("themen") or []:
+            gr = [g for g in t.get("gruppen") or [] if g in groups]
+            benutzt.update(gr)
+            if gr:
+                themen.append(dict(id=str(t.get("id") or gr[0]), name=str(t.get("name") or gr[0]),
+                                   name_en=str(t.get("name_en") or t.get("name") or gr[0]), gruppen=gr))
+        if themen:
+            out.append(dict(id=str(b["id"]), name=str(b["name"]), name_en=str(b.get("name_en") or b["name"]),
+                            themen=themen))
+    rest = [g for g in groups if g not in benutzt]
+    if rest:
+        out.append(dict(id="weitere", name="Weitere", name_en="More",
+                        themen=[dict(id=g, name=g, name_en=g, gruppen=[g]) for g in rest]))
+    return out
+
+
 def schema() -> Dict[str, Any]:
     groups: List[str] = []
     for m in MODEL_INFO.values():
@@ -711,7 +737,7 @@ def schema() -> Dict[str, Any]:
                  beschreibung_en=m.get("beschreibung_en", ""),
                  schluessel=[k for k, i in MODEL_INFO.items() if (i.get("paket") or {}).get("id") == m.get("id")])
             for _, m, err in PAKETE]
-    return dict(version=__version__, groups=groups, models=MODEL_INFO, config=CONFIG_INFO,
+    return dict(version=__version__, groups=groups, bereiche=bereiche(groups), models=MODEL_INFO, config=CONFIG_INFO,
                 motive=[mt.summary(m) for m in mt.library()], motive_ordner=mt.user_dir(),
                 bilder=bilder.library(), bilder_ordner=bilder.user_dir(), gravur=gravur.optionen(),
                 vehicle_defaults=VEHICLE_DEFAULTS, pakete=paks, pakete_ordner=pakete.install_dir())

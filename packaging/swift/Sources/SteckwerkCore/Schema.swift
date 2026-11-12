@@ -12,9 +12,10 @@ public struct Schema: Decodable, Sendable {
     public let assistent: KISettings?
     public let bilder: [BildInfo]
     public let gravur: GravurOptionen
+    public let bereiche: [Bereich]
 
     enum CodingKeys: String, CodingKey {
-        case models, groups, config, motive, pakete, version, assistent, bilder, gravur
+        case models, groups, config, motive, pakete, version, assistent, bilder, gravur, bereiche
         case groupLabels = "group_labels"
     }
 
@@ -30,6 +31,41 @@ public struct Schema: Decodable, Sendable {
         assistent = try? c.decodeIfPresent(KISettings.self, forKey: .assistent)
         bilder = (try? c.decodeIfPresent([BildInfo].self, forKey: .bilder)) ?? []
         gravur = (try? c.decodeIfPresent(GravurOptionen.self, forKey: .gravur)) ?? GravurOptionen()
+        bereiche = (try? c.decodeIfPresent([Bereich].self, forKey: .bereiche)) ?? []
+    }
+
+    /// Alle Vorlagen, nach Name sortiert.
+    public var alleModelle: [ModelEntry] {
+        models.map { ModelEntry(id: $0.key, info: $0.value) }.sorted {
+            ($0.info.label.lowercased(), $0.id) < ($1.info.label.lowercased(), $1.id)
+        }
+    }
+
+    /// Vorlagen eines Themas (alle seiner Gruppen), nach Name sortiert.
+    public func modelle(in thema: Thema) -> [ModelEntry] {
+        alleModelle.filter { thema.gruppen.contains($0.info.group) }
+    }
+
+    /// Vorlagen eines Bereichs, nach Themen geordnet.
+    public func modelle(in bereich: Bereich) -> [ModelEntry] {
+        bereich.themen.flatMap { modelle(in: $0) }
+    }
+
+    /// Anzahl Vorlagen in einem Bereich (für die Seitenleiste).
+    public func anzahl(in bereich: Bereich) -> Int { modelle(in: bereich).count }
+
+    /// Das Thema, zu dem eine Vorlage gehört (für Bezeichnung in der Galerie).
+    public func thema(for entry: ModelEntry) -> Thema? {
+        bereiche.lazy.flatMap { $0.themen }.first { $0.gruppen.contains(entry.info.group) }
+    }
+
+    /// Treffer in Name, Beschreibung, Gruppe oder Kennung (ohne Groß-/Kleinschreibung).
+    public static func filter(_ entries: [ModelEntry], matching query: String) -> [ModelEntry] {
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !q.isEmpty else { return entries }
+        return entries.filter { e in
+            [e.id, e.info.label, e.info.desc, e.info.group].contains { $0.lowercased().contains(q) }
+        }
     }
 
     /// Modelle für die Seitenleiste: Gruppen in der Reihenfolge der Engine, darin nach Name sortiert.
@@ -62,6 +98,50 @@ public struct Schema: Decodable, Sendable {
 
     public func motiv(id: String) -> Motiv? {
         motive.first { $0.id == id }
+    }
+}
+
+/// Ein Bereich der Seitenleiste („Feste und Jahreszeiten“ …) mit seinen Themen.
+public struct Bereich: Identifiable, Hashable, Sendable, Decodable {
+    public let id: String
+    public let name: String
+    public let themen: [Thema]
+
+    enum CodingKeys: String, CodingKey { case id, name, themen }
+
+    public init(id: String, name: String, themen: [Thema]) {
+        self.id = id
+        self.name = name
+        self.themen = themen
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        themen = try c.decodeIfPresent([Thema].self, forKey: .themen) ?? []
+    }
+}
+
+/// Ein Thema („Weihnachten“, „Winterdorf“ …): fasst eine oder mehrere Engine-Gruppen zusammen.
+public struct Thema: Identifiable, Hashable, Sendable, Decodable {
+    public let id: String
+    public let name: String
+    public let gruppen: [String]
+
+    enum CodingKeys: String, CodingKey { case id, name, gruppen }
+
+    public init(id: String, name: String, gruppen: [String]) {
+        self.id = id
+        self.name = name
+        self.gruppen = gruppen
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        gruppen = try c.decodeIfPresent([String].self, forKey: .gruppen) ?? []
     }
 }
 
