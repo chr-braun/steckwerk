@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.13.0 – 2026-11-12
+
 - **Tidier sidebar in Steckwerk Desktop:** just *All templates*, *Recent*, six areas, the *Library* (motifs and photos, packages) and *Settings* at the bottom with material and updates. You pick a template on the right in a **gallery with plate thumbnails**, grouped and filterable by theme; search results show up there too. The grouping lives in `themen.json`, the pictures in `vorschau/` (rerun `python3 packaging/vorschaubilder.py` for new templates; a missing picture is computed by the engine on first view).
 - **Package catalogue by area:** the browser app and Steckwerk Desktop now group the theme packages under *Seasons and holidays*, *Home and gifts*, *Play and motion*, *Shapes and art*, *Shop and market* and *Basics*. The grouping lives in `paketquellen/bereiche.json` and arrives through the update channel.
 - New **website** at chr-braun.github.io/steckwerk with download, packages by area and model pictures computed straight from the packages.
