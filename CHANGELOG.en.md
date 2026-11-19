@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.14.0 – 2026-11-19
+
 - **Cut eave edge** for the gnome house, annex, house series and mailbox: the eave can now be a real cut contour instead of just an engraving – *scallops*, *lace scallops with holes*, *waves*, *zigzag*, *icing drips* and *icicles*. The edge hangs below the roof overhang; dimensions and joints stay the same. In a series the edge is randomised per house; all other features of a series stay unchanged for the same seed.
 
 ## 2.13.0 – 2026-11-12
