@@ -29,6 +29,8 @@ Alles ist seit dem 9. Oktober 2026 entstanden. Die Details stehen im
 | 2.10.1 | 10.11. | Deutlich schneller auf älteren Rechnern: Prüfung 3- bis 20-mal schneller, großes Ebenenbild 90 s → 9 s, überholte Live-Vorschauen werden verworfen, Speichern nutzt das geprüfte Ergebnis |
 | 2.11.0 | 11.11. | Themenpaket Spiele 1.0.0; Wichtel 1.1.0 mit edlem Zubehör; Weihnachten 2.1.0 mit Namensanhängern in Schreibschrift; Export als .xcs/.xs, „In XCS öffnen“, Schätzung, Montage-PDF, Projekte |
 | 2.12.0 | 11.11. | Neue Oberfläche (Statusleiste, Projekte, Ausgeben-Blatt, Prüfbericht als Teiletabelle); Eigene Gravur mit Fotos, Logos und 18 Mustern; Spiele 1.1.0 mit Puzzle; Weihnachten 2.2.0 mit edlem Christbaumschmuck |
+| 2.13.0 | 12.11. | Steckwerk Desktop mit aufgeräumter Seitenleiste und Vorlagen-Galerie mit Vorschaubildern; Paketkatalog nach Bereichen; Webseite auf GitHub Pages; nur noch zwei Releases auf GitHub
+| 2.14.0 | 19.11. | Geschnittene Dachkante (Bogen, Spitze, Wellen, Zacken, Zuckerguss, Eiszapfen) für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten |
 
 ## Pakete
 

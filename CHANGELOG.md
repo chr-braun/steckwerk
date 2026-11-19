@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.14.0 – 2026-11-19
+
 - **Geschnittene Dachkante** für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten: Die Traufe kann jetzt als echte Schnittkontur verziert werden statt nur graviert – *Bogenkante*, *Spitzenkante mit Lochung*, *Wellenkante*, *Zackenkante*, *Zuckerguss-Tropfen* und *Eiszapfen*. Die Kante hängt zusätzlich unter dem Dachüberstand, Maße und Steckverbindungen bleiben gleich, die Dachgravur bleibt auf der Dachfläche. In der Serie wird die Kante wie die übrigen Merkmale je Haus gewürfelt; alle anderen Merkmale einer Serie bleiben bei gleichem Seed wie bisher.
 
 ## 2.13.0 – 2026-11-12
