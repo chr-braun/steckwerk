@@ -6,7 +6,8 @@ vorne, Brief- und Fähnchen-Gravur, Pfosten mit Tabs oben (in den Kastenboden) u
 (in die Fußplatte).
 
 Gestaltung: text (Name statt Briefumschlag, z. B. „Post“ oder „Fam. Huber“) mit schild_form,
-schrift und schreibweise; dach (Dachgravur wie beim Wichtelhaus).
+schrift und schreibweise; dach (Dachgravur wie beim Wichtelhaus); dachkante (geschnittene Traufkante wie beim
+Wichtelhaus: bogen, spitze, wellen, zacken, zuckerguss, eiszapfen).
 """
 from __future__ import annotations
 
@@ -24,9 +25,11 @@ DEFAULTS = dict(width=40.0, depth=50.0, height=32.0, post=55.0)
 def build(cfg: Config, name: str = "briefkasten", width: Optional[float] = None,
           depth: Optional[float] = None, height: Optional[float] = None,
           post: Optional[float] = None, pitch: float = 35.0, text: str = "", schild_form: str = "rahmen",
-          schrift: str = "normal", schreibweise: str = "gross", dach: str = "ziegel") -> Assembly:
+          schrift: str = "normal", schreibweise: str = "gross", dach: str = "ziegel",
+          dachkante: str = "gerade") -> Assembly:
     dk.check_choice("Schildform", schild_form, dk.SIGNS)
     dk.check_choice("Dach", dach, dk.ROOFS)
+    dk.check_choice("Dachkante", dachkante, dk.EAVES)
     if schrift not in STYLES:
         raise ValueError(f"Schrift {schrift!r} unbekannt – erlaubt: {', '.join(STYLES)}")
     if schreibweise not in CASES:
@@ -68,7 +71,14 @@ def build(cfg: Config, name: str = "briefkasten", width: Optional[float] = None,
     for k, r in enumerate(("dach_links", "dach_rechts")):
         roof = asm.part(info.name(r))
         x0, y0, x1, y1 = roof.bbox()
-        dk.roof_pattern(dk.Canvas(roof, margin=1.2, hole_margin=1.0, seed=cfg.seed + k), dach,
+        if dachkante != "gerade":
+            edge, holes = dk.eave_edge(x0, x1, y0, dachkante, max(2.5, min(5.0, 0.11 * H)), cfg.seed + k,
+                                       cfg.arc_tolerance, cfg.min_web)
+            roof.outline = clean(edge + [(x1, y1), (x0, y1)])
+            for h in holes:
+                roof.add_hole(h)
+        area = rect(x0, 1.2, x1 - x0, y1 - 1.2) if dachkante != "gerade" else None
+        dk.roof_pattern(dk.Canvas(roof, margin=1.2, hole_margin=1.0, area=area, seed=cfg.seed + k), dach,
                         (x0, y0, x1, y1), 5.0, cfg.seed + k)
 
     # Pfosten: oben Tab in den Kastenboden, unten Tab in die Fußplatte
@@ -101,7 +111,7 @@ def build(cfg: Config, name: str = "briefkasten", width: Optional[float] = None,
     asm.parts.append(foot)
     asm.connect(f"{post_part.name}:unten", f"{foot.name}:pfosten")
     for k, v, d in (("text", text, ""), ("schild_form", schild_form, "rahmen"), ("schrift", schrift, "normal"),
-                    ("schreibweise", schreibweise, "gross"), ("dach", dach, "ziegel")):
+                    ("schreibweise", schreibweise, "gross"), ("dach", dach, "ziegel"), ("dachkante", dachkante, "gerade")):
         if v != d:
             asm.params[k] = v
     asm.notes.append(f"{name}: Pfosten in Fußplatte und Kastenboden stecken (ggf. mit Leim fixieren).")

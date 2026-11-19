@@ -106,6 +106,8 @@ def house_style(random: bool = False) -> list:
             choice("fenster_deko", "Fensterschmuck", dk.WINDOW_DECO, st.fenster_deko, FENSTER),
             choice("wand", "Wandgravur", dk.WALLS, st.wand, WAND),
             choice("dach", "Dachgravur", dk.ROOFS, st.dach, WAND),
+            choice("dachkante", "Dachkante", dk.EAVES, st.dachkante, WAND,
+                   "Zierkante an der Traufe – echt ausgeschnitten, nicht nur graviert"),
             choice("zierleiste", "Zierleiste unter dem Dach", dk.TRIMS, st.zierleiste, WAND,
                    "Linie entlang der Traufe – auch auf dem Dach"),
             choice("giebel", "Giebelschmuck", dk.GABLES, st.giebel, WAND),
@@ -166,6 +168,8 @@ MODEL_INFO: Dict[str, Dict[str, Any]] = {
                         params=[num("width", "Breite", 40, 25, 150), num("depth", "Tiefe", 50, 25, 150),
                                 num("height", "Höhe Kasten", 32, 20, 150),
                                 sel("dach", "Dachgravur", dk.ROOFS, "ziegel", section="Dach"),
+                                sel("dachkante", "Dachkante", dk.EAVES, "gerade",
+                                    "Zierkante an der Traufe – echt ausgeschnitten", section="Dach"),
                                 txt("text", "Namensschild", "", "statt Briefumschlag, z. B. „Post“ – | = neue Zeile – "
                                     + SYM, 40, section=SCHRIFT, symbols=True),
                                 sel("schild_form", "Schildform", dk.SIGNS, "rahmen", section=SCHRIFT)]

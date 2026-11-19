@@ -29,9 +29,14 @@ POOLS: Dict[str, List[str]] = {
     "dach": ["ziegel", "ziegel", "biber", "biber", "schindel", "schindel", "reet", "schnee", "schnee"],
     "zierleiste": ["keine", "keine", "zuckerguss", "zuckerguss", "eiszapfen", "eiszapfen", "lichterkette",
                    "girlande", "wellen", "punkte"],
+    "dachkante": ["gerade", "gerade", "bogen", "bogen", "spitze", "wellen", "zuckerguss", "eiszapfen",
+                  "zacken"],
     "schild_form": ["rahmen", "rund", "banner", "holz", "geschweift", "oval"],
 }
 RANDOM_KEYS = list(POOLS)
+# Später hinzugekommene Optionen würfeln mit eigenem Zufall – so bleiben bestehende Serien
+# (gleicher Seed) in allen älteren Merkmalen unverändert.
+OWN_RNG = {"dachkante": 53}
 
 
 def variants(n: int, seed: int, base_width: float, base_height: float, base_depth: float) -> List[dict]:
@@ -65,6 +70,7 @@ def variants(n: int, seed: int, base_width: float, base_height: float, base_dept
 def styles(n: int, seed: int, style: Dict[str, Optional[str]]) -> List[dict]:
     """Gestaltung je Haus: feste Werte übernehmen, „zufall“ je Haus auswürfeln."""
     rng = random.Random(seed * 31 + 5)
+    own = {k: random.Random(seed * m + 11) for k, m in OWN_RNG.items()}
     names = [s.strip() for s in (style.get("schild") or "").split(",")]
     out = []
     for i in range(n):
@@ -73,7 +79,7 @@ def styles(n: int, seed: int, style: Dict[str, Optional[str]]) -> List[dict]:
             if k == "schild":
                 continue
             if k in POOLS and (v is None or v == RANDOM):
-                st[k] = rng.choice(POOLS[k])
+                st[k] = own.get(k, rng).choice(POOLS[k])
             elif v is not None:
                 st[k] = v
         if i < len(names) and names[i]:
