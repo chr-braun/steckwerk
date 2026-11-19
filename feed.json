@@ -1,25 +1,19 @@
 {
   "standard": 1,
-  "erstellt": "2026-11-12",
+  "erstellt": "2026-11-19",
   "programm": {
-    "version": "2.13.0",
-    "datum": "2026-11-12",
+    "version": "2.14.0",
+    "datum": "2026-11-19",
     "hinweise": [
-      "Aufgeräumte Seitenleiste in Steckwerk Desktop: nur noch *Alle Vorlagen*, *Zuletzt*, sechs Bereiche (*Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt*, *Basis*), die *Bibliothek* (Motive und Fotos, Pakete) und unten *Einstellungen* mit Material und Updates. Die Vorlage wählst du rechts in einer Galerie mit Vorschaubildern der Platte, nach Themen gegliedert und filterbar; die Suche zeigt ihre Treffer ebenfalls dort. Die Zuordnung steht in themen.json, die Bilder in vorschau/ (für neue Vorlagen python3 packaging/vorschaubilder.py laufen lassen; fehlt ein Bild, rechnet die Engine es beim ersten Öffnen selbst).",
-      "Paketkatalog nach Bereichen: In der Browser-App und in Steckwerk Desktop stehen die Themenpakete jetzt geordnet unter *Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt* und *Basis*. Die Zuordnung steht in paketquellen/bereiche.json und kommt über den Update-Kanal.",
-      "Neue Webseite unter chr-braun.github.io/steckwerk mit Download, Paketen nach Bereichen und Modellbildern, die direkt aus den Paketen gerechnet werden.",
-      "Auf der Releases-Seite bleiben nur noch die zwei neuesten Versionen stehen; das README ist kurz und übersichtlich, die ausführliche Referenz steht im Wiki unter *Kommandozeile*."
+      "Geschnittene Dachkante für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten: Die Traufe kann jetzt als echte Schnittkontur verziert werden statt nur graviert – *Bogenkante*, *Spitzenkante mit Lochung*, *Wellenkante*, *Zackenkante*, *Zuckerguss-Tropfen* und *Eiszapfen*. Die Kante hängt zusätzlich unter dem Dachüberstand, Maße und Steckverbindungen bleiben gleich, die Dachgravur bleibt auf der Dachfläche. In der Serie wird die Kante wie die übrigen Merkmale je Haus gewürfelt; alle anderen Merkmale einer Serie bleiben bei gleichem Seed wie bisher."
     ],
     "hinweise_en": [
-      "Tidier sidebar in Steckwerk Desktop: just *All templates*, *Recent*, six areas, the *Library* (motifs and photos, packages) and *Settings* at the bottom with material and updates. You pick a template on the right in a gallery with plate thumbnails, grouped and filterable by theme; search results show up there too. The grouping lives in themen.json, the pictures in vorschau/ (rerun python3 packaging/vorschaubilder.py for new templates; a missing picture is computed by the engine on first view).",
-      "Package catalogue by area: the browser app and Steckwerk Desktop now group the theme packages under *Seasons and holidays*, *Home and gifts*, *Play and motion*, *Shapes and art*, *Shop and market* and *Basics*. The grouping lives in paketquellen/bereiche.json and arrives through the update channel.",
-      "New website at chr-braun.github.io/steckwerk with download, packages by area and model pictures computed straight from the packages.",
-      "The releases page keeps only the two newest versions; the README is short, the full reference moved to the wiki page *Kommandozeile*."
+      "Cut eave edge for the gnome house, annex, house series and mailbox: the eave can now be a real cut contour instead of just an engraving – *scallops*, *lace scallops with holes*, *waves*, *zigzag*, *icing drips* and *icicles*. The edge hangs below the roof overhang; dimensions and joints stay the same. In a series the edge is randomised per house; all other features of a series stay unchanged for the same seed."
     ],
     "mac": {
-      "datei": "Steckwerk-2.13.0-macOS.zip",
-      "sha256": "a15731292e21a140102c364f778335f45839fb75cfe33adcf0adccd34dc6a7c0",
-      "groesse": 935229
+      "datei": "Steckwerk-2.14.0-macOS.zip",
+      "sha256": "feac61b81305d3416f874c2dc58fca8d4adcb2b396b2a66a253553556b6012fb",
+      "groesse": 937428
     }
   },
   "pakete": [
@@ -447,18 +441,15 @@
     }
   ],
   "desktop": {
-    "version": "2.13.0",
-    "datum": "2026-11-12",
+    "version": "2.14.0",
+    "datum": "2026-11-19",
     "hinweise": [
-      "Aufgeräumte Seitenleiste in Steckwerk Desktop: nur noch *Alle Vorlagen*, *Zuletzt*, sechs Bereiche (*Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt*, *Basis*), die *Bibliothek* (Motive und Fotos, Pakete) und unten *Einstellungen* mit Material und Updates. Die Vorlage wählst du rechts in einer Galerie mit Vorschaubildern der Platte, nach Themen gegliedert und filterbar; die Suche zeigt ihre Treffer ebenfalls dort. Die Zuordnung steht in themen.json, die Bilder in vorschau/ (für neue Vorlagen python3 packaging/vorschaubilder.py laufen lassen; fehlt ein Bild, rechnet die Engine es beim ersten Öffnen selbst).",
-      "Paketkatalog nach Bereichen: In der Browser-App und in Steckwerk Desktop stehen die Themenpakete jetzt geordnet unter *Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt* und *Basis*. Die Zuordnung steht in paketquellen/bereiche.json und kommt über den Update-Kanal.",
-      "Neue Webseite unter chr-braun.github.io/steckwerk mit Download, Paketen nach Bereichen und Modellbildern, die direkt aus den Paketen gerechnet werden.",
-      "Auf der Releases-Seite bleiben nur noch die zwei neuesten Versionen stehen; das README ist kurz und übersichtlich, die ausführliche Referenz steht im Wiki unter *Kommandozeile*."
+      "Geschnittene Dachkante für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten: Die Traufe kann jetzt als echte Schnittkontur verziert werden statt nur graviert – *Bogenkante*, *Spitzenkante mit Lochung*, *Wellenkante*, *Zackenkante*, *Zuckerguss-Tropfen* und *Eiszapfen*. Die Kante hängt zusätzlich unter dem Dachüberstand, Maße und Steckverbindungen bleiben gleich, die Dachgravur bleibt auf der Dachfläche. In der Serie wird die Kante wie die übrigen Merkmale je Haus gewürfelt; alle anderen Merkmale einer Serie bleiben bei gleichem Seed wie bisher."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.13.0-macOS.zip",
-      "sha256": "49bb4e7524cbdee86106183780e6a694d10de194e2845c70d8e32b49503c7a04",
-      "groesse": 2979426
+      "datei": "Steckwerk-Desktop-2.14.0-macOS.zip",
+      "sha256": "ddea5a9d968b742df89d116f863ec94c1de345fb61a3af6de37186a290b02e72",
+      "groesse": 2981623
     }
   }
 }
