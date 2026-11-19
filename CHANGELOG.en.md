@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **Cut eave edge** for the gnome house, annex, house series and mailbox: the eave can now be a real cut contour instead of just an engraving – *scallops*, *lace scallops with holes*, *waves*, *zigzag*, *icing drips* and *icicles*. The edge hangs below the roof overhang; dimensions and joints stay the same. In a series the edge is randomised per house; all other features of a series stay unchanged for the same seed.
+
 ## 2.13.0 – 2026-11-12
 
 - **Tidier sidebar in Steckwerk Desktop:** just *All templates*, *Recent*, six areas, the *Library* (motifs and photos, packages) and *Settings* at the bottom with material and updates. You pick a template on the right in a **gallery with plate thumbnails**, grouped and filterable by theme; search results show up there too. The grouping lives in `themen.json`, the pictures in `vorschau/` (rerun `python3 packaging/vorschaubilder.py` for new templates; a missing picture is computed by the engine on first view).

@@ -14,6 +14,7 @@ Gestaltung (alles optional, siehe Style):
   giebel         rundfenster · herz · stern · uhr · luke · text · keins   (+ giebel_text)
   wand           keine · holz · ziegel · stein · fachwerk · schuppen · putz · sterne · herzen
   dach           ziegel · biber · schindel · reet · schnee · sterne · keine
+  dachkante      gerade · bogen · spitze · wellen · zacken · zuckerguss · eiszapfen  (geschnittene Traufkante)
   zierleiste     keine · linie · doppelt · gestrichelt · punkte · wellen · zickzack · zuckerguss ·
                  eiszapfen · lichterkette · girlande · sterne · herzen  (Giebel, Traufe, Dachkante)
   schild         Text über der Tür (schild_form: rahmen · rund · oval · banner · holz · geschweift · ohne)
@@ -48,6 +49,7 @@ class Style:
     giebel_text: str = ""
     wand: str = "keine"
     dach: str = "ziegel"
+    dachkante: str = "gerade"
     zierleiste: str = "keine"
     schild: str = ""
     schild_form: str = "rahmen"
@@ -65,6 +67,7 @@ class Style:
         dk.check_choice("Giebel", self.giebel, dk.GABLES)
         dk.check_choice("Wand", self.wand, dk.WALLS)
         dk.check_choice("Dach", self.dach, dk.ROOFS)
+        dk.check_choice("Dachkante", self.dachkante, dk.EAVES)
         dk.check_choice("Zierleiste", self.zierleiste, dk.TRIMS)
         dk.check_choice("Schildform", self.schild_form, dk.SIGNS)
         dk.check_choice("Vorplatz", self.vorplatz, dk.YARDS)
@@ -294,10 +297,31 @@ def decorate_back(part: Part, info: BoxInfo, cfg: Config, light: bool = True,
              (W / 2, H, H + G) if gable else None)
 
 
+def eave_depth(H: float) -> float:
+    """Wie tief die geschnittene Traufkante unter dem Dach hängt."""
+    return _clamp(0.075 * H, 3.0, 7.0)
+
+
+def cut_eave(part: Part, info: BoxInfo, cfg: Config, kind: str, seed: int = 1) -> None:
+    """Ersetzt die gerade Traufkante (y = 0) einer Dachplatte durch eine geschnittene Zierkante.
+    Die Kante hängt zusätzlich unter dem Dachüberstand – Slots und Maße bleiben unverändert."""
+    if kind == "gerade":
+        return
+    x0, y0, x1, y1 = part.bbox()
+    edge, holes = dk.eave_edge(x0, x1, y0, kind, eave_depth(info.H), seed, cfg.arc_tolerance, cfg.min_web)
+    part.outline = clean(edge + [(x1, y1), (x0, y1)])
+    for h in holes:
+        part.add_hole(h)
+
+
 def decorate_roof(part: Part, info: BoxInfo, st: Optional[Style] = None, seed: int = 1) -> None:
     st = st or Style()
     x0, y0, x1, y1 = part.bbox()
-    cv = dk.Canvas(part, margin=1.2, hole_margin=1.0, seed=seed)
+    area = None
+    if y0 < 0.0:                           # geschnittene Zierkante hängt unter der Traufe (y = 0):
+        y0 = 0.0                           # die Dachgravur bleibt auf der eigentlichen Dachfläche
+        area = rect(x0, 1.2, x1 - x0, y1 - 1.2)
+    cv = dk.Canvas(part, margin=1.2, hole_margin=1.0, area=area, seed=seed)
     start = y0
     if st.zierleiste != "keine":
         size = _trim_size(info.H)
@@ -398,6 +422,7 @@ def build(cfg: Config, name: str = "wichtelhaus", width: Optional[float] = None,
     if chimney:
         add_chimney(asm, info, cfg)
     for k, r in enumerate(("dach_links", "dach_rechts")):
+        cut_eave(asm.part(info.name(r)), info, cfg, st.dachkante, seed + 4 + k)
         decorate_roof(asm.part(info.name(r)), info, st, seed + 4 + k)
     decorate_base(asm.part(info.name("boden")), info, cfg, door, st, seed + 6)
     if fe:
@@ -413,6 +438,7 @@ def build(cfg: Config, name: str = "wichtelhaus", width: Optional[float] = None,
         decorate_side(sub.part(sinfo.name("rechts")), sinfo, cfg, 1, mode, sst, seed + 11)
         decorate_back(sub.part(sinfo.name("hinten")), sinfo, cfg, False, 0.0, mode, sst, seed + 13)
         for k, r in enumerate(("dach_links", "dach_rechts")):
+            cut_eave(sub.part(sinfo.name(r)), sinfo, cfg, sst.dachkante, seed + 14 + k)
             decorate_roof(sub.part(sinfo.name(r)), sinfo, sst, seed + 14 + k)
         sub.notes.append(f"{name}: Anbau rechts an das Haus kleben (Vorderkanten bündig).")
         asm.merge(sub)

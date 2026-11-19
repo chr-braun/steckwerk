@@ -112,6 +112,11 @@ EN: Dict[str, str] = {
     "Dachgravur": "Roof engraving", "Giebelschmuck": "Gable decoration", "Giebeltext": "Gable text",
     "Heuluke": "Hay hatch", "Uhr": "Clock", "Rundfenster": "Round window", "Schneehaube": "Snow cap",
     "Schneekante": "Snow edge", "Eiszapfen": "Icicles", "Lichterkette": "Fairy lights", "Girlande": "Garland",
+    "Dachkante": "Roof edge", "Zierkante an der Traufe – echt ausgeschnitten, nicht nur graviert":
+        "Decorative eave edge – really cut out, not just engraved",
+    "Zierkante an der Traufe – echt ausgeschnitten": "Decorative eave edge – really cut out",
+    "gerade": "straight", "Bogenkante": "Scalloped edge", "Spitzenkante mit Lochung": "Lace edge with holes",
+    "Wellenkante": "Wavy edge", "Zackenkante": "Zigzag edge", "Zuckerguss-Tropfen": "Icing drips",
     "Zierleiste unter dem Dach": "Trim under the roof", "Linie entlang der Traufe – auch auf dem Dach": "Line along the eaves – also on the roof",
     "Vorplatz": "Forecourt", "Bodenplatte vor der Tür wird verlängert": "Base plate is extended in front of the door",
     "Fußmatte": "Doormat", "Text auf der Fußmatte": "Text on the doormat", "Steinweg": "Stone path",

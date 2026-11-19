@@ -131,6 +131,7 @@ python3 cli.py --model serie -n 4 -O schild="Anna, Ben, Lea, Tom" -O dach=schnee
 python3 cli.py --model ornament --shape kugel --pattern tannen --text "Mia" -O rand_stil=lichterkette -O textrahmen=holz
 python3 cli.py --model fahrzeug --vehicle lok --text "Polarexpress" -O textrahmen=banner -O zierlinie=sterne
 python3 cli.py --model briefkasten -O text="Fam. Huber" -O schild_form=geschweift -O dach=schnee
+python3 cli.py --model wichtelhaus -O wand=ziegel -O dachkante=bogen      # ausgeschnittene Bogenkante am Dach
 python3 cli.py --model schneemann -O text="Frosty ❄" -O schrift=kursiv
 
 # Steckfahrzeuge
@@ -362,6 +363,7 @@ Kanten, Durchbrüchen, Slots und zueinander, Schilder suchen sich die größte f
 | `fenster_deko` | `rahmen` (Rahmen + Sims), `laeden`, `herzlaeden`, `blumen` (Blumenkasten), `beides`, `schnee` (Schneehaube), `keine` |
 | `wand` | `keine`, `holz` (Bretter mit Astlöchern), `ziegel`, `stein` (Bruchstein), `fachwerk`, `schuppen`, `putz`, `sterne`, `herzen` |
 | `dach` | `ziegel`, `biber`, `schindel`, `reet`, `schnee` (Schneekante), `sterne`, `keine` |
+| `dachkante` | Geschnittene Traufkante (echte Schnittkontur, hängt unter dem Dachüberstand): `gerade`, `bogen` (Bogenkante), `spitze` (Bögen mit Lochung), `wellen`, `zacken`, `zuckerguss` (Tropfen), `eiszapfen` – auch beim Anbau und beim Briefkasten |
 | `zierleiste` | Linie unter dem Dach und an der Traufe: `keine` oder ein Linienstil (s. u.) |
 | `giebel` | `rundfenster`, `herz`, `stern`, `uhr`, `luke` (Heuluke), `text` (mit `giebel_text`), `keins` |
 | `vorplatz` | `keiner`, `weg` (Steinweg), `matte` (Fußmatte, Text `matte_text`), `garten` (Tannen + Schnee), `alles` – die Bodenplatte wird dafür nach vorne verlängert |

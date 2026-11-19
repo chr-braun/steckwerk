@@ -14,6 +14,7 @@ _deko.py – Gestaltungsbaukasten für Gravuren und Fenster.
   sign          Schild mit Beschriftung (Rahmen, abgerundet, oval, Banner, Holzbrett, geschweift)
   wall_pattern  Wandgravur (Holz, Ziegel, Bruchstein, Fachwerk, Schindeln, Rauputz, Sterne, Herzen)
   roof_pattern  Dachgravur (Ziegel, Biberschwanz, Holzschindeln, Reet, Schneekante, Sternenhimmel)
+  eave_edge     geschnittene Traufkante am Dach (Bogen, Spitze, Wellen, Zacken, Zuckerguss, Eiszapfen)
   yard          Vorplatz auf der Bodenplatte (Steinweg, Fußmatte mit Text, Tannen)
 """
 from __future__ import annotations
@@ -61,6 +62,9 @@ SIGNS = [("rahmen", "Rahmen"), ("rund", "abgerundet"), ("oval", "oval"), ("banne
 FONT_STYLES = [("normal", "normal"), ("fett", "fett"), ("kursiv", "kursiv"), ("schmal", "schmal"),
                ("breit", "breit"), ("schatten", "mit Schatten")]
 FONT_CASES = [("gross", "GROSSBUCHSTABEN"), ("normal", "wie eingegeben (groß/klein)")]
+EAVES = [("gerade", "gerade"), ("bogen", "Bogenkante"), ("spitze", "Spitzenkante mit Lochung"),
+         ("wellen", "Wellenkante"), ("zacken", "Zackenkante"), ("zuckerguss", "Zuckerguss-Tropfen"),
+         ("eiszapfen", "Eiszapfen")]
 YARDS = [("keiner", "keiner"), ("weg", "Steinweg"), ("matte", "Fußmatte"), ("garten", "Tannen und Schnee"),
          ("alles", "alles zusammen")]
 
@@ -1482,3 +1486,82 @@ def yard(cv: Canvas, kind: str, door_x: float, front_y: float, depth: float, doo
         for _ in range(int((x_range[1] - x_range[0]) * depth / 40)):
             p = (rng.uniform(*x_range), front_y - rng.uniform(1.0, depth))
             cv.put(circle(p[0], p[1], 0.3, 0.03))
+
+
+# ---------------------------------------------------------------------------
+# Geschnittene Traufkante
+# ---------------------------------------------------------------------------
+
+def eave_edge(x0: float, x1: float, y: float, kind: str, depth: float, seed: int = 1,
+              tol: float = 0.05, min_web: float = 1.5) -> Tuple[List[Point], List[List[Point]]]:
+    """Zierkante als echte Schnittkontur entlang der Traufe.
+
+    Liefert die Kantenpunkte von (x0, y) nach (x1, y) – das Material hängt bis zu 'depth' mm
+    unter y – und die Durchbrüche (nur bei „spitze“). Die Bögen werden auf eine ganze Zahl
+    über die Länge verteilt, damit beide Enden gleich aussehen."""
+    check_choice("Dachkante", kind, EAVES)
+    L = x1 - x0
+    if kind == "gerade" or depth <= 0 or L < 3 * depth:
+        return [(x0, y), (x1, y)], []
+    d = depth * {"zuckerguss": 1.6, "eiszapfen": 1.5}.get(kind, 1.0)
+    period = {"bogen": 2.3, "spitze": 2.5, "wellen": 2.6, "zacken": 1.5,
+              "zuckerguss": 0.95, "eiszapfen": 0.75}[kind] * d
+    n = max(2, int(round(L / period)))
+    p = L / n
+    pts: List[Point] = [(x0, y)]
+    holes: List[List[Point]] = []
+    rng = random.Random(seed)
+    if kind in ("bogen", "spitze"):
+        c = p / 2
+        sg = min(d, 0.8 * c)                           # keine zu spitzen Zwickel (Kerf, Stege)
+        R = (c * c + sg * sg) / (2 * sg)
+        for i in range(n):
+            a = x0 + i * p
+            cx, cy = a + c, y - sg + R
+            t0 = math.atan2(y - cy, a - cx)
+            t1 = math.atan2(y - cy, a + p - cx)
+            pts += arc_points(cx, cy, R, t0, t1, tol)[1:]
+            if kind == "spitze":
+                r = min(0.24 * sg, 0.17 * p)
+                hy = y - 0.5 * sg
+                # Steg zur Bogenkante und zur Nachbarkante mindestens min_web
+                room = R - math.hypot(0.0, hy - cy) - r
+                if r >= 0.7 and room >= min_web:
+                    holes.append(circle(cx, hy, r, tol))
+    elif kind == "wellen":
+        k = 16
+        for i in range(n):
+            a = x0 + i * p
+            for j in range(1, k + 1):
+                t = j / k
+                pts.append((a + t * p, y - d / 2 * (1 - math.cos(2 * math.pi * t))))
+    elif kind == "zacken":
+        for i in range(n):
+            a = x0 + i * p
+            pts += [(a + p / 2, y - d), (a + p, y)]
+    elif kind == "zuckerguss":
+        b = 0.22 * d                                   # durchgehender Guss-Rand
+        r = max(0.29 * p, min_web)                     # Tropfenradius
+        f = 0.45 * r                                   # Hohlkehle zwischen Rand und Tropfen
+        lens = [1.0, 0.55, 0.8, 0.62, 0.92, 0.5]
+        off = rng.randrange(len(lens))
+        pts.append((x0, y - b))
+        for i in range(n):
+            cx = x0 + (i + 0.5) * p
+            ly = max(b + r + f + 0.3, d * lens[(i + off) % len(lens)])
+            pts += arc_points(cx - r - f, y - b - f, f, math.pi / 2, 0.0, tol)
+            pts += arc_points(cx, y - ly + r, r, math.pi, 2 * math.pi, tol)
+            pts += arc_points(cx + r + f, y - b - f, f, math.pi, math.pi / 2, tol)
+        pts.append((x1, y - b))
+    elif kind == "eiszapfen":
+        b = 0.18 * d
+        w = 0.72 * p
+        pts.append((x0, y - b))
+        for i in range(n):
+            cx = x0 + (i + 0.5) * p
+            ly = b + (d - b) * rng.uniform(0.5, 1.0)
+            pts += [(cx - w / 2, y - b), (cx, y - ly), (cx + w / 2, y - b)]
+        pts.append((x1, y - b))
+    if dist(pts[-1], (x1, y)) > 1e-6:
+        pts.append((x1, y))
+    return clean(pts), holes

@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+- **Geschnittene Dachkante** für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten: Die Traufe kann jetzt als echte Schnittkontur verziert werden statt nur graviert – *Bogenkante*, *Spitzenkante mit Lochung*, *Wellenkante*, *Zackenkante*, *Zuckerguss-Tropfen* und *Eiszapfen*. Die Kante hängt zusätzlich unter dem Dachüberstand, Maße und Steckverbindungen bleiben gleich, die Dachgravur bleibt auf der Dachfläche. In der Serie wird die Kante wie die übrigen Merkmale je Haus gewürfelt; alle anderen Merkmale einer Serie bleiben bei gleichem Seed wie bisher.
+
 ## 2.13.0 – 2026-11-12
 
 - **Aufgeräumte Seitenleiste in Steckwerk Desktop:** nur noch *Alle Vorlagen*, *Zuletzt*, sechs Bereiche (*Feste und Jahreszeiten*, *Zuhause und Geschenke*, *Spielen und Bewegen*, *Formen und Kunst*, *Laden und Markt*, *Basis*), die *Bibliothek* (Motive und Fotos, Pakete) und unten *Einstellungen* mit Material und Updates. Die Vorlage wählst du rechts in einer **Galerie mit Vorschaubildern der Platte**, nach Themen gegliedert und filterbar; die Suche zeigt ihre Treffer ebenfalls dort. Die Zuordnung steht in `themen.json`, die Bilder in `vorschau/` (für neue Vorlagen `python3 packaging/vorschaubilder.py` laufen lassen; fehlt ein Bild, rechnet die Engine es beim ersten Öffnen selbst).
