@@ -4,10 +4,10 @@
   "name": "Papier",
   "version": "1.0.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Basteln mit Karton und Tonpapier: Steck-Tannenbaum mit Anhängern und Ausmal-Linien für Kinder – ohne Schere und ohne Kleber.",
+  "beschreibung": "Basteln mit Karton und Tonpapier: Steck-Tannenbaum mit Anhängern und Ausmal-Linien für Kinder, Laternen-Häuschen zum Falten mit Fenstern für Transparentpapier.",
   "name_en": "Paper",
-  "beschreibung_en": "Crafts from card and construction paper: slot-together Christmas tree with ornaments and colouring lines for children – no scissors, no glue.",
+  "beschreibung_en": "Crafts from card and construction paper: slot-together Christmas tree with ornaments and colouring lines for children, folding lantern house with windows for tracing paper.",
   "steckwerk": "2.6.0",
   "benoetigt": {"verzierungen": "2.0.0"},
-  "modelle": ["steck_tannenbaum"]
+  "modelle": ["steck_tannenbaum", "laternenhaus"]
 }

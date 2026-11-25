@@ -59,3 +59,19 @@ def test_tannenbaum_dickes_material_hinweis(M):
 def test_tannenbaum_falsche_form(M):
     with pytest.raises(ValueError):
         M["steck_tannenbaum"].build(Config(**KARTON), formen="mond")
+
+
+@pytest.mark.parametrize("kw", [dict(), dict(breite=50, tiefe=50, hoehe=50, fenster="rund", verzierung=False),
+                                dict(breite=110, tiefe=90, hoehe=90, fenster="herz"),
+                                dict(breite=140, tiefe=140, hoehe=140, fenster="stern", zuckerguss=False)])
+def test_laternenhaus(M, kw):
+    cfg = Config(**KARTON)
+    asm = M["laternenhaus"].build(cfg, **kw)
+    assert_cut_ready(asm, cfg)
+    namen = [p.name for p in asm.parts]
+    assert namen[-1] == "dach"
+    gross = kw.get("breite", 80) + kw.get("tiefe", 70) > 185
+    assert namen[:-1] == (["haus_vorne", "haus_hinten"] if gross else ["haus"])
+    assert all(p.holes for p in asm.parts[:-1])
+    assert all(p.engrave for p in asm.parts)          # Falzlinien
+    assert any("LED" in n for n in asm.notes)
