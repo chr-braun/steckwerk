@@ -38,6 +38,14 @@ KARTEN: Dict[str, Dict[str, Any]] = {
                               "Blütenmandala, Sommersonne und Herbstkranz.",
                          text_en="Five finely engraved medals and window pictures: winter wreath, frost-flower window, "
                                  "blossom mandala, summer sun and autumn wreath."),
+    "steckstern": dict(modell="holzstern", teile=["platte_a"], masse="Holzstern", masse_en="Wooden star",
+                       text="Sterne mit aufwendigem Filigran: Holzstern aus zwei gesteckten Platten und gefalteter "
+                            "Papierstern mit Spitzenborte und Rosette.",
+                       text_en="Stars with elaborate filigree: wooden star of two slotted plates and folded paper star "
+                               "with lace border and rosette."),
+    "papier": dict(modell="steck_tannenbaum", teile=["baum_a"], masse="Steck-Tannenbaum", masse_en="Slot-together tree",
+                   text="Aus Karton und Tonpapier: Bastelsets für Kinder und edle Papierarbeiten für Erwachsene.",
+                   text_en="From card and construction paper: craft kits for children and fine paper work for adults."),
     "wichtel": dict(modell="schaukelstuhl", teile=["seite_l", "strickkorb_a"], masse="Schaukelstuhl", masse_en="Rocking chair",
                     groesse="Wichtel-Maßstab", groesse_en="elf scale",
                     text="Wichteltür, Möbel, Wichtelzimmer, Wichtelmarkt und edles Zubehör wie Kamin, Standuhr und "

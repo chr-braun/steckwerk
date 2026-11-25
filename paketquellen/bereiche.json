@@ -4,7 +4,10 @@
   "bereiche": [
     {"id": "feste", "name": "Feste und Jahreszeiten", "name_en": "Seasons and holidays",
      "text": "Für Advent, Weihnachten, Halloween und die vier Jahreszeiten.", "text_en": "For Advent, Christmas, Halloween and the four seasons.",
-     "pakete": ["weihnacht", "wichtel", "halloween", "jahreszeiten"]},
+     "pakete": ["weihnacht", "steckstern", "wichtel", "halloween", "jahreszeiten"]},
+    {"id": "basteln", "name": "Papier und Basteln", "name_en": "Paper and crafts",
+     "text": "Aus Karton und Tonpapier: zum Falten, Stecken und Leuchten – für Kinder und Erwachsene.", "text_en": "From card and construction paper: to fold, slot and light up – for children and adults.",
+     "pakete": ["papier"]},
     {"id": "zuhause", "name": "Zuhause und Geschenke", "name_en": "Home and gifts",
      "text": "Rahmen, Schmuck und Bilder zum Verschenken.", "text_en": "Frames, jewellery and pictures to give away.",
      "pakete": ["wohnen", "schmuck", "ebenen"]},

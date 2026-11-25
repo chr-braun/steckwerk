@@ -1,0 +1,18 @@
+{
+  "standard": 1,
+  "id": "steckstern",
+  "name": "Steckstern",
+  "version": "1.0.0",
+  "autor": "Christian & Claude",
+  "beschreibung": "Sterne mit aufwendigem Filigran: Holzstern aus zwei gesteckten Platten und gefalteter Papierstern aus Karton mit Spitzenborte, vier Ornamenten und Rosette.",
+  "name_en": "Slot-together star",
+  "beschreibung_en": "Stars with elaborate filigree: wooden star of two slotted plates and folded card star with lace border, four ornaments and rosette.",
+  "steckwerk": "2.6.0",
+  "benoetigt": {
+    "verzierungen": "2.0.0"
+  },
+  "modelle": [
+    "holzstern",
+    "papierstern"
+  ]
+}
