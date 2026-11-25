@@ -121,3 +121,15 @@ def test_sternengirlande(M, formen):
     assert_cut_ready(asm, cfg)
     assert len(asm.parts) == 6
     assert all(len(p.holes) >= 2 for p in asm.parts)            # mindestens zwei Fadenlöcher
+
+
+@pytest.mark.parametrize("kw", [dict(), dict(szene="tannenwald", form="rechteck"),
+                                dict(breite=120, hoehe=150, sterne=False), dict(breite=280, hoehe=290)])
+def test_fensterbild(M, kw):
+    cfg = Config(**KARTON)
+    asm = M["fensterbild"].build(cfg, **kw)
+    assert_cut_ready(asm, cfg)
+    p = asm.parts[0]
+    assert p.name == "fensterbild" and p.holes
+    if kw.get("szene", "winterdorf") == "winterdorf":
+        assert len(p.holes) > 20                                # Himmel, Fensterscheiben, Türen
