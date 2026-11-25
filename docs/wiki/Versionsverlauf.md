@@ -31,6 +31,7 @@ Alles ist seit dem 9. Oktober 2026 entstanden. Die Details stehen im
 | 2.12.0 | 11.11. | Neue Oberfläche (Statusleiste, Projekte, Ausgeben-Blatt, Prüfbericht als Teiletabelle); Eigene Gravur mit Fotos, Logos und 18 Mustern; Spiele 1.1.0 mit Puzzle; Weihnachten 2.2.0 mit edlem Christbaumschmuck |
 | 2.13.0 | 12.11. | Steckwerk Desktop mit aufgeräumter Seitenleiste und Vorlagen-Galerie mit Vorschaubildern; Paketkatalog nach Bereichen; Webseite auf GitHub Pages; nur noch zwei Releases auf GitHub
 | 2.14.0 | 19.11. | Geschnittene Dachkante (Bogen, Spitze, Wellen, Zacken, Zuckerguss, Eiszapfen) für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten |
+| 2.15.0 | 25.11. | Neues Paket Jahreszeiten (Winterkranz-Medaille, Eisblumenfenster, Blütenmandala, Sommersonne, Herbstkranz); Mehrlagig 1.3.0 mit Leuchtender Schattenbox
 
 ## Pakete
 
