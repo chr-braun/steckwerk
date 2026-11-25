@@ -1,4 +1,4 @@
-"""Weihnachten 2.2.0: Edler Christbaumschmuck – zwölf detailreiche Anhänger."""
+"""Schmuck 1.1.0 (vorher Weihnachten 2.2.0): Edler Christbaumschmuck – zwölf detailreiche Anhänger."""
 import os
 
 import pytest
@@ -19,7 +19,7 @@ def CS(tmp_path_factory):
     os.environ["STECKWERK_PAKETE"] = str(d / "inst")
     os.environ["STECKWERK_DATEN"] = str(d / "daten")
     pakete.install(os.path.join(QUELLEN, "verzierungen"))
-    _, m = pakete.load_folder(os.path.join(QUELLEN, "weihnacht"))
+    _, m = pakete.load_folder(os.path.join(QUELLEN, "schmuck"))
     yield m["christbaumschmuck"]
     for k, v in alt.items():
         if v is None:

@@ -29,7 +29,7 @@ _here = os.path.dirname(os.path.abspath(__file__))
 def _sub(name: str):
     import importlib.util
     path = os.path.join(_here, name + ".py")
-    key = "swpaket_weihnacht_" + name
+    key = "swpaket_schmuck_" + name
     mod = sys.modules.get(key)
     if mod is None or getattr(mod, "__file__", None) != path:
         spec = importlib.util.spec_from_file_location(key, path)
@@ -43,7 +43,7 @@ E = bibliothek("verzierungen").E
 W = bibliothek("verzierungen").W
 K = E.K
 Figur = K.Figur
-NA = _sub("namensanhaenger")
+NA = _sub("_namen")
 FG = NA.FG
 SS = _sub("_schreibschrift")
 CB = _sub("christbaumschmuck")
@@ -64,9 +64,9 @@ RAHMEN = NA.RAHMEN
 
 INFO = dict(
     label="Christbaumschmuck mit Steckfach",
-    group="Weihnachten",
+    group="Schmuck",
     desc="Anhänger mit verstecktem Fach für einen gefalteten Geldschein oder eine Gutscheinkarte: Christbaumkugel, "
-         "Glocke, Herz oder Geschenkpäckchen aus drei Lagen – Vorderseite mit Filigran-Spitze und fein gravierter "
+         "Lebkuchenhaus oder Geschenkpäckchen aus drei Lagen – Vorderseite mit Filigran-Spitze und fein gravierter "
          "Widmung, Fachrahmen in der Mitte, Rückseite mit Gruß. Das Band verschließt das Fach.",
     params=[
         sel("form", "Form", AUSWAHL, "kugel"),
