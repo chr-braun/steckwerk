@@ -22,7 +22,7 @@ _here = os.path.dirname(os.path.abspath(__file__))
 def _sub(name: str):
     import importlib.util
     path = os.path.join(_here, name + ".py")
-    key = "swpaket_weihnacht_" + name
+    key = "swpaket_schmuck_" + name
     mod = sys.modules.get(key)
     if mod is None or getattr(mod, "__file__", None) != path:
         spec = importlib.util.spec_from_file_location(key, path)
@@ -36,7 +36,7 @@ E = bibliothek("verzierungen").E
 F = bibliothek("verzierungen").F
 K = E.K
 Figur = K.Figur
-NA = _sub("namensanhaenger")
+NA = _sub("_namen")
 SS = _sub("_schreibschrift")
 SZ = _sub("_szenen")
 Poly = List[Tuple[float, float]]
@@ -53,7 +53,7 @@ MIT_NAMEN = {"stern", "kugel", "glocke", "herz", "schneemann", "geschenk", "stie
 
 INFO = dict(
     label="Edler Christbaumschmuck",
-    group="Weihnachten",
+    group="Schmuck",
     desc="Detailreiche Christbaumanhänger: Engel mit Federflügeln, Facettenstern, Kugel mit Winterszene, Glocke, "
          "Tannenzapfen, Tannenbaum, Schneemann, Herz mit Lebensbaum, schlafender Mond, Kerze, Geschenk und "
          "Nikolausstiefel – Scherenschnitt mit feiner Gravur, auf Wunsch mit Namen in Schreibschrift.",

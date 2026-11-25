@@ -4,7 +4,10 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
-- **Weihnachten 2.3.0** mit neuem Modell **Christbaumschmuck mit Steckfach**: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz.
+## 2.16.0 – 2026-11-25
+
+- **Neues Modul: Christbaumschmuck im Paket „Schmuck“ (1.1.0).** Der edle Christbaumschmuck und der Christbaumschmuck mit Steckfach liegen jetzt zusammen mit den Ohrhängern im Paket *Schmuck*, das du getrennt von Weihnachten nachladen kannst. *Weihnachten 2.4.0* enthält sie nicht mehr. Wer den Christbaumschmuck nutzt, installiert unter Updates das Paket Schmuck.
+- **Christbaumschmuck mit Steckfach** (erst Weihnachten 2.3.0, jetzt im Paket Schmuck), neues Modell **Christbaumschmuck mit Steckfach**: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz.
 
 ## 2.15.0 – 2026-11-25
 

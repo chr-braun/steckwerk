@@ -27,12 +27,12 @@ der App, auf der [Webseite](https://chr-braun.github.io/steckwerk/) und im READM
 
 | Bereich | Paket (ID) | Version | Was drin ist | ersetzt |
 |---|---|---|---|---|
-| Feste und Jahreszeiten | **Weihnachten** (`weihnacht`) | 2.3.0 | Edler **Christbaumschmuck** (zwölf Anhänger in Scherenschnitt-Qualität), **Christbaumschmuck mit Steckfach** (Kugel, Lebkuchenhaus, Geschenk; verstecktes Fach für Geldschein oder Gutscheinkarte, drei Lagen), **Namensanhänger** in echter Schreibschrift, Zierschlitten mit Schnörkelkufen, Steckkrippe (Stall und Figuren), Familien- und Weihnachtsanhänger, **Spitzenschmuck** (mit Muster-Rezepten und Zufallsmustern), **Scherenschnitt-Medaillon**, **Kristall-Schneeflocken**. Filigranes am besten mit den Profilen 1,5 / 2 mm. | Weihnachtsdeko, Filigran |
+| Feste und Jahreszeiten | **Weihnachten** (`weihnacht`) | 2.4.0 | **Namensanhänger** in echter Schreibschrift, Zierschlitten mit Schnörkelkufen, Steckkrippe (Stall und Figuren), Familien- und Weihnachtsanhänger, **Spitzenschmuck** (mit Muster-Rezepten und Zufallsmustern), **Scherenschnitt-Medaillon**, **Kristall-Schneeflocken**. Filigranes am besten mit den Profilen 1,5 / 2 mm. | Weihnachtsdeko, Filigran |
 | | **Wichtel** (`wichtel`) | 1.1.0 | **Figur:** Schicht-Wichtel aus vier Lagen zum Bemalen. **Haus:** Wichteltür, Wichtelfenster. **Möbel:** Bank, Tisch mit Hockern, Bett. **Zubehör:** Leiter, Wegweiser, Wäscheleine. **Wichtelzimmer** auf Knopfdruck. **Wichtelmarkt:** Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne. **Edles Zubehör:** Kamin mit Zierblende, Feuer und Strümpfen mit Namen, Standuhr, Schaukelstuhl, Christbaum mit Geschenken, Schneemann, Wichtelgarten. Alles im selben Wichtel-Maßstab. | Wichtelmöbel, Wichteltür, Wichtelzubehör, Wichtelwelt, Wichtelfiguren |
 | | **Halloween** (`halloween`) | 1.4.0 | Spukschloss im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set aus der Motiv-Bibliothek, Spinnennetz, Skelett (Hampelmann), Fledermausgirlande, Süßigkeitenschale. | – |
 | | **Jahreszeiten** (`jahreszeiten`) | 1.0.0 | Fein gravierte Medaillen und Fensterbilder: **Winterkranz-Medaille** (Bogenrand, Tannengrün mit einzeln gravierten Nadeln, Mitte Eiskristall, Zierstern oder Gruß), **Eisblumenfenster** (Rundbogen, Spitzbogen oder Rechteck, ausgeschnittene Eisblumen-Wedel, jeder Startwert anders), **Blütenmandala** (Ranke, Tulpen oder Kirschzweige; Blüte, Schmetterling oder Wort), **Sommersonne** (Flammen, Lorbeer oder Perlen, Guilloche, Sonnenblume oder Wort), **Herbstkranz** (Ahorn, Eiche, Eicheln; offener Kranz mit Schleife oder Medaille mit Text). | – |
 | Zuhause und Geschenke | **Wohnen** (`wohnen`) | 1.0.0 | **Bilderrahmen** (9 × 13 bis 15 × 20 cm oder eigenes Maß, schlicht oder filigran, mit Sockel oder Schlüsselloch), **Zierrahmen** mit Schild und graviertem Text, **Türschild** mit Namen. | Umrandungen, Türschild |
-| | **Schmuck** (`schmuck`) | 1.0.0 | **Ohrhänger** als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen, Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil. | – |
+| | **Schmuck** (`schmuck`) | 1.1.0 | Edler **Christbaumschmuck** (zwölf Anhänger in Scherenschnitt-Qualität), **Christbaumschmuck mit Steckfach** (Kugel, Lebkuchenhaus, Geschenk; verstecktes Fach für Geldschein oder Gutscheinkarte, drei Lagen), **Ohrhänger** als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen, Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil. Bis Weihnachten 2.3.0 lag der Christbaumschmuck im Paket Weihnachten. | – |
 | | **Mehrlagig** (`ebenen`) | 1.3.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Leuchtende Schattenbox**: Zinkenkasten mit Lichtkammer für LED-Teelicht oder Lichterkette, gravierter Frontrahmen, Wechselsatz für eine zweite Szene. **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
 | Spielen und Bewegen | **Spiele** (`spiele`) | 1.1.0 | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär und das **Puzzle**: Bilderpuzzle mit Nasen, rechteckig oder rund, 4–200 Teile, mit detailreichen Szenen, eigenem Motiv/Logo oder Foto, auf Wunsch mit Rahmen. | – |
 | | **Bewegung** (`bewegung`) | 1.0.0 | Hampelmann (Wichtel, Weihnachtsmann, Rentier, Schneemann, Skelett), Kurbeltier mit Nocken, Turner-Affe, Kreisel, Balancier-Vogel. | – |
@@ -63,9 +63,11 @@ zugeordnet ist.
 
 ![Mehrlagig 1.3 – Leuchtende Schattenbox (beleuchtete Frontansicht)](medien/mehrlagig-1.3-schattenbox.png)
 
-### Weihnachten
+### Schmuck
 
-![Weihnachten 2.3 – Christbaumschmuck mit Steckfach (zusammengebaut, Vorderseite, Fachrahmen, Rückseite)](medien/weihnacht-2.3-steckfach.png)
+![Schmuck 1.1 – Christbaumschmuck mit Steckfach (zusammengebaut, Vorderseite, Fachrahmen, Rückseite)](medien/weihnacht-2.3-steckfach.png)
+
+### Weihnachten
 
 ![Weihnachten: Krippe und Schlitten](medien/weihnachtsdeko-krippe-schlitten.png)
 

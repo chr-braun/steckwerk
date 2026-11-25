@@ -28,10 +28,9 @@ QUELLEN = os.path.join(ROOT, "paketquellen")
 # Bild je Paket: Modell, Teile (ids aus der SVG) und Bildunterschrift. Kurztexte für die Karten.
 KARTEN: Dict[str, Dict[str, Any]] = {
     "weihnacht": dict(modell="namensanhaenger", teile=["emma"], masse="Namensanhänger", masse_en="Name ornament",
-                      text="Edler Christbaumschmuck, Namensanhänger in echter Schreibschrift, Steckkrippe, Zierschlitten, "
-                           "Spitzenschmuck und Kristall-Schneeflocken.",
-                      text_en="Fine tree ornaments, name ornaments in real script, nativity set, sleigh, lace ornaments "
-                              "and crystal snowflakes."),
+                      text="Namensanhänger in echter Schreibschrift, Steckkrippe, Zierschlitten, Spitzenschmuck und "
+                           "Kristall-Schneeflocken.",
+                      text_en="Name ornaments in real script, nativity set, sleigh, lace ornaments and crystal snowflakes."),
     "jahreszeiten": dict(modell="winterkranz", teile=["winterkranz"], masse="Winterkranz-Medaille",
                          masse_en="Winter wreath medal",
                          text="Fünf fein gravierte Medaillen und Fensterbilder: Winterkranz, Eisblumenfenster, "
@@ -56,8 +55,10 @@ KARTEN: Dict[str, Dict[str, Any]] = {
                            "door sign with your name."),
     "schmuck": dict(modell="ohrhaenger", teile=["links", "rechts"], masse="Ohrhänger Lotus", masse_en="Lotus earrings",
                     paar=True,
-                    text="Ohrhänger als Paar in zehn Formen, durchbrochen, als Rahmen oder graviert.",
-                    text_en="Earring pairs in ten shapes, pierced, as a frame or engraved."),
+                    text="Edler Christbaumschmuck, Christbaumschmuck mit Steckfach für Geldschein oder Gutscheinkarte und "
+                         "Ohrhänger als Paar in zehn Formen.",
+                    text_en="Fine tree ornaments, tree ornaments with a hidden pocket for a banknote or gift card and "
+                            "earring pairs in ten shapes."),
     "ebenen": dict(modell="ebenenmotiv", teile=["ebenenmotiv_grund", "ebenenmotiv_motiv", "ebenenmotiv_auflage"],
                    masse="Ebenenmotiv", masse_en="Layered motif", groesse="drei Lagen", groesse_en="three layers",
                    text="Schneidebilder mit vier Szenen, Motive aus drei Lagen mit Steckstiften und feine "
