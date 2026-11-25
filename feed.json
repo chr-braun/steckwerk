@@ -2,20 +2,20 @@
   "standard": 1,
   "erstellt": "2026-11-25",
   "programm": {
-    "version": "2.15.0",
+    "version": "2.16.0",
     "datum": "2026-11-25",
     "hinweise": [
-      "Neues Paket „Jahreszeiten“ (1.0.0): fünf fein gravierte Medaillen und Fensterbilder im Bereich *Feste und Jahreszeiten*. *Winterkranz-Medaille* mit Bogenrand, Tannengrün aus einzeln gravierten Nadeln und Eiskristall, Zierstern oder Gruß in der Mitte; *Eisblumenfenster* (Rundbogen, Spitzbogen, Rechteck) mit ausgeschnittenen Eisblumen-Wedeln, die mit jedem Startwert anders wachsen; *Blütenmandala* mit Ranke, Tulpen oder Kirschzweigen; *Sommersonne* mit Flammen, Lorbeer und Guilloche; *Herbstkranz* aus Ahorn- und Eichenlaub mit Eicheln, als Kranz mit Schleife oder Medaille mit Text. Läuft bei 2 bis 4 mm Holz, Gravur nur auf sicherem Holz.",
-      "Leuchtende Schattenbox (Mehrlagig 1.3.0): Holzkasten mit Zinken und Bildfenster, darin 3–6 Szenen-Ebenen aus dem Ebenenbild (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht) und ein Hintergrund mit Mond und Sternen oder als Rahmen für Transparentpapier. Hinter der Szene liegt eine Lichtkammer für ein LED-Teelicht (gravierte Markierung) oder eine LED-Lichterkette (Kabelloch in der Rückwand). Der Frontrahmen ist fein graviert: doppelte Fensterlinie, Perlenreihe, Kassettenrand, Eckornamente (Ranke, Blätterzweig, Schnörkel) und auf Wunsch Text. Die Ebenen stehen nur mit Zapfen im Boden, mit dem Wechselsatz tauschst du die Szene ohne Werkzeug. Läuft bei 2 bis 6 mm Holz, Standardgröße in rund 6 Sekunden."
+      "Neues Modul: Christbaumschmuck im Paket „Schmuck“ (1.1.0). Der edle Christbaumschmuck und der Christbaumschmuck mit Steckfach liegen jetzt zusammen mit den Ohrhängern im Paket *Schmuck*, das du getrennt von Weihnachten nachladen kannst. *Weihnachten 2.4.0* enthält sie nicht mehr. Wer den Christbaumschmuck nutzt, installiert unter Updates das Paket Schmuck.",
+      "Christbaumschmuck mit Steckfach (erst Weihnachten 2.3.0, jetzt im Paket Schmuck), neues Modell Christbaumschmuck mit Steckfach: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz."
     ],
     "hinweise_en": [
-      "New package “Seasons” (1.0.0): five finely engraved medals and window pictures in *Seasons and holidays*. *Winter wreath medal* with scalloped rim, fir of individually engraved needles and an ice crystal, ornamental star or greeting in the centre; *frost-flower window* (round arch, pointed arch, rectangle) with cut-out frost fronds that grow differently with every seed; *blossom mandala* with tendril, tulips or cherry twigs; *summer sun* with flames, laurel and guilloche; *autumn wreath* of maple and oak leaves with acorns, as an open wreath with bow or a medal with text. Works with 2 to 4 mm wood, engraving only on safe wood.",
-      "Illuminated shadow box (Multi-layer 1.3.0): a finger-jointed wooden box with a picture window holding 3–6 scene layers from the layered picture (winter forest, winter village, haunted castle, Christmas night) and a background with moon and stars or as a frame for tracing paper. Behind the scene is a light chamber for an LED tea light (engraved mark) or LED fairy lights (cable hole in the back). The front frame is finely engraved: double window line, row of pearls, panel border, corner ornaments (scroll, leafy sprig, flourish) and optional text. The layers only stand in the base by their pegs; with the swap set you change the scene without tools. Works with 2 to 6 mm wood; the default size takes about 6 seconds."
+      "New module: tree ornaments in the “Jewellery” package (1.1.0). The fine tree ornaments and the tree ornaments with a hidden pocket now live with the earrings in the *Jewellery* package, which you can load separately from Christmas. *Christmas 2.4.0* no longer contains them. If you use the tree ornaments, install the Jewellery package under Updates.",
+      "Tree ornament with hidden pocket (first Christmas 2.3.0, now in the Jewellery package), new model Tree ornament with hidden pocket: an ornament with a hidden pocket for a banknote folded twice, a gift card (credit card size) or a custom size. *Bauble* with filigree lace border, *gingerbread house* with icing, gable window and heart windows, *present* with bow and star windows. Three layers: front with lace and a finely engraved dedication in script, pocket frame in the middle (open at the top), back with a greeting. The size follows the insert, the clearance is adjustable; there are no cut-outs over the pocket. The ribbon through both loops closes the pocket. Works with 2 to 4 mm wood."
     ],
     "mac": {
-      "datei": "Steckwerk-2.15.0-macOS.zip",
-      "sha256": "254ea6660ef932ad70860efda06d363c3cc3998b8c80ffd011ec83bf3269ff27",
-      "groesse": 1021639
+      "datei": "Steckwerk-2.16.0-macOS.zip",
+      "sha256": "38a01869d7aab1269f6b6cebfdd215790bbdff10e0ea4f3f489a136fa41204c7",
+      "groesse": 1038788
     }
   },
   "pakete": [
@@ -169,19 +169,26 @@
     {
       "id": "schmuck",
       "name": "Schmuck",
-      "version": "1.0.0",
-      "beschreibung": "Ohrhänger als Paar, wie gerade auf Atomm beliebt: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen und Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil.",
+      "version": "1.1.0",
+      "beschreibung": "Schmuck zum Anhängen und Tragen: edler, detailreicher Christbaumschmuck (Engel, Stern, Kugel, Glocke, Zapfen, Tannenbaum, Schneemann, Herz, Mond, Kerze, Geschenk, Stiefel), Christbaumschmuck mit verstecktem Steckfach für Geldschein oder Gutscheinkarte (Kugel, Lebkuchenhaus, Geschenk) und Ohrhänger als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen und Fächer – durchbrochen, als Rahmen oder graviert.",
       "autor": "Christian & Claude",
       "name_en": "Jewellery",
-      "beschreibung_en": "Earring pairs as currently popular on Atomm: lotus, wing, drop, moon, sun, cloud, rhombus, honeycomb, rainbow and fan – pierced, as a frame or engraved, optionally with a connector piece.",
+      "beschreibung_en": "Jewellery to hang and wear: fine, richly detailed tree ornaments (angel, star, bauble, bell, pine cone, tree, snowman, heart, moon, candle, present, boot), tree ornaments with a hidden pocket for a banknote or gift card (bauble, gingerbread house, present) and earring pairs: lotus, wing, drop, moon, sun, cloud, rhombus, honeycomb, rainbow and fan – pierced, as a frame or engraved.",
+      "benoetigt": {
+        "verzierungen": "2.0.0"
+      },
       "steckwerk": "2.6.0",
-      "datei": "pakete/schmuck-1.0.0.swpaket",
-      "sha256": "aaa1250b3966cd97e399d242dc81e4b375701ec0a53a0ed134ac074dedc1ddb2",
-      "groesse": 8980,
+      "datei": "pakete/schmuck-1.1.0.swpaket",
+      "sha256": "8d4594593643eb241fce944b48616ebe8154d4d2dd66ad53539260b8ff419ede",
+      "groesse": 146424,
       "inhalt": [
+        "Edler Christbaumschmuck",
+        "Christbaumschmuck mit Steckfach",
         "Ohrhänger"
       ],
       "inhalt_en": [
+        "Fine tree ornaments",
+        "Tree ornament with hidden pocket",
         "Earrings"
       ]
     },
@@ -265,11 +272,11 @@
     {
       "id": "weihnacht",
       "name": "Weihnachten",
-      "version": "2.2.0",
-      "beschreibung": "Alles für Weihnachten in einem Paket: edler, detailreicher Christbaumschmuck (Engel, Stern, Kugel, Glocke, Zapfen, Tannenbaum, Schneemann, Herz, Mond, Kerze, Geschenk, Stiefel), edle Namensanhänger in echter Schreibschrift mit Winter- und Adventsszenen, Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken.",
+      "version": "2.4.0",
+      "beschreibung": "Alles für Weihnachten in einem Paket: edle Namensanhänger in echter Schreibschrift mit Winter- und Adventsszenen, Zierschlitten zum Stecken, Steckkrippe mit Stall und Figuren, Familien- und Weihnachtsanhänger, filigraner Spitzenschmuck, Scherenschnitt-Medaillons mit Winterszenen und Kristall-Schneeflocken. Den edlen Christbaumschmuck und den Schmuck mit Steckfach gibt es im Paket „Schmuck“.",
       "autor": "Christian & Claude",
       "name_en": "Christmas",
-      "beschreibung_en": "Everything for Christmas in one package: fine, richly detailed tree ornaments (angel, star, bauble, bell, pine cone, tree, snowman, heart, moon, candle, present, boot), fine name ornaments in real script lettering with winter and Advent scenes, slot-together sleigh, nativity with stable and figures, family and Christmas ornaments, filigree lace baubles, paper-cut medallions with winter scenes and crystal snowflakes.",
+      "beschreibung_en": "Everything for Christmas in one package: fine name ornaments in real script lettering with winter and Advent scenes, slot-together sleigh, nativity with stable and figures, family and Christmas ornaments, filigree lace baubles, paper-cut medallions with winter scenes and crystal snowflakes. The fine tree ornaments and the ornaments with a hidden pocket are in the “Jewellery” package.",
       "benoetigt": {
         "verzierungen": "2.0.0"
       },
@@ -277,15 +284,14 @@
         "filigran"
       ],
       "steckwerk": "2.6.0",
-      "datei": "pakete/weihnacht-2.2.0.swpaket",
-      "sha256": "8bb1b31529702e42345cfad3c3268b4a373c0e3833945a8354f2315c1378ad6d",
-      "groesse": 177675,
+      "datei": "pakete/weihnacht-2.4.0.swpaket",
+      "sha256": "0bb2d36335c2ceaec350ee41a7d5cf08df23424ac0a264847161f465a62fb581",
+      "groesse": 159507,
       "inhalt": [
         "Zierschlitten",
         "Steckkrippe",
         "Familienanhänger",
         "Weihnachtsanhänger",
-        "Edler Christbaumschmuck",
         "Edler Namensanhänger",
         "Spitzenschmuck",
         "Scherenschnitt-Medaillon",
@@ -296,7 +302,6 @@
         "Slot-together nativity",
         "Family ornament",
         "Christmas ornaments",
-        "Fine tree ornaments",
         "Fine name ornament",
         "Lace ornament",
         "Paper-cut medallion",
@@ -476,16 +481,16 @@
     }
   ],
   "desktop": {
-    "version": "2.15.0",
+    "version": "2.16.0",
     "datum": "2026-11-25",
     "hinweise": [
-      "Neues Paket „Jahreszeiten“ (1.0.0): fünf fein gravierte Medaillen und Fensterbilder im Bereich *Feste und Jahreszeiten*. *Winterkranz-Medaille* mit Bogenrand, Tannengrün aus einzeln gravierten Nadeln und Eiskristall, Zierstern oder Gruß in der Mitte; *Eisblumenfenster* (Rundbogen, Spitzbogen, Rechteck) mit ausgeschnittenen Eisblumen-Wedeln, die mit jedem Startwert anders wachsen; *Blütenmandala* mit Ranke, Tulpen oder Kirschzweigen; *Sommersonne* mit Flammen, Lorbeer und Guilloche; *Herbstkranz* aus Ahorn- und Eichenlaub mit Eicheln, als Kranz mit Schleife oder Medaille mit Text. Läuft bei 2 bis 4 mm Holz, Gravur nur auf sicherem Holz.",
-      "Leuchtende Schattenbox (Mehrlagig 1.3.0): Holzkasten mit Zinken und Bildfenster, darin 3–6 Szenen-Ebenen aus dem Ebenenbild (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht) und ein Hintergrund mit Mond und Sternen oder als Rahmen für Transparentpapier. Hinter der Szene liegt eine Lichtkammer für ein LED-Teelicht (gravierte Markierung) oder eine LED-Lichterkette (Kabelloch in der Rückwand). Der Frontrahmen ist fein graviert: doppelte Fensterlinie, Perlenreihe, Kassettenrand, Eckornamente (Ranke, Blätterzweig, Schnörkel) und auf Wunsch Text. Die Ebenen stehen nur mit Zapfen im Boden, mit dem Wechselsatz tauschst du die Szene ohne Werkzeug. Läuft bei 2 bis 6 mm Holz, Standardgröße in rund 6 Sekunden."
+      "Neues Modul: Christbaumschmuck im Paket „Schmuck“ (1.1.0). Der edle Christbaumschmuck und der Christbaumschmuck mit Steckfach liegen jetzt zusammen mit den Ohrhängern im Paket *Schmuck*, das du getrennt von Weihnachten nachladen kannst. *Weihnachten 2.4.0* enthält sie nicht mehr. Wer den Christbaumschmuck nutzt, installiert unter Updates das Paket Schmuck.",
+      "Christbaumschmuck mit Steckfach (erst Weihnachten 2.3.0, jetzt im Paket Schmuck), neues Modell Christbaumschmuck mit Steckfach: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.15.0-macOS.zip",
-      "sha256": "5bbb4006883cf01c49a7b4fcc9ede8bee875910e829ddd12c38691ffde5d06ff",
-      "groesse": 3066324
+      "datei": "Steckwerk-Desktop-2.16.0-macOS.zip",
+      "sha256": "698606d605dfa181bbfdda3755036fa01a64c5f5b50be2d52ffa4161d2761f14",
+      "groesse": 3083559
     }
   }
 }
