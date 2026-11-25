@@ -45,9 +45,11 @@ jedem Paket automatisch mit.
 | Bereich | Paket | Was drin ist |
 |---|---|---|
 | Feste und Jahreszeiten | Weihnachten | Christbaumschmuck, Christbaumschmuck mit Steckfach, Namensanhänger in Schreibschrift, Steckkrippe, Zierschlitten, Spitzenschmuck |
+| | Steckstern | Holzstern aus zwei gesteckten Platten, gefalteter Papierstern mit Filigran |
 | | Wichtel | Wichteltür, Möbel, Wichtelzimmer, Wichtelmarkt, Kamin, Standuhr, Christbaum |
 | | Halloween | Spukschloss, Kürbislaterne, Grabstein, Spinnennetz, Skelett-Hampelmann, Süßigkeitenschale |
 | | Jahreszeiten | Winterkranz-Medaille, Eisblumenfenster, Blütenmandala, Sommersonne, Herbstkranz |
+| Papier und Basteln | Papier | Steck-Tannenbaum mit Anhängern und Ausmal-Linien, Laternen-Häuschen zum Falten |
 | Zuhause und Geschenke | Wohnen | Bilderrahmen, Zierrahmen, Türschild |
 | | Schmuck | Ohrhänger als Paar in zehn Formen |
 | | Mehrlagig | Schneidebilder mit vier Szenen, Ebenenmotive, Aufsteck-Verzierungen |

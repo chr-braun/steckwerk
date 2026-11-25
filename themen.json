@@ -6,9 +6,14 @@
      "themen": [
        {"id": "weihnachten", "name": "Weihnachten", "name_en": "Christmas", "gruppen": ["Weihnachten"]},
        {"id": "winterdorf", "name": "Winterdorf", "name_en": "Winter village", "gruppen": ["Häuser", "Zubehör"]},
+       {"id": "steckstern", "name": "Sterne", "name_en": "Stars", "gruppen": ["Steckstern"]},
        {"id": "wichtel", "name": "Wichtel", "name_en": "Gnomes", "gruppen": ["Wichtel"]},
        {"id": "halloween", "name": "Halloween", "name_en": "Halloween", "gruppen": ["Halloween"]},
        {"id": "jahreszeiten", "name": "Jahreszeiten", "name_en": "Seasons", "gruppen": ["Jahreszeiten"]}
+     ]},
+    {"id": "basteln", "name": "Papier und Basteln", "name_en": "Paper and crafts",
+     "themen": [
+       {"id": "papier", "name": "Papier", "name_en": "Paper", "gruppen": ["Papier"]}
      ]},
     {"id": "zuhause", "name": "Zuhause und Geschenke", "name_en": "Home and gifts",
      "themen": [
