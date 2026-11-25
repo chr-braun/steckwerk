@@ -32,7 +32,7 @@ der App, auf der [Webseite](https://chr-braun.github.io/steckwerk/) und im READM
 | | **Halloween** (`halloween`) | 1.4.0 | Spukschloss im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set aus der Motiv-Bibliothek, Spinnennetz, Skelett (Hampelmann), Fledermausgirlande, Süßigkeitenschale. | – |
 | Zuhause und Geschenke | **Wohnen** (`wohnen`) | 1.0.0 | **Bilderrahmen** (9 × 13 bis 15 × 20 cm oder eigenes Maß, schlicht oder filigran, mit Sockel oder Schlüsselloch), **Zierrahmen** mit Schild und graviertem Text, **Türschild** mit Namen. | Umrandungen, Türschild |
 | | **Schmuck** (`schmuck`) | 1.0.0 | **Ohrhänger** als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen, Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil. | – |
-| | **Mehrlagig** (`ebenen`) | 1.2.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
+| | **Mehrlagig** (`ebenen`) | 1.3.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Leuchtende Schattenbox**: Zinkenkasten mit Lichtkammer für LED-Teelicht oder Lichterkette, gravierter Frontrahmen, Wechselsatz für eine zweite Szene. **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
 | Spielen und Bewegen | **Spiele** (`spiele`) | 1.1.0 | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär und das **Puzzle**: Bilderpuzzle mit Nasen, rechteckig oder rund, 4–200 Teile, mit detailreichen Szenen, eigenem Motiv/Logo oder Foto, auf Wunsch mit Rahmen. | – |
 | | **Bewegung** (`bewegung`) | 1.0.0 | Hampelmann (Wichtel, Weihnachtsmann, Rentier, Schneemann, Skelett), Kurbeltier mit Nocken, Turner-Affe, Kreisel, Balancier-Vogel. | – |
 | Formen und Kunst | **Formen** (`formen`) | 1.0.0 | **Steckkörper** (Kugel, Ei, Zwiebelturm, Tanne aus gekreuzten Rippen), **Wellenfläche** als Gitter, gedrehte **Stapelvase**. | – |
@@ -59,6 +59,8 @@ zugeordnet ist.
 ![Mehrlagig 1.0](medien/mehrlagig-1.0.png)
 
 ![Mehrlagig 1.1 – neue Motive](medien/mehrlagig-1.1-neu.png)
+
+![Mehrlagig 1.3 – Leuchtende Schattenbox (beleuchtete Frontansicht)](medien/mehrlagig-1.3-schattenbox.png)
 
 ### Weihnachten
 
