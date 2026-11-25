@@ -49,7 +49,7 @@ jedem Paket automatisch mit.
 | | Wichtel | Wichteltür, Möbel, Wichtelzimmer, Wichtelmarkt, Kamin, Standuhr, Christbaum |
 | | Halloween | Spukschloss, Kürbislaterne, Grabstein, Spinnennetz, Skelett-Hampelmann, Süßigkeitenschale |
 | | Jahreszeiten | Winterkranz-Medaille, Eisblumenfenster, Blütenmandala, Sommersonne, Herbstkranz |
-| Papier und Basteln | Papier | Steck-Tannenbaum mit Anhängern und Ausmal-Linien, Laternen-Häuschen zum Falten, Steck-Tiere (Rentier, Eisbär, Pinguin) |
+| Papier und Basteln | Papier | Steck-Tannenbaum mit Anhängern und Ausmal-Linien, Laternen-Häuschen zum Falten, Steck-Tiere (Rentier, Eisbär, Pinguin), Adventskalender aus 24 Schachteln |
 | Zuhause und Geschenke | Wohnen | Bilderrahmen, Zierrahmen, Türschild |
 | | Schmuck | Ohrhänger als Paar in zehn Formen |
 | | Mehrlagig | Schneidebilder mit vier Szenen, Ebenenmotive, Aufsteck-Verzierungen |

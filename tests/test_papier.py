@@ -94,3 +94,21 @@ def test_steck_tiere_gross_ohne_gravur(M):
     assert_cut_ready(asm, cfg)
     with pytest.raises(ValueError):
         M["steck_tiere"].build(cfg, tier="einhorn")
+
+
+def test_adventskalender(M):
+    cfg = Config(**KARTON)
+    asm = M["adventskalender"].build(cfg)
+    assert_cut_ready(asm, cfg)
+    assert [p.name for p in asm.parts] == [f"tag_{n}" for n in range(1, 25)]
+    assert len(asm.parts[0].engrave) > 12                       # Falze, Rahmen, Zahl, Motiv
+    assert asm.parts[0].engrave != asm.parts[1].engrave
+
+
+def test_adventskalender_teilbereich(M):
+    cfg = Config(**KARTON)
+    asm = M["adventskalender"].build(cfg, groesse=70, von=20, bis=24, motive=False)
+    assert_cut_ready(asm, cfg)
+    assert len(asm.parts) == 5
+    with pytest.raises(ValueError):
+        M["adventskalender"].build(cfg, von=10, bis=5)
