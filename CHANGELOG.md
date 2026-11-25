@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.16.0 – 2026-11-25
+
 - **Weihnachten 2.3.0** mit neuem Modell **Christbaumschmuck mit Steckfach**: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz.
 
 ## 2.15.0 – 2026-11-25
