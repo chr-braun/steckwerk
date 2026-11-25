@@ -31,5 +31,10 @@ Größe 70–220 mm.
 geschweifter Rahmen, die Zahl und ein Motiv, das von Tag zu Tag wechselt (Stern, Tanne, Herz,
 Schneeflocke, Glocke, Mond). Du kannst auch nur einen Teil der Zahlen schneiden.
 
+## Sternengirlande
+
+Filigrane Sterne, Schneeflocken und Herzen (35–120 mm) mit je zwei Fadenlöchern, gemischt oder einzeln.
+Einfach auf einen Faden oder ein Band fädeln – schön in Weiß, Silber oder buntem Tonpapier.
+
 **Material:** Karton 300 g (ca. 0,5 mm). Lege dir in Steckwerk ein Materialprofil „Karton“ an:
 Dicke 0,5 mm, Kerf 0,1 mm, Mindeststeg 0,6 mm. Die Ausmal-Linien nur ganz leicht gravieren.

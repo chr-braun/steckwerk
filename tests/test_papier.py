@@ -112,3 +112,12 @@ def test_adventskalender_teilbereich(M):
     assert len(asm.parts) == 5
     with pytest.raises(ValueError):
         M["adventskalender"].build(cfg, von=10, bis=5)
+
+
+@pytest.mark.parametrize("formen", ["gemischt", "sterne", "flocken", "herzen"])
+def test_sternengirlande(M, formen):
+    cfg = Config(**KARTON)
+    asm = M["sternengirlande"].build(cfg, anzahl=6, formen=formen)
+    assert_cut_ready(asm, cfg)
+    assert len(asm.parts) == 6
+    assert all(len(p.holes) >= 2 for p in asm.parts)            # mindestens zwei Fadenlöcher

@@ -97,7 +97,7 @@ def _fenster(fig: "K.Figur", cx: float, y: float, w: float, h: float, art: str, 
         p = _herz(cx, y + w * 0.5, w * 1.05)
         fig.cut(p)
     else:
-        p = F_.stern(cx, y + w * 0.5, w * 0.6, w * 0.27, 5, math.pi / 2)
+        p = F_.stern(cx, y + w * 0.5, w * 0.6, w * 0.27, 5)
         fig.cut(p)
     return p
 
@@ -178,7 +178,7 @@ def _haus(cfg, B, D, H, art, verz, notes, wände=(0, 1, 2, 3), name="haus") -> P
             if art == "herz":
                 fig.cut(_herz(x0 + b / 2, gy, gw * 1.1))
             elif art == "stern":
-                fig.cut(F_.stern(x0 + b / 2, gy, gw * 0.62, gw * 0.28, 5, math.pi / 2))
+                fig.cut(F_.stern(x0 + b / 2, gy, gw * 0.62, gw * 0.28, 5))
             else:
                 fig.cut(F_.kreis(x0 + b / 2, gy, gw / 2, 32))
     # seitliche Klebelasche

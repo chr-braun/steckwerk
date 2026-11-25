@@ -81,7 +81,7 @@ def _motiv(i, cx, cy, s):
     """Liste geschlossener Linienzüge für Motiv Nummer i."""
     art = i % 6
     if art == 0:
-        return [F_.stern(cx, cy, s * 0.5, s * 0.22, 5, math.pi / 2)]
+        return [F_.stern(cx, cy, s * 0.5, s * 0.22, 5)]
     if art == 1:
         return [_tanne(cx, cy, s)]
     if art == 2:

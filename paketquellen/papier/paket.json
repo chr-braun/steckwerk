@@ -4,10 +4,10 @@
   "name": "Papier",
   "version": "1.0.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Basteln mit Karton und Tonpapier: Steck-Tannenbaum mit Anhängern und Ausmal-Linien für Kinder, Laternen-Häuschen zum Falten mit Fenstern für Transparentpapier, Steck-Tiere (Rentier, Eisbär, Pinguin) und Adventskalender aus 24 Schachteln.",
+  "beschreibung": "Basteln mit Karton und Tonpapier: Steck-Tannenbaum mit Anhängern und Ausmal-Linien für Kinder, Laternen-Häuschen zum Falten mit Fenstern für Transparentpapier, Steck-Tiere (Rentier, Eisbär, Pinguin), Adventskalender aus 24 Schachteln und Sternengirlande.",
   "name_en": "Paper",
-  "beschreibung_en": "Crafts from card and construction paper: slot-together Christmas tree with ornaments and colouring lines for children, folding lantern house with windows for tracing paper, slot-together animals (reindeer, polar bear, penguin) and an advent calendar of 24 boxes.",
+  "beschreibung_en": "Crafts from card and construction paper: slot-together Christmas tree with ornaments and colouring lines for children, folding lantern house with windows for tracing paper, slot-together animals (reindeer, polar bear, penguin), an advent calendar of 24 boxes and a star garland.",
   "steckwerk": "2.6.0",
   "benoetigt": {"verzierungen": "2.0.0"},
-  "modelle": ["steck_tannenbaum", "laternenhaus", "steck_tiere", "adventskalender"]
+  "modelle": ["steck_tannenbaum", "laternenhaus", "steck_tiere", "adventskalender", "sternengirlande"]
 }
