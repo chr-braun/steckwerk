@@ -1,0 +1,13 @@
+{
+  "standard": 1,
+  "id": "jahreszeiten",
+  "name": "Jahreszeiten",
+  "version": "1.0.0",
+  "autor": "Christian & Claude",
+  "beschreibung": "Fünf feine Gravurmodelle durchs Jahr: Winterkranz-Medaille mit Tannengrün und Eiskristall, Eisblumenfenster, Blütenmandala, Sommersonne mit Guilloche und Herbstkranz aus Ahorn- und Eichenlaub – Spitzenschnitt mit sehr feiner Gravur.",
+  "name_en": "Seasons",
+  "beschreibung_en": "Five fine engraved designs through the year: winter wreath medal with fir and ice crystal, frost-flower window, blossom mandala, summer sun with guilloche and autumn wreath of maple and oak leaves – lace cutting with very fine engraving.",
+  "steckwerk": "2.6.0",
+  "benoetigt": {"verzierungen": "2.0.0"},
+  "modelle": ["winterkranz", "eisblumen", "bluetenmandala", "sommersonne", "herbstkranz"]
+}

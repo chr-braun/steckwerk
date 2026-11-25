@@ -3,8 +3,8 @@
   "beschreibung": "Ordnet die Themenpakete in Bereiche. Gilt für den Paketkatalog in Steckwerk, Steckwerk Desktop, die Webseite und das README. Ein Paket ohne Eintrag landet unter „Weitere“.",
   "bereiche": [
     {"id": "feste", "name": "Feste und Jahreszeiten", "name_en": "Seasons and holidays",
-     "text": "Für Advent, Weihnachten und Halloween.", "text_en": "For Advent, Christmas and Halloween.",
-     "pakete": ["weihnacht", "wichtel", "halloween"]},
+     "text": "Für Advent, Weihnachten, Halloween und die vier Jahreszeiten.", "text_en": "For Advent, Christmas, Halloween and the four seasons.",
+     "pakete": ["weihnacht", "wichtel", "halloween", "jahreszeiten"]},
     {"id": "zuhause", "name": "Zuhause und Geschenke", "name_en": "Home and gifts",
      "text": "Rahmen, Schmuck und Bilder zum Verschenken.", "text_en": "Frames, jewellery and pictures to give away.",
      "pakete": ["wohnen", "schmuck", "ebenen"]},

@@ -32,6 +32,12 @@ KARTEN: Dict[str, Dict[str, Any]] = {
                            "Spitzenschmuck und Kristall-Schneeflocken.",
                       text_en="Fine tree ornaments, name ornaments in real script, nativity set, sleigh, lace ornaments "
                               "and crystal snowflakes."),
+    "jahreszeiten": dict(modell="winterkranz", teile=["winterkranz"], masse="Winterkranz-Medaille",
+                         masse_en="Winter wreath medal",
+                         text="Fünf fein gravierte Medaillen und Fensterbilder: Winterkranz, Eisblumenfenster, "
+                              "Blütenmandala, Sommersonne und Herbstkranz.",
+                         text_en="Five finely engraved medals and window pictures: winter wreath, frost-flower window, "
+                                 "blossom mandala, summer sun and autumn wreath."),
     "wichtel": dict(modell="schaukelstuhl", teile=["seite_l", "strickkorb_a"], masse="Schaukelstuhl", masse_en="Rocking chair",
                     groesse="Wichtel-Maßstab", groesse_en="elf scale",
                     text="Wichteltür, Möbel, Wichtelzimmer, Wichtelmarkt und edles Zubehör wie Kamin, Standuhr und "
