@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.15.0 – 2026-11-25
+
 - **Neues Paket „Jahreszeiten“ (1.0.0):** fünf fein gravierte Medaillen und Fensterbilder im Bereich *Feste und Jahreszeiten*. *Winterkranz-Medaille* mit Bogenrand, Tannengrün aus einzeln gravierten Nadeln und Eiskristall, Zierstern oder Gruß in der Mitte; *Eisblumenfenster* (Rundbogen, Spitzbogen, Rechteck) mit ausgeschnittenen Eisblumen-Wedeln, die mit jedem Startwert anders wachsen; *Blütenmandala* mit Ranke, Tulpen oder Kirschzweigen; *Sommersonne* mit Flammen, Lorbeer und Guilloche; *Herbstkranz* aus Ahorn- und Eichenlaub mit Eicheln, als Kranz mit Schleife oder Medaille mit Text. Läuft bei 2 bis 4 mm Holz, Gravur nur auf sicherem Holz.
 - **Leuchtende Schattenbox (Mehrlagig 1.3.0):** Holzkasten mit Zinken und Bildfenster, darin 3–6 Szenen-Ebenen aus dem Ebenenbild (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht) und ein Hintergrund mit Mond und Sternen oder als Rahmen für Transparentpapier. Hinter der Szene liegt eine Lichtkammer für ein LED-Teelicht (gravierte Markierung) oder eine LED-Lichterkette (Kabelloch in der Rückwand). Der Frontrahmen ist fein graviert: doppelte Fensterlinie, Perlenreihe, Kassettenrand, Eckornamente (Ranke, Blätterzweig, Schnörkel) und auf Wunsch Text. Die Ebenen stehen nur mit Zapfen im Boden, mit dem Wechselsatz tauschst du die Szene ohne Werkzeug. Läuft bei 2 bis 6 mm Holz, Standardgröße in rund 6 Sekunden.
 

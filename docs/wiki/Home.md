@@ -26,7 +26,7 @@ fertige SVG werden kontrolliert. Gibt es auch nur einen Fehler, wird nichts gesc
 
 | | |
 |---|---|
-| Programm | Steckwerk **2.14.0** (19.11.2026) mit Steckwerk Desktop 2.14.0 |
+| Programm | Steckwerk **2.15.0** (25.11.2026) mit Steckwerk Desktop 2.15.0 |
 | Pakete im Update-Kanal | 11 Themenpakete in 6 Bereichen, siehe [Pakete](Pakete.md) |
 | Tests | 1321 Python-Tests grün · 59 Swift-Tests (Desktop-App) grün |
 | Repo | [`chr-braun/steckwerk`](https://github.com/chr-braun/steckwerk), Lizenz MIT · [Webseite](https://chr-braun.github.io/steckwerk/) |

@@ -35,7 +35,7 @@ Stand 11.11.2026, abends. Was noch ansteht oder auf deine Entscheidung wartet.
 
 - **Webseite:** Pages ist eingeschaltet (Quelle „GitHub Actions“), der Workflow „Webseite“ läuft durch. Die Seite liegt unter <https://chr-braun.github.io/steckwerk/>. Bitte einmal im Browser prüfen, ob Startseite und „Pakete bauen“ laden.
 - **Repo-Beschreibung und Topics:** eingetragen (Stand 11.11., von Christian bestätigt).
-- **Paketkanal:** Der Update-Kanal steht auf Steckwerk 2.14.0 mit den Paket-Bereichen. Auf GitHub bleiben die zwei neuesten Releases stehen, die Tags bleiben.
+- **Paketkanal:** Der Update-Kanal steht auf Steckwerk 2.15.0 mit den Paket-Bereichen. Auf GitHub bleiben die zwei neuesten Releases stehen, die Tags bleiben.
 - **Repo-Sichtbarkeit:** Das Repo ist derzeit öffentlich, der Update-Kanal braucht damit keinen Lese-Schlüssel. Ob es so bleibt, entscheidest du.
 - **Markenrecherche:** Eine Prüfung in TMview (Klassen 9 und 42) für „Steckwerk“ stand noch aus.
 - **Wiki:** Diese Seiten liegen im Repo unter `docs/wiki/`. Wenn du das GitHub-Wiki einschaltest, lassen
