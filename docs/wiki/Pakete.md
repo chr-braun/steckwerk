@@ -27,7 +27,7 @@ der App, auf der [Webseite](https://chr-braun.github.io/steckwerk/) und im READM
 
 | Bereich | Paket (ID) | Version | Was drin ist | ersetzt |
 |---|---|---|---|---|
-| Feste und Jahreszeiten | **Weihnachten** (`weihnacht`) | 2.2.0 | Edler **Christbaumschmuck** (zwölf Anhänger in Scherenschnitt-Qualität), **Namensanhänger** in echter Schreibschrift, Zierschlitten mit Schnörkelkufen, Steckkrippe (Stall und Figuren), Familien- und Weihnachtsanhänger, **Spitzenschmuck** (mit Muster-Rezepten und Zufallsmustern), **Scherenschnitt-Medaillon**, **Kristall-Schneeflocken**. Filigranes am besten mit den Profilen 1,5 / 2 mm. | Weihnachtsdeko, Filigran |
+| Feste und Jahreszeiten | **Weihnachten** (`weihnacht`) | 2.3.0 | Edler **Christbaumschmuck** (zwölf Anhänger in Scherenschnitt-Qualität), **Christbaumschmuck mit Steckfach** (Kugel, Lebkuchenhaus, Geschenk; verstecktes Fach für Geldschein oder Gutscheinkarte, drei Lagen), **Namensanhänger** in echter Schreibschrift, Zierschlitten mit Schnörkelkufen, Steckkrippe (Stall und Figuren), Familien- und Weihnachtsanhänger, **Spitzenschmuck** (mit Muster-Rezepten und Zufallsmustern), **Scherenschnitt-Medaillon**, **Kristall-Schneeflocken**. Filigranes am besten mit den Profilen 1,5 / 2 mm. | Weihnachtsdeko, Filigran |
 | | **Wichtel** (`wichtel`) | 1.1.0 | **Figur:** Schicht-Wichtel aus vier Lagen zum Bemalen. **Haus:** Wichteltür, Wichtelfenster. **Möbel:** Bank, Tisch mit Hockern, Bett. **Zubehör:** Leiter, Wegweiser, Wäscheleine. **Wichtelzimmer** auf Knopfdruck. **Wichtelmarkt:** Lebkuchenstand, Kreidetafel, Backstube, Briefkasten, Gartenzaun, Werkbank, Wegelaterne. **Edles Zubehör:** Kamin mit Zierblende, Feuer und Strümpfen mit Namen, Standuhr, Schaukelstuhl, Christbaum mit Geschenken, Schneemann, Wichtelgarten. Alles im selben Wichtel-Maßstab. | Wichtelmöbel, Wichteltür, Wichtelzubehör, Wichtelwelt, Wichtelfiguren |
 | | **Halloween** (`halloween`) | 1.4.0 | Spukschloss im gotischen Bogen, Kürbislaterne, Grabstein mit Gespenst, Anhänger-Set aus der Motiv-Bibliothek, Spinnennetz, Skelett (Hampelmann), Fledermausgirlande, Süßigkeitenschale. | – |
 | | **Jahreszeiten** (`jahreszeiten`) | 1.0.0 | Fein gravierte Medaillen und Fensterbilder: **Winterkranz-Medaille** (Bogenrand, Tannengrün mit einzeln gravierten Nadeln, Mitte Eiskristall, Zierstern oder Gruß), **Eisblumenfenster** (Rundbogen, Spitzbogen oder Rechteck, ausgeschnittene Eisblumen-Wedel, jeder Startwert anders), **Blütenmandala** (Ranke, Tulpen oder Kirschzweige; Blüte, Schmetterling oder Wort), **Sommersonne** (Flammen, Lorbeer oder Perlen, Guilloche, Sonnenblume oder Wort), **Herbstkranz** (Ahorn, Eiche, Eicheln; offener Kranz mit Schleife oder Medaille mit Text). | – |
@@ -64,6 +64,8 @@ zugeordnet ist.
 ![Mehrlagig 1.3 – Leuchtende Schattenbox (beleuchtete Frontansicht)](medien/mehrlagig-1.3-schattenbox.png)
 
 ### Weihnachten
+
+![Weihnachten 2.3 – Christbaumschmuck mit Steckfach (zusammengebaut, Vorderseite, Fachrahmen, Rückseite)](medien/weihnacht-2.3-steckfach.png)
 
 ![Weihnachten: Krippe und Schlitten](medien/weihnachtsdeko-krippe-schlitten.png)
 

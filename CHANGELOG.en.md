@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **Christmas 2.3.0** with the new model **Tree ornament with hidden pocket**: an ornament with a hidden pocket for a banknote folded twice, a gift card (credit card size) or a custom size. *Bauble* with filigree lace border, *gingerbread house* with icing, gable window and heart windows, *present* with bow and star windows. Three layers: front with lace and a finely engraved dedication in script, pocket frame in the middle (open at the top), back with a greeting. The size follows the insert, the clearance is adjustable; there are no cut-outs over the pocket. The ribbon through both loops closes the pocket. Works with 2 to 4 mm wood.
+
 ## 2.15.0 – 2026-11-25
 
 - **New package “Seasons” (1.0.0):** five finely engraved medals and window pictures in *Seasons and holidays*. *Winter wreath medal* with scalloped rim, fir of individually engraved needles and an ice crystal, ornamental star or greeting in the centre; *frost-flower window* (round arch, pointed arch, rectangle) with cut-out frost fronds that grow differently with every seed; *blossom mandala* with tendril, tulips or cherry twigs; *summer sun* with flames, laurel and guilloche; *autumn wreath* of maple and oak leaves with acorns, as an open wreath with bow or a medal with text. Works with 2 to 4 mm wood, engraving only on safe wood.

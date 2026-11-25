@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+- **Weihnachten 2.3.0** mit neuem Modell **Christbaumschmuck mit Steckfach**: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz.
+
 ## 2.15.0 – 2026-11-25
 
 - **Neues Paket „Jahreszeiten“ (1.0.0):** fünf fein gravierte Medaillen und Fensterbilder im Bereich *Feste und Jahreszeiten*. *Winterkranz-Medaille* mit Bogenrand, Tannengrün aus einzeln gravierten Nadeln und Eiskristall, Zierstern oder Gruß in der Mitte; *Eisblumenfenster* (Rundbogen, Spitzbogen, Rechteck) mit ausgeschnittenen Eisblumen-Wedeln, die mit jedem Startwert anders wachsen; *Blütenmandala* mit Ranke, Tulpen oder Kirschzweigen; *Sommersonne* mit Flammen, Lorbeer und Guilloche; *Herbstkranz* aus Ahorn- und Eichenlaub mit Eicheln, als Kranz mit Schleife oder Medaille mit Text. Läuft bei 2 bis 4 mm Holz, Gravur nur auf sicherem Holz.
