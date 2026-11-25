@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+- **Leuchtende Schattenbox (Mehrlagig 1.3.0):** Holzkasten mit Zinken und Bildfenster, darin 3–6 Szenen-Ebenen aus dem Ebenenbild (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht) und ein Hintergrund mit Mond und Sternen oder als Rahmen für Transparentpapier. Hinter der Szene liegt eine Lichtkammer für ein LED-Teelicht (gravierte Markierung) oder eine LED-Lichterkette (Kabelloch in der Rückwand). Der Frontrahmen ist fein graviert: doppelte Fensterlinie, Perlenreihe, Kassettenrand, Eckornamente (Ranke, Blätterzweig, Schnörkel) und auf Wunsch Text. Die Ebenen stehen nur mit Zapfen im Boden, mit dem Wechselsatz tauschst du die Szene ohne Werkzeug. Läuft bei 2 bis 6 mm Holz, Standardgröße in rund 6 Sekunden.
+
 ## 2.14.0 – 2026-11-19
 
 - **Geschnittene Dachkante** für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten: Die Traufe kann jetzt als echte Schnittkontur verziert werden statt nur graviert – *Bogenkante*, *Spitzenkante mit Lochung*, *Wellenkante*, *Zackenkante*, *Zuckerguss-Tropfen* und *Eiszapfen*. Die Kante hängt zusätzlich unter dem Dachüberstand, Maße und Steckverbindungen bleiben gleich, die Dachgravur bleibt auf der Dachfläche. In der Serie wird die Kante wie die übrigen Merkmale je Haus gewürfelt; alle anderen Merkmale einer Serie bleiben bei gleichem Seed wie bisher.
