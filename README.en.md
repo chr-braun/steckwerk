@@ -43,7 +43,7 @@ Install packages in Steckwerk under **Settings → Packages** with one click. Ba
 
 | Area | Package | What’s inside |
 |---|---|---|
-| Seasons and holidays | Christmas | Tree ornaments, name ornaments in script, nativity set, sleigh, lace ornaments |
+| Seasons and holidays | Christmas | Tree ornaments, ornaments with hidden pocket, name ornaments in script, nativity set, sleigh, lace ornaments |
 | | Elves | Elf door, furniture, elf room, elf market, fireplace, clock, Christmas tree |
 | | Halloween | Haunted castle, pumpkin lantern, gravestone, spider web, skeleton jumping jack, candy bowl |
 | Home and gifts | Home | Picture frames, ornamental frames, door sign |
