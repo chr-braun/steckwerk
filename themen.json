@@ -7,7 +7,8 @@
        {"id": "weihnachten", "name": "Weihnachten", "name_en": "Christmas", "gruppen": ["Weihnachten"]},
        {"id": "winterdorf", "name": "Winterdorf", "name_en": "Winter village", "gruppen": ["Häuser", "Zubehör"]},
        {"id": "wichtel", "name": "Wichtel", "name_en": "Gnomes", "gruppen": ["Wichtel"]},
-       {"id": "halloween", "name": "Halloween", "name_en": "Halloween", "gruppen": ["Halloween"]}
+       {"id": "halloween", "name": "Halloween", "name_en": "Halloween", "gruppen": ["Halloween"]},
+       {"id": "jahreszeiten", "name": "Jahreszeiten", "name_en": "Seasons", "gruppen": ["Jahreszeiten"]}
      ]},
     {"id": "zuhause", "name": "Zuhause und Geschenke", "name_en": "Home and gifts",
      "themen": [

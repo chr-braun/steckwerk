@@ -4,6 +4,7 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **New package “Seasons” (1.0.0):** five finely engraved medals and window pictures in *Seasons and holidays*. *Winter wreath medal* with scalloped rim, fir of individually engraved needles and an ice crystal, ornamental star or greeting in the centre; *frost-flower window* (round arch, pointed arch, rectangle) with cut-out frost fronds that grow differently with every seed; *blossom mandala* with tendril, tulips or cherry twigs; *summer sun* with flames, laurel and guilloche; *autumn wreath* of maple and oak leaves with acorns, as an open wreath with bow or a medal with text. Works with 2 to 4 mm wood, engraving only on safe wood.
 - **Illuminated shadow box (Multi-layer 1.3.0):** a finger-jointed wooden box with a picture window holding 3–6 scene layers from the layered picture (winter forest, winter village, haunted castle, Christmas night) and a background with moon and stars or as a frame for tracing paper. Behind the scene is a light chamber for an LED tea light (engraved mark) or LED fairy lights (cable hole in the back). The front frame is finely engraved: double window line, row of pearls, panel border, corner ornaments (scroll, leafy sprig, flourish) and optional text. The layers only stand in the base by their pegs; with the swap set you change the scene without tools. Works with 2 to 6 mm wood; the default size takes about 6 seconds.
 
 ## 2.14.0 – 2026-11-19
