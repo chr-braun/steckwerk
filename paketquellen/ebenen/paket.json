@@ -2,18 +2,19 @@
   "standard": 1,
   "id": "ebenen",
   "name": "Mehrlagig",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Mehrlagige Schneidebilder mit vier Szenen, Ebenenmotive aus drei Lagen mit Steckstiften und feine Aufsteck-Verzierungen – neu: winkender Weihnachtsmann, Pick-up mit Tannenbaum und Nussknacker.",
+  "beschreibung": "Mehrlagige Schneidebilder mit vier Szenen, die leuchtende Schattenbox im Zinkenkasten mit LED-Lichtkammer und Wechselsatz, Ebenenmotive aus drei Lagen mit Steckstiften und feine Aufsteck-Verzierungen.",
   "name_en": "Multi-layer",
-  "beschreibung_en": "Multi-layer cut pictures with four scenes, three-layer motifs held by pegs and fine clip-on decorations – new: waving Santa, pick-up with Christmas tree and nutcracker.",
-  "steckwerk": "2.4.0",
+  "beschreibung_en": "Multi-layer cut pictures with four scenes, the illuminated shadow box in a finger-jointed case with LED light chamber and swap set, three-layer motifs held by pegs and fine clip-on decorations.",
+  "steckwerk": "2.6.0",
   "modelle": [
     "ebenenbild",
     "ebenenmotiv",
-    "aufsteckdeko"
+    "aufsteckdeko",
+    "schattenbox"
   ],
   "benoetigt": {
-    "verzierungen": "1.1.0"
+    "verzierungen": "2.0.0"
   }
 }

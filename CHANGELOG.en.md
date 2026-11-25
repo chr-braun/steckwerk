@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **Illuminated shadow box (Multi-layer 1.3.0):** a finger-jointed wooden box with a picture window holding 3–6 scene layers from the layered picture (winter forest, winter village, haunted castle, Christmas night) and a background with moon and stars or as a frame for tracing paper. Behind the scene is a light chamber for an LED tea light (engraved mark) or LED fairy lights (cable hole in the back). The front frame is finely engraved: double window line, row of pearls, panel border, corner ornaments (scroll, leafy sprig, flourish) and optional text. The layers only stand in the base by their pegs; with the swap set you change the scene without tools. Works with 2 to 6 mm wood; the default size takes about 6 seconds.
+
 ## 2.14.0 – 2026-11-19
 
 - **Cut eave edge** for the gnome house, annex, house series and mailbox: the eave can now be a real cut contour instead of just an engraving – *scallops*, *lace scallops with holes*, *waves*, *zigzag*, *icing drips* and *icicles*. The edge hangs below the roof overhang; dimensions and joints stay the same. In a series the edge is randomised per house; all other features of a series stay unchanged for the same seed.
