@@ -75,3 +75,22 @@ def test_laternenhaus(M, kw):
     assert all(p.holes for p in asm.parts[:-1])
     assert all(p.engrave for p in asm.parts)          # Falzlinien
     assert any("LED" in n for n in asm.notes)
+
+
+@pytest.mark.parametrize("tier,teile", [("rentier", ["koerper", "beine_vorne", "beine_hinten"]),
+                                        ("eisbaer", ["koerper", "beine_vorne", "beine_hinten"]),
+                                        ("pinguin", ["pinguin_vorne", "pinguin_seite"])])
+def test_steck_tiere(M, tier, teile):
+    cfg = Config(**KARTON)
+    asm = M["steck_tiere"].build(cfg, tier=tier)
+    assert_cut_ready(asm, cfg)
+    assert [p.name for p in asm.parts] == teile
+    assert all(p.engrave for p in asm.parts)
+
+
+def test_steck_tiere_gross_ohne_gravur(M):
+    cfg = Config(**KARTON)
+    asm = M["steck_tiere"].build(cfg, tier="rentier", groesse=200, schal=False, details=False)
+    assert_cut_ready(asm, cfg)
+    with pytest.raises(ValueError):
+        M["steck_tiere"].build(cfg, tier="einhorn")
