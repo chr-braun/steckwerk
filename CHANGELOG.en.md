@@ -6,7 +6,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## 2.16.0 – 2026-11-25
 
-- **Christmas 2.3.0** with the new model **Tree ornament with hidden pocket**: an ornament with a hidden pocket for a banknote folded twice, a gift card (credit card size) or a custom size. *Bauble* with filigree lace border, *gingerbread house* with icing, gable window and heart windows, *present* with bow and star windows. Three layers: front with lace and a finely engraved dedication in script, pocket frame in the middle (open at the top), back with a greeting. The size follows the insert, the clearance is adjustable; there are no cut-outs over the pocket. The ribbon through both loops closes the pocket. Works with 2 to 4 mm wood.
+- **New module: tree ornaments in the “Jewellery” package (1.1.0).** The fine tree ornaments and the tree ornaments with a hidden pocket now live with the earrings in the *Jewellery* package, which you can load separately from Christmas. *Christmas 2.4.0* no longer contains them. If you use the tree ornaments, install the Jewellery package under Updates.
+- **Tree ornament with hidden pocket** (first Christmas 2.3.0, now in the Jewellery package), new model **Tree ornament with hidden pocket**: an ornament with a hidden pocket for a banknote folded twice, a gift card (credit card size) or a custom size. *Bauble* with filigree lace border, *gingerbread house* with icing, gable window and heart windows, *present* with bow and star windows. Three layers: front with lace and a finely engraved dedication in script, pocket frame in the middle (open at the top), back with a greeting. The size follows the insert, the clearance is adjustable; there are no cut-outs over the pocket. The ribbon through both loops closes the pocket. Works with 2 to 4 mm wood.
 
 ## 2.15.0 – 2026-11-25
 

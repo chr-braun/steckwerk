@@ -1,4 +1,4 @@
-"""Paket „Schmuck“ (ab 2.8.0): Ohrhänger-Paare."""
+"""Paket „Schmuck“ (ab 2.8.0): Ohrhänger-Paare (Christbaumschmuck hat eigene Tests)."""
 import os
 
 import pytest
@@ -8,7 +8,27 @@ from steckwerk import Config
 from conftest import assert_cut_ready
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_, MODS = pakete.load_folder(os.path.join(HERE, "paketquellen", "schmuck"))
+
+
+def _laden():
+    """Schmuck braucht seit 1.1.0 das Paket „verzierungen“: kurz in ein Temp-Verzeichnis installieren."""
+    import tempfile
+    alt = {k: os.environ.get(k) for k in ("STECKWERK_PAKETE", "STECKWERK_DATEN")}
+    d = tempfile.mkdtemp(prefix="schmuck-")
+    os.environ["STECKWERK_PAKETE"] = os.path.join(d, "inst")
+    os.environ["STECKWERK_DATEN"] = os.path.join(d, "daten")
+    try:
+        pakete.install(os.path.join(HERE, "paketquellen", "verzierungen"))
+        return pakete.load_folder(os.path.join(HERE, "paketquellen", "schmuck"))[1]
+    finally:
+        for k, v in alt.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
+MODS = _laden()
 OH = MODS["ohrhaenger"]
 
 

@@ -2,13 +2,18 @@
   "standard": 1,
   "id": "schmuck",
   "name": "Schmuck",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Ohrhänger als Paar, wie gerade auf Atomm beliebt: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen und Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil.",
+  "beschreibung": "Schmuck zum Anhängen und Tragen: edler, detailreicher Christbaumschmuck (Engel, Stern, Kugel, Glocke, Zapfen, Tannenbaum, Schneemann, Herz, Mond, Kerze, Geschenk, Stiefel), Christbaumschmuck mit verstecktem Steckfach für Geldschein oder Gutscheinkarte (Kugel, Lebkuchenhaus, Geschenk) und Ohrhänger als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen und Fächer – durchbrochen, als Rahmen oder graviert.",
   "name_en": "Jewellery",
-  "beschreibung_en": "Earring pairs as currently popular on Atomm: lotus, wing, drop, moon, sun, cloud, rhombus, honeycomb, rainbow and fan – pierced, as a frame or engraved, optionally with a connector piece.",
+  "beschreibung_en": "Jewellery to hang and wear: fine, richly detailed tree ornaments (angel, star, bauble, bell, pine cone, tree, snowman, heart, moon, candle, present, boot), tree ornaments with a hidden pocket for a banknote or gift card (bauble, gingerbread house, present) and earring pairs: lotus, wing, drop, moon, sun, cloud, rhombus, honeycomb, rainbow and fan – pierced, as a frame or engraved.",
   "steckwerk": "2.6.0",
+  "benoetigt": {
+    "verzierungen": "2.0.0"
+  },
   "modelle": [
+    "christbaumschmuck",
+    "steckfach",
     "ohrhaenger"
   ]
 }

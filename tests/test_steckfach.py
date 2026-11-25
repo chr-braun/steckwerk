@@ -1,4 +1,4 @@
-"""Weihnachten 2.3.0: Christbaumschmuck mit Steckfach – drei Lagen, Fach für Geldschein oder Gutscheinkarte."""
+"""Schmuck 1.1.0 (vorher Weihnachten 2.3.0): Christbaumschmuck mit Steckfach – drei Lagen, Fach für Geldschein oder Gutscheinkarte."""
 import os
 
 import pytest
@@ -18,7 +18,7 @@ def SF(tmp_path_factory):
     os.environ["STECKWERK_PAKETE"] = str(d / "inst")
     os.environ["STECKWERK_DATEN"] = str(d / "daten")
     pakete.install(os.path.join(QUELLEN, "verzierungen"))
-    _, m = pakete.load_folder(os.path.join(QUELLEN, "weihnacht"))
+    _, m = pakete.load_folder(os.path.join(QUELLEN, "schmuck"))
     yield m["steckfach"]
     for k, v in alt.items():
         if v is None:

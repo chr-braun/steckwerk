@@ -1,22 +1,7 @@
 # Weihnachten
 
-**Christbaumschmuck mit Steckfach** (neu in 2.3.0) – Anhänger mit verstecktem Fach für einen zweimal gefalteten
-Geldschein (5 bis 200 €), eine Gutscheinkarte im Scheckkartenformat oder ein eigenes Maß. Drei Formen:
-Christbaumkugel mit Filigran-Spitzenrand (Blütenkranz, Klöppelspitze, Ranken, Sterne, Herzchen, Perlen),
-Lebkuchenhaus mit Zuckerguss, Giebelfenster, Herzfenstern und Mandeln, Geschenkpäckchen mit Schleife, Band und
-Sternfenstern. Drei Lagen: Die Vorderseite trägt Spitze und feine Gravur mit Widmung in Schreibschrift, der
-Fachrahmen liegt in der Mitte (oben offen), die Rückseite ist geschlossen und trägt einen Gruß. Die Größe richtet
-sich nach der Einlage, das Fach bekommt ringsum Spiel (einstellbar). Über dem Fach gibt es keine Durchbrüche, der
-Inhalt bleibt unsichtbar. Das Band läuft durch beide Ösen und verschließt das Fach. In einer dunkleren Holzart
-für den Fachrahmen wirkt die Spitze wie eine Intarsie.
-
-**Edler Christbaumschmuck** (neu in 2.2.0) – Zwölf eigens gezeichnete, detailreiche Anhänger, einzeln oder als
-Set: Engel mit Federflügeln und Heiligenschein, Facettenstern mit geschliffen wirkenden Zacken, Christbaumkugel
-mit Sternenhimmel und Winterszene, Glocke mit Schleife und Stechpalme, Tannenzapfen mit Schuppen und Tannenzweigen,
-geschmückter Tannenbaum, Schneemann mit Zylinder und Schal, Herz mit Lebensbaum, schlafender Mond mit Zipfelmütze,
-Kerze im Tannengrün, Geschenk mit Schleife und Nikolausstiefel mit Pelzkrempe. Fenster, Federn und Schuppen sind
-ausgeschnitten, Gesichter, Federkiele, Nadeln, Facetten und Perlenränder fein graviert. Auf Wunsch steht ein Name in
-Schreibschrift auf dem Anhänger (auf Stern, Kugel, Glocke, Herz, Schneemann, Geschenk, Stiefel und Engel).
+Den edlen Christbaumschmuck und den Christbaumschmuck mit Steckfach findest du seit Weihnachten 2.4.0 im
+Paket **Schmuck**.
 
 **Edler Namensanhänger** (neu in 2.1.0) – Der Name in echter Schreibschrift (elegant, schwungvoll oder rund),
 ein Anhänger je Name (mit | trennen):
