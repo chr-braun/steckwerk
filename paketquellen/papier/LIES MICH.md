@@ -19,5 +19,28 @@ Bogenfenster mit Sprossen, Rundfenster, Herzen oder Sterne, auf Wunsch gravierte
 Dachziegel, Zuckerguss-Kante am Dach. Transparentpapier von innen dahinter kleben, dann leuchtet es mit einem
 LED-Teelicht (nie mit echter Kerze). Größere Häuser teilt Steckwerk automatisch in zwei Hälften.
 
+## Steck-Tiere
+
+Rentier und Eisbär aus einem Körper und zwei Beinpaaren, die quer von unten eingesteckt werden, der Pinguin
+aus Vorder- und Seitenansicht über Kreuz. Augen, Nase, Fell und Schal sind leicht graviert zum Ausmalen.
+Größe 70–220 mm.
+
+## Adventskalender
+
+24 Würfelschachteln (Kantenlänge 30–80 mm) mit Steckboden, Steckdeckel und Griffmulde. Vorne ein
+geschweifter Rahmen, die Zahl und ein Motiv, das von Tag zu Tag wechselt (Stern, Tanne, Herz,
+Schneeflocke, Glocke, Mond). Du kannst auch nur einen Teil der Zahlen schneiden.
+
+## Sternengirlande
+
+Filigrane Sterne, Schneeflocken und Herzen (35–120 mm) mit je zwei Fadenlöchern, gemischt oder einzeln.
+Einfach auf einen Faden oder ein Band fädeln – schön in Weiß, Silber oder buntem Tonpapier.
+
+## Fensterbild
+
+Scherenschnitt-Szene im Rahmen (Rundbogen oder Rechteck, bis 280 × 290 mm): Winterdorf mit Häusern,
+Sprossenfenstern und Tannen oder Tannenwald mit Reh, dazu Mondsichel und hängende Sterne. Von hinten mit
+Transparentpapier hinterkleben – am schönsten aus dunklem Tonpapier.
+
 **Material:** Karton 300 g (ca. 0,5 mm). Lege dir in Steckwerk ein Materialprofil „Karton“ an:
 Dicke 0,5 mm, Kerf 0,1 mm, Mindeststeg 0,6 mm. Die Ausmal-Linien nur ganz leicht gravieren.

@@ -75,3 +75,61 @@ def test_laternenhaus(M, kw):
     assert all(p.holes for p in asm.parts[:-1])
     assert all(p.engrave for p in asm.parts)          # Falzlinien
     assert any("LED" in n for n in asm.notes)
+
+
+@pytest.mark.parametrize("tier,teile", [("rentier", ["koerper", "beine_vorne", "beine_hinten"]),
+                                        ("eisbaer", ["koerper", "beine_vorne", "beine_hinten"]),
+                                        ("pinguin", ["pinguin_vorne", "pinguin_seite"])])
+def test_steck_tiere(M, tier, teile):
+    cfg = Config(**KARTON)
+    asm = M["steck_tiere"].build(cfg, tier=tier)
+    assert_cut_ready(asm, cfg)
+    assert [p.name for p in asm.parts] == teile
+    assert all(p.engrave for p in asm.parts)
+
+
+def test_steck_tiere_gross_ohne_gravur(M):
+    cfg = Config(**KARTON)
+    asm = M["steck_tiere"].build(cfg, tier="rentier", groesse=200, schal=False, details=False)
+    assert_cut_ready(asm, cfg)
+    with pytest.raises(ValueError):
+        M["steck_tiere"].build(cfg, tier="einhorn")
+
+
+def test_adventskalender(M):
+    cfg = Config(**KARTON)
+    asm = M["adventskalender"].build(cfg)
+    assert_cut_ready(asm, cfg)
+    assert [p.name for p in asm.parts] == [f"tag_{n}" for n in range(1, 25)]
+    assert len(asm.parts[0].engrave) > 12                       # Falze, Rahmen, Zahl, Motiv
+    assert asm.parts[0].engrave != asm.parts[1].engrave
+
+
+def test_adventskalender_teilbereich(M):
+    cfg = Config(**KARTON)
+    asm = M["adventskalender"].build(cfg, groesse=70, von=20, bis=24, motive=False)
+    assert_cut_ready(asm, cfg)
+    assert len(asm.parts) == 5
+    with pytest.raises(ValueError):
+        M["adventskalender"].build(cfg, von=10, bis=5)
+
+
+@pytest.mark.parametrize("formen", ["gemischt", "sterne", "flocken", "herzen"])
+def test_sternengirlande(M, formen):
+    cfg = Config(**KARTON)
+    asm = M["sternengirlande"].build(cfg, anzahl=6, formen=formen)
+    assert_cut_ready(asm, cfg)
+    assert len(asm.parts) == 6
+    assert all(len(p.holes) >= 2 for p in asm.parts)            # mindestens zwei Fadenlöcher
+
+
+@pytest.mark.parametrize("kw", [dict(), dict(szene="tannenwald", form="rechteck"),
+                                dict(breite=120, hoehe=150, sterne=False), dict(breite=280, hoehe=290)])
+def test_fensterbild(M, kw):
+    cfg = Config(**KARTON)
+    asm = M["fensterbild"].build(cfg, **kw)
+    assert_cut_ready(asm, cfg)
+    p = asm.parts[0]
+    assert p.name == "fensterbild" and p.holes
+    if kw.get("szene", "winterdorf") == "winterdorf":
+        assert len(p.holes) > 20                                # Himmel, Fensterscheiben, Türen
