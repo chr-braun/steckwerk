@@ -4,6 +4,12 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.18.0 – 2026-11-26
+
+- **Alle Dekos sind jetzt Plugins.** Im Programm stecken nur noch das Wichtelhaus, die Häuser-Serie, die eigenen Motive und die Gravur. Die Modelle, die bisher fest eingebaut waren, sind in die Themenpakete umgezogen: *Christbaumschmuck*, *Schwibbogen*, *Schneeflocken*, *Tannenbaum* und *Schneemann* ins Paket **Weihnachten 2.5.0**, *Wichtel*, *Zaun*, *Laterne*, *Briefkasten* und das *Zubehör-Set* ins Paket **Wichtel 1.2.0**, *Steckfahrzeug* und *Zug-Set* ins Paket **Bewegung 1.1.0**. Sie heißen wie vorher, stehen an derselben Stelle in Seitenleiste und Galerie und bauen dieselben Teile; gespeicherte Projekte laufen weiter.
+- Fehlt das passende Paket, sagt Steckwerk, welches du installieren musst (Einstellungen → Pakete oder Updates). *Alle Modelle* baut Haus und Serie und dazu die früheren Kernmodelle der installierten Pakete.
+- Die neuen Paketversionen brauchen Steckwerk 2.18.0.
+
 ## 2.17.0 – 2026-11-26
 
 - **Neues Paket „Steckstern“ (1.0.0)** im Bereich *Feste und Jahreszeiten*: *Holzstern* aus zwei über Kreuz gesteckten sechszackigen Platten mit vier Filigranmustern (Eiskristall, Winterranke, Perlenspitze, Sternennacht, je Platte wählbar oder von Zacke zu Zacke im Wechsel), für 4 mm Holz. *Papierstern*: gefalteter Fünfzackstern aus zwei Hälften mit Spitzenborte und Ornamenten (Lebensblume, Sternmosaik, Eisfeder, Schneeflocken), Rückhälfte mit Lampenloch, Falzlinien zum Ritzen. *Fensterstern*: flacher Scherenschnitt-Stern mit sehr feinem Filigran als Eisblume (8 Zacken mit Federästen), Rosette (12 Zacken mit Blütenmitte und Perlenring) oder Spitzenstern (6 Zacken mit Wabenspitze und Perlenborte).

@@ -12,6 +12,9 @@ import service
 from cli import konfigurator, run
 
 
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
+
 def test_schema_is_json_and_complete():
     s = json.loads(json.dumps(service.schema()))
     assert {"wichtelhaus", "ornament", "schneeflocke", "fahrzeug", "alle"} <= set(s["models"])

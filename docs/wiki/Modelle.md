@@ -1,6 +1,8 @@
 # Modelle
 
-Alle eingebauten Vorlagen. Weitere Modelle kommen über [Pakete](Pakete.md).
+Im Programm selbst stecken seit 2.18 nur noch die Häuser und die eigenen Motive. Alle Dekos kommen als
+[Pakete](Pakete.md) (Plugins), die du unter *Einstellungen → Pakete* einzeln installierst. Die Modelle unten,
+die früher fest eingebaut waren, behalten ihren Namen; alte Projekte laufen weiter, sobald das Paket da ist.
 
 ## Häuser
 
@@ -9,12 +11,15 @@ Alle eingebauten Vorlagen. Weitere Modelle kommen über [Pakete](Pakete.md).
 | **wichtelhaus** | Haus mit Zinkenwänden, Sockel, Satteldach, Kamin, optional Anbau. Standard 80 × 70 mm, Traufhöhe 65 mm, 45° Dach. |
 | **serie** | N zusammenpassende Wichtelhäuser mit variierender Architektur (Dachneigung, Proportionen, Fenster, Türen, Gestaltung). Reproduzierbar über den Seed. |
 
-## Zubehör
+## Zubehör (Pakete Wichtel und Weihnachten)
 
-Abgestimmt aufs Standard-Wichtelhaus: **tannenbaum** (3D-gesteckt), **schneemann**, **wichtel**,
+Seit 2.18 im Paket **Wichtel** (Wichtel, Zaun, Laterne, Briefkasten, Zubehör-Set) und **Weihnachten**
+(Tannenbaum, Schneemann). Abgestimmt aufs Standard-Wichtelhaus: **tannenbaum** (3D-gesteckt), **schneemann**, **wichtel**,
 **zaun**, **laterne**, **briefkasten** (mit Namen) und **zubehoer** (alles auf einmal).
 
-## Schmuck
+## Schmuck (Paket Weihnachten)
+
+Seit 2.18 im Paket **Weihnachten**.
 
 ![Neue Schmuckformen](medien/neue_formen.png)
 
@@ -28,7 +33,9 @@ Abgestimmt aufs Standard-Wichtelhaus: **tannenbaum** (3D-gesteckt), **schneemann
 | **schneeflocke** | Sechszählige Flocken, jede aus ihrem Seed, optional 3D gesteckt. |
 | **schwibbogen** | Lichterbogen mit Szene Dorf, Wald oder Kirche, 1–11 Kerzen, Fenster zum Hinterleuchten, Text auf der Sockelleiste. |
 
-## Fahrzeuge
+## Fahrzeuge (Paket Bewegung)
+
+Seit 2.18 im Paket **Bewegung**.
 
 ![Zug, Bus und Traktor](medien/zug_bus_traktor.png)
 

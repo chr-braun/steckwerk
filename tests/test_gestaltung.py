@@ -4,7 +4,13 @@ import pytest
 from conftest import assert_cut_ready
 from steckwerk import Config
 from models import _deko as dk
-from models import briefkasten, fahrzeug, ornament, schneemann, serie, wichtel, wichtelhaus
+from models import serie, wichtelhaus
+from conftest import lade
+briefkasten = lade("wichtel", "briefkasten")
+fahrzeug = lade("bewegung", "fahrzeug")
+ornament = lade("weihnacht", "ornament")
+schneemann = lade("weihnacht", "schneemann")
+wichtel = lade("wichtel", "wichtel")
 from models._font import CASES, STYLES, fit_text, normalize, unsupported
 import service
 from cli import options_text, parse_args, params_from_args
@@ -15,6 +21,9 @@ HOUSE_LISTS = [("fenster", dk.WINDOW_FORMS), ("sprossen", dk.MUNTINS), ("fenster
 
 
 # --- Schrift ---------------------------------------------------------------------------
+
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
 
 @pytest.mark.parametrize("style", STYLES)
 @pytest.mark.parametrize("case", CASES)

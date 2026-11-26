@@ -5,6 +5,7 @@ _shapes.py – Formbausteine für Anhänger und Steckfiguren.
   cut_axis_slot   Kreuzschlitz entlang der senkrechten Achse (für 3D-Steckversionen)
   fill_pattern    Muster-Gravuren / Filigran-Durchbrüche innerhalb eines Bereichs
   star            Sternpolygon
+  fillet          Polygon mit abgerundeten Ecken aus (x, y, radius)
 """
 from __future__ import annotations
 
@@ -19,6 +20,43 @@ from steckwerk import (Part, Point, arc_points, circle, clean, clip_segment, dis
 def star(cx: float, cy: float, r_out: float, r_in: float, n: int = 5, rot: float = math.pi / 2) -> List[Point]:
     return [(cx + (r_out if k % 2 == 0 else r_in) * math.cos(rot + k * math.pi / n),
              cy + (r_out if k % 2 == 0 else r_in) * math.sin(rot + k * math.pi / n)) for k in range(2 * n)]
+
+
+def fillet(pts: Sequence[Tuple[float, float, float]], tol: float = 0.05) -> List[Point]:
+    """Polygon aus (x, y, radius) mit abgerundeten Ecken (Radius wird an kurze Kanten angepasst)."""
+    n = len(pts)
+    out: List[Point] = []
+    for i in range(n):
+        ax, ay, _ = pts[i - 1]
+        bx, by, r = pts[i]
+        cx, cy, _ = pts[(i + 1) % n]
+        if r <= 0:
+            out.append((bx, by))
+            continue
+        l1, l2 = math.hypot(ax - bx, ay - by), math.hypot(cx - bx, cy - by)
+        u1 = ((ax - bx) / l1, (ay - by) / l1)
+        u2 = ((cx - bx) / l2, (cy - by) / l2)
+        cosang = max(-1.0, min(1.0, u1[0] * u2[0] + u1[1] * u2[1]))
+        ang = math.acos(cosang)
+        if ang < 1e-3 or ang > math.pi - 1e-3:
+            out.append((bx, by))
+            continue
+        d = r / math.tan(ang / 2)
+        d = min(d, 0.45 * l1, 0.45 * l2)
+        r = d * math.tan(ang / 2)
+        t1 = (bx + u1[0] * d, by + u1[1] * d)
+        t2 = (bx + u2[0] * d, by + u2[1] * d)
+        bis = (u1[0] + u2[0], u1[1] + u2[1])
+        bl = math.hypot(*bis)
+        k = r / math.sin(ang / 2)
+        c = (bx + bis[0] / bl * k, by + bis[1] / bl * k)
+        a1 = math.atan2(t1[1] - c[1], t1[0] - c[0])
+        a2 = math.atan2(t2[1] - c[1], t2[0] - c[0])
+        delta = (a2 - a1 + math.pi) % (2 * math.pi) - math.pi
+        steps = max(2, int(math.ceil(abs(delta) / (2 * math.acos(max(-1.0, 1 - tol / r))))))
+        out += [(c[0] + r * math.cos(a1 + delta * s / steps), c[1] + r * math.sin(a1 + delta * s / steps))
+                for s in range(steps + 1)]
+    return clean(out)
 
 
 def _circle_hits(poly: Sequence[Point], cx: float, cy: float, r: float):

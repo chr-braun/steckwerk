@@ -67,8 +67,10 @@ EN: Dict[str, str] = {
         "Locomotive, tender and wagons in matching sizes – with coupling holes to connect them.",
     "Lichterbogen mit Kerzen und Scherenschnitt-Szene (Dorf, Wald, Kirche) – Fenster zum Hinterleuchten.":
         "Candle arch with candles and a paper-cut scene (village, forest, church) – windows to backlight.",
-    "Jedes Modell in Standardgröße – gut als Testlauf für neue Material- und Kerf-Einstellungen.":
-        "Every model in standard size – a good test run for new material and kerf settings.",
+    "Haus, Serie und die bekannten Deko-Modelle der installierten Pakete in Standardgröße – gut als Testlauf für "
+    "neue Material- und Kerf-Einstellungen.":
+        "House, series and the well-known decoration models of the installed packages in standard size – a good "
+        "test run for new material and kerf settings.",
     "Platte mit Standsockel – Motive aus der Bibliothek frei platzieren: ausschneiden oder gravieren.":
         "Plate on a stand – place motifs from the library freely: cut out or engrave.",
     "Hängeschild mit Löchern oder Schraublöchern – Motive frei platzieren, Text darunter.":

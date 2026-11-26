@@ -20,6 +20,17 @@ from steckwerk import Assembly, Config, Part, Point, arc_points, arched, bezier_
 from models import _deko as dk
 from models._font import CASES, STYLES, fit_text, unsupported
 from models._stand import tab_feature_at
+from pakete import num, integer, sel, txt, flag
+
+
+SYM = "Symbole: ♥ ★ ❄ 🎄"
+SCHRIFT = "Beschriftung"
+
+
+def _schrift(section=SCHRIFT, **when):
+    extra = dict(when=when) if when else {}
+    return [sel("schrift", "Schriftstil", dk.FONT_STYLES, "normal", section=section, **extra),
+            sel("schreibweise", "Schreibweise", dk.FONT_CASES, "gross", section=section, **extra)]
 
 SCENES = [("dorf", "Dorf"), ("wald", "Wald"), ("kirche", "Kirche")]
 DECOS = [("keine", "keine")] + dk.LINE_STYLES
@@ -200,3 +211,14 @@ def build(cfg: Config, name: str = "schwibbogen", width: Optional[float] = None,
     asm.notes.append(f"{name}: Bogen mit beiden Zapfen in die Bodenplatte stecken (bei Bedarf leimen). "
                      "Eine LED-Lichterkette hinter der Szene lässt die Fenster leuchten.")
     return asm
+
+INFO = dict(
+    label="Schwibbogen", group="Schmuck",
+    desc="Lichterbogen mit Kerzen und Scherenschnitt-Szene (Dorf, Wald, Kirche) – Fenster zum Hinterleuchten.",
+    params=[num("width", "Breite", 240, 120, 600),
+            sel("szene", "Szene", SCENES, "dorf"),
+            integer("kerzen", "Kerzen", 7, 1, 11),
+            flag("fenster", "Fenster ausschneiden", True, "zum Hinterleuchten mit einer Lichterkette"),
+            sel("bogen_deko", "Zierlinie auf dem Bogen", DECOS, "sterne", section="Gestaltung"),
+            txt("text", "Text auf der Sockelleiste", "", "z. B. Frohe Weihnacht – " + SYM, 40, section=SCHRIFT,
+                symbols=True)] + _schrift())

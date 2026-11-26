@@ -1,8 +1,13 @@
 """CLI: schreibt nur validierte Dateien, sonst gar nichts."""
+import pytest
+
 import os
 
 from cli import run
 
+
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
 
 def _files(d):
     return sorted(os.path.relpath(os.path.join(r, f), d) for r, _, fs in os.walk(d) for f in fs)

@@ -13,6 +13,7 @@ from typing import Optional
 from steckwerk import (Assembly, Config, JointFeature, Part, arc_points, arched, circle, clean,
                         profile_edge, slot_feature)
 from models._box import build_box
+from pakete import num
 
 DEFAULTS = dict(width=50.0, height=70.0)
 
@@ -94,3 +95,6 @@ def build(cfg: Config, name: str = "laterne", width: Optional[float] = None,
     asm.notes.append(f"{name}: LED-Teelicht auf die Markierung stellen, Deckel aufstecken, Bügel einstecken.")
     asm.params.update(openings=mode)
     return asm
+
+INFO = dict(label="Laterne", group="Zubehör", desc="Kleine Laterne mit Fenstern und Bügel.",
+            params=[num("width", "Breite", 50, 35, 200), num("height", "Höhe", 70, 45, 300)])

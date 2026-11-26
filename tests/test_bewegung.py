@@ -31,7 +31,9 @@ def test_standardwerte_cut_ready(mods, T, kerf):
     cfg = Config(thickness=T, kerf=kerf)
     for name, mod in mods.items():
         params = {p["key"]: p["default"] for p in mod.INFO["params"]}
-        assert_cut_ready(mod.build(cfg, **params), cfg)
+        res = mod.build(cfg, **params)
+        for asm in res if isinstance(res, list) else [res]:            # Zug-Set: mehrere Fahrzeuge
+            assert_cut_ready(asm, cfg)
 
 
 @pytest.mark.parametrize("figur", ["wichtel", "weihnachtsmann", "rentier", "schneemann", "skelett"])

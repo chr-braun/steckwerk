@@ -43,14 +43,14 @@ Install packages in Steckwerk under **Settings → Packages** with one click. Ba
 
 | Area | Package | What’s inside |
 |---|---|---|
-| Seasons and holidays | Christmas | Tree ornaments, ornaments with hidden pocket, name ornaments in script, nativity set, sleigh, lace ornaments |
-| | Elves | Elf door, furniture, elf room, elf market, fireplace, clock, Christmas tree |
+| Seasons and holidays | Christmas | Tree ornaments, candle arch, snowflakes, fir tree, snowman, name ornaments in script, nativity set, sleigh, lace ornaments |
+| | Elves | Elf, fence, lantern, mailbox, elf door, furniture, elf room, elf market, fireplace, clock, Christmas tree |
 | | Halloween | Haunted castle, pumpkin lantern, gravestone, spider web, skeleton jumping jack, candy bowl |
 | Home and gifts | Home | Picture frames, ornamental frames, door sign |
 | | Jewellery | Earring pairs in ten shapes |
 | | Multi-layer | Cut pictures with four scenes, layered motifs, clip-on decorations |
 | Play and motion | Games | Nine men’s morris, tic-tac-toe, four in a row, marble maze, peg solitaire, jigsaw puzzle |
-| | Motion | Jumping jack, crank animal, acrobat, spinning top, balancing bird |
+| | Motion | Vehicles and train set, jumping jack, crank animal, acrobat, spinning top, balancing bird |
 | Shapes and art | Shapes | Rib sculptures, wave surfaces, stacked vases |
 | Shop and market | Shop | Bottle price tags with logo and unit price |
 | Basics | Basics | Ornaments, border strips and the fit test for the right kerf |

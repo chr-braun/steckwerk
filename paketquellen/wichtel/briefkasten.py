@@ -18,6 +18,17 @@ from steckwerk import (Assembly, Config, JointFeature, Part, clean, profile_edge
 from models import _deko as dk
 from models._box import build_box
 from models._font import CASES, STYLES, unsupported
+from pakete import num, sel, txt
+
+
+SYM = "Symbole: ♥ ★ ❄ 🎄"
+SCHRIFT = "Beschriftung"
+
+
+def _schrift(section=SCHRIFT, **when):
+    extra = dict(when=when) if when else {}
+    return [sel("schrift", "Schriftstil", dk.FONT_STYLES, "normal", section=section, **extra),
+            sel("schreibweise", "Schreibweise", dk.FONT_CASES, "gross", section=section, **extra)]
 
 DEFAULTS = dict(width=40.0, depth=50.0, height=32.0, post=55.0)
 
@@ -116,3 +127,15 @@ def build(cfg: Config, name: str = "briefkasten", width: Optional[float] = None,
             asm.params[k] = v
     asm.notes.append(f"{name}: Pfosten in Fußplatte und Kastenboden stecken (ggf. mit Leim fixieren).")
     return asm
+
+INFO = dict(
+    label="Briefkasten", group="Zubehör",
+    desc="Wichtel-Briefkasten auf Pfosten – mit Namensschild und Dachgravur.",
+    params=[num("width", "Breite", 40, 25, 150), num("depth", "Tiefe", 50, 25, 150),
+            num("height", "Höhe Kasten", 32, 20, 150),
+            sel("dach", "Dachgravur", dk.ROOFS, "ziegel", section="Dach"),
+            sel("dachkante", "Dachkante", dk.EAVES, "gerade", "Zierkante an der Traufe – echt ausgeschnitten",
+                section="Dach"),
+            txt("text", "Namensschild", "", "statt Briefumschlag, z. B. „Post“ – | = neue Zeile – " + SYM, 40,
+                section=SCHRIFT, symbols=True),
+            sel("schild_form", "Schildform", dk.SIGNS, "rahmen", section=SCHRIFT)] + _schrift())

@@ -14,8 +14,12 @@ import steckwerk
 from steckwerk import Config, layout
 
 
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Steckfahrzeug, Tannenbaum)
+pytestmark = pytest.mark.usefixtures("mit_paketen_modul")
+
+
 @pytest.fixture(scope="module")
-def auto():
+def auto(mit_paketen_modul):
     req = {"model": "fahrzeug", "config": {"thickness": 3, "kerf": 0.15}}
     results, cfg = service.run_request(req, preview_on_error=False)
     assert results[0].ok

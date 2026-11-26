@@ -5,7 +5,13 @@ import pytest
 
 from conftest import MATERIALS, assert_cut_ready
 from steckwerk import Config
-from models import briefkasten, laterne, schneemann, tannenbaum, wichtel, zaun
+from conftest import lade
+briefkasten = lade("wichtel", "briefkasten")
+laterne = lade("wichtel", "laterne")
+schneemann = lade("weihnacht", "schneemann")
+tannenbaum = lade("weihnacht", "tannenbaum")
+wichtel = lade("wichtel", "wichtel")
+zaun = lade("wichtel", "zaun")
 
 
 # --- Tannenbaum --------------------------------------------------------------------

@@ -41,3 +41,52 @@ def _deutsche_dialoge(monkeypatch):
     monkeypatch.setenv("STECKWERK_SPRACHE", "de")
     import steckwerk_app
     monkeypatch.setattr(steckwerk_app, "_LANG", None)
+
+
+# --- Modelle, die seit 2.18 als Pakete kommen (Weihnachten, Wichtel, Bewegung) -----------------------------
+QUELLEN = os.path.join(ROOT, "paketquellen")
+KERN_PAKETE = ("verzierungen", "weihnacht", "wichtel", "bewegung")
+
+
+_GELADEN = {}
+
+
+def lade(pid, name):
+    """Modellmodul direkt aus den Paketquellen laden (ohne Installation), z. B. lade("weihnacht", "ornament")."""
+    import pakete
+    if (pid, name) not in _GELADEN:
+        _GELADEN[pid, name] = pakete._import(os.path.join(QUELLEN, pid), pid, name)
+    return _GELADEN[pid, name]
+
+
+@pytest.fixture(scope="session")
+def _kern_pakete_ordner(tmp_path_factory):
+    d = tmp_path_factory.mktemp("kernpakete")
+    for pid in KERN_PAKETE:
+        os.symlink(os.path.join(QUELLEN, pid), str(d / pid))
+    return str(d)
+
+
+@pytest.fixture
+def mit_paketen(_kern_pakete_ordner, tmp_path, monkeypatch):
+    """service kennt die früheren Kernmodelle (Christbaumschmuck, Zubehör, Fahrzeuge …) aus den Paketquellen."""
+    import service
+    monkeypatch.setenv("STECKWERK_PAKETE", _kern_pakete_ordner)
+    monkeypatch.setenv("STECKWERK_DATEN", str(tmp_path / "daten"))
+    service.reload_pakete()
+    yield service
+    monkeypatch.undo()
+    service.reload_pakete()
+
+
+@pytest.fixture(scope="module")
+def mit_paketen_modul(_kern_pakete_ordner, tmp_path_factory):
+    """Wie mit_paketen, aber für modulweite Fixtures."""
+    import service
+    mp = pytest.MonkeyPatch()
+    mp.setenv("STECKWERK_PAKETE", _kern_pakete_ordner)
+    mp.setenv("STECKWERK_DATEN", str(tmp_path_factory.mktemp("daten")))
+    service.reload_pakete()
+    yield service
+    mp.undo()
+    service.reload_pakete()

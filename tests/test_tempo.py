@@ -12,6 +12,9 @@ import validator
 from steckwerk import Config, PolygonIndex, SegmentGrid
 
 
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
+
 def _blob(rng, n, cx=0.0, cy=0.0, r=20.0):
     """Zufällige, sternförmige (also einfache) Kontur mit n Punkten."""
     pts = []

@@ -3,7 +3,8 @@ import pytest
 
 from conftest import MATERIALS, assert_cut_ready
 from steckwerk import Config
-from models import schneeflocke
+from conftest import lade
+schneeflocke = lade("weihnacht", "schneeflocke")
 
 
 def test_same_seed_same_flake(cfg):

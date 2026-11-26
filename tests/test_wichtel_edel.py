@@ -37,7 +37,7 @@ def _std(mod, **kw):
 
 def test_im_paket(mods):
     m = pakete.read_manifest(os.path.join(QUELLEN, "wichtel"))
-    assert m["version"] == "1.1.0"
+    assert m["version"] >= "1.1.0"
     for n in NEU:
         assert n in m["modelle"] and n in mods
         assert mods[n].INFO["group"] == "Wichtel"

@@ -386,7 +386,7 @@ def run(port: int = DEFAULT_PORT, out_dir: Optional[str] = None, browser: bool =
 
 def self_test() -> int:
     import service
-    r = service.generate({"model": "schneeflocke", "params": {"count": 1}})
+    r = service.generate({"model": "motiv_anhaenger"})
     assert r["ok"], r
     assert os.path.exists(webui.INDEX), webui.INDEX
     print(f"Steckwerk {__version__} OK · Python {sys.version.split()[0]} · {sys.executable}")
