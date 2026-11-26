@@ -18,6 +18,8 @@ Frei kombinierbar:
 from __future__ import annotations
 
 import math
+import os
+import sys
 from typing import Dict, List, Optional, Sequence
 
 from steckwerk import (Assembly, Config, JointFeature, Part, Point, arc_points, bbox, bezier_q,
@@ -26,6 +28,34 @@ from models import _deko as dk
 from models._font import CASES, STYLES, fit_text, unsupported
 from models._shapes import (border, cut_axis_slot, fill_pattern, keepout_circle, keepout_rect, star,
                             union_circle)
+from pakete import num, integer, sel, txt, flag
+
+
+_here = os.path.dirname(os.path.abspath(__file__))
+
+
+def _sub(name: str):
+    """Nachbarmodul aus demselben Paket laden (gleicher Name wie beim Paket-Lader)."""
+    import importlib.util
+    path = os.path.join(_here, name + ".py")
+    key = "swpaket_weihnacht_" + name
+    mod = sys.modules.get(key)
+    if mod is None or getattr(mod, "__file__", None) != path:
+        spec = importlib.util.spec_from_file_location(key, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[key] = mod
+        spec.loader.exec_module(mod)
+    return mod
+
+
+SYM = "Symbole: ♥ ★ ❄ 🎄"
+SCHRIFT = "Beschriftung"
+
+
+def _schrift(section=SCHRIFT, **when):
+    extra = dict(when=when) if when else {}
+    return [sel("schrift", "Schriftstil", dk.FONT_STYLES, "normal", section=section, **extra),
+            sel("schreibweise", "Schreibweise", dk.FONT_CASES, "gross", section=section, **extra)]
 
 SHAPES = ["kugel", "stern", "herz", "glocke", "baum", "mond", "anhaenger", "lebkuchen", "stiefel", "zuckerstange",
           "geschenk", "kerze", "engel", "zapfen", "schneemann", "schneeflocke"]
@@ -101,7 +131,7 @@ def _glocke(S: float, tol: float) -> Shape:
 
 
 def _baum(S: float, tol: float) -> Shape:
-    from models.tannenbaum import _right_profile
+    _right_profile = _sub("tannenbaum")._right_profile
     Wt = 0.78 * S
     th = 0.1 * S
     tw = 0.16 * Wt
@@ -151,7 +181,7 @@ def _anhaenger(S: float, tol: float) -> Shape:
 # --- Neue Formen (Einheiten relativ zur Höhe S, rechte Hälfte gespiegelt) --------------------------
 
 def _round(pts, S, tol):
-    from models.fahrzeug import fillet
+    from models._shapes import fillet
     out: List[Point] = []
     for q in fillet([(x * S, y * S, r * S) for x, y, r in pts], tol):
         if not out or math.hypot(q[0] - out[-1][0], q[1] - out[-1][1]) > 0.08:
@@ -474,7 +504,7 @@ def build(cfg: Config, name: str = "ornament", shape: str = DEFAULTS["shape"], s
     if shape == "schneeflocke":
         if text:
             raise ValueError("Schneeflocken haben keinen Platz für Text – nimm z. B. form=anhaenger")
-        from models import schneeflocke
+        schneeflocke = _sub("schneeflocke")
         sub = schneeflocke.build(cfg, name=f"{name}_flocke", size=S, count=max(count, 1), seed=seed,
                                  three_d=three_d)
         sub.name = asm.name
@@ -499,3 +529,30 @@ def _slug(t: str) -> str:
     s = "".join(rep.get(c, c) for c in t.replace("|", "_"))
     s = "".join(c.lower() if c.isalnum() else "_" for c in s)
     return s.strip("_")[:24] or "text"
+
+ORNAMENT_PATTERNS = [("sterne", "Sterne"), ("punkte", "Punkte"), ("streifen", "Streifen"), ("flocken", "Flocken"),
+                     ("herzen", "Herzen"), ("tannen", "Tannen"), ("karo", "Karo"), ("wellen", "Wellen"),
+                     ("filigran", "Filigran (Durchbrüche)"), ("keins", "keins")]
+
+INFO = dict(
+    label="Christbaumschmuck", group="Schmuck",
+    desc="Anhänger-Konfigurator: Form, Muster, Randstil, Name/Jahr mit Rahmen, Öse – flach oder 3D gesteckt.",
+    params=[sel("shape", "Form", [
+                ("stern", "Stern"), ("kugel", "Kugel"), ("herz", "Herz"), ("glocke", "Glocke"),
+                ("baum", "Tannenbaum"), ("mond", "Mond"), ("anhaenger", "Anhänger/Schild"),
+                ("lebkuchen", "Lebkuchenmann"), ("stiefel", "Nikolausstiefel"),
+                ("zuckerstange", "Zuckerstange (ohne Text)"), ("geschenk", "Geschenk"), ("kerze", "Kerze"),
+                ("engel", "Engel"), ("zapfen", "Tannenzapfen"), ("schneemann", "Schneemann"),
+                ("schneeflocke", "Schneeflocke")], "stern"),
+            num("size", "Größe (Höhe)", 70, 30, 200),
+            sel("pattern", "Muster", ORNAMENT_PATTERNS, "sterne", "Gravur; Filigran = Durchbrüche"),
+            txt("text", "Text", "", "Komma = je Name ein Anhänger, | = neue Zeile (z. B. Anna|2026) – " + SYM,
+                symbols=True),
+            sel("hanger", "Aufhängung", [("oese", "Öse oben"), ("loch", "Loch")], "oese"),
+            flag("rand", "Rand", True),
+            sel("rand_stil", "Randstil", dk.LINE_STYLES, "linie", when={"rand": [True]}),
+            flag("three_d", "3D gesteckt", False, "Zwei Hälften mit Kreuzschlitz (ohne Text)"),
+            integer("count", "Anzahl ohne Text", 1, 1, 30),
+            integer("seed", "Zufallsstartwert", 7, 0, 99999, "Gleicher Wert = gleiches Ergebnis"),
+            sel("textrahmen", "Textrahmen", dk.SIGNS, "ohne", "Schild um den Text", section=SCHRIFT)]
+           + _schrift())

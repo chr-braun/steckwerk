@@ -3,8 +3,9 @@ import pytest
 
 from conftest import MATERIALS, assert_cut_ready
 from steckwerk import Config
-from models import ornament
-from models.ornament import PATTERNS, SHAPES
+from conftest import lade
+ornament = lade("weihnacht", "ornament")
+PATTERNS, SHAPES = ornament.PATTERNS, ornament.SHAPES
 
 FLAT = [s for s in SHAPES if s != "schneeflocke"]
 

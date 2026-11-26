@@ -11,6 +11,7 @@ import math
 from typing import List, Optional
 
 from steckwerk import Assembly, Config, JointFeature, Part, Point, circle, clean
+from pakete import num, integer
 
 DEFAULTS = dict(height=110.0, width=None, tiers=4)
 
@@ -96,3 +97,6 @@ def build(cfg: Config, name: str = "tannenbaum", height: Optional[float] = None,
     asm.connect(f"{A.name}:kreuz", f"{B.name}:kreuz")
     asm.notes.append(f"{name}: Teil A (Schlitz oben) von oben auf Teil B (Schlitz unten) schieben.")
     return asm
+
+INFO = dict(label="Tannenbaum", group="Zubehör", desc="Zwei Hälften, über Kreuz gesteckt.",
+            params=[num("height", "Höhe", 110, 50, 400), integer("tiers", "Etagen", 4, 2, 8)])

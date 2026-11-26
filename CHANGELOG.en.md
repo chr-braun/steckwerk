@@ -4,6 +4,12 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.18.0 – 2026-11-26
+
+- **All decorations are now plugins.** The program itself only contains the elf house, the house series, your own motifs and engraving. The models that used to be built in moved to the theme packages: *tree ornaments*, *candle arch*, *snowflakes*, *fir tree* and *snowman* to **Christmas 2.5.0**, *elf*, *fence*, *lantern*, *mailbox* and the *accessory set* to **Elves 1.2.0**, *slot-together vehicle* and *train set* to **Motion 1.1.0**. They keep their names, sit in the same place in sidebar and gallery and build the same parts; saved projects keep working.
+- If the matching package is missing, Steckwerk tells you which one to install (Settings → Packages or Updates). *All models* builds house and series plus the former core models of the installed packages.
+- The new package versions need Steckwerk 2.18.0.
+
 ## 2.17.0 – 2026-11-26
 
 - **New package “Slotted star” (1.0.0)** in *Seasons and holidays*: *wooden star* of two six-pointed plates slotted crosswise with four filigree patterns, for 4 mm wood; *paper star*: folded five-pointed star of two halves with lace border and ornaments, back half with lamp hole, fold lines to score; *window star*: flat paper-cut star with very fine filigree as frost flower (8 points), rosette (12 points) or lace star (6 points).

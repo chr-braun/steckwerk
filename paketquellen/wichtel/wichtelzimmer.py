@@ -7,7 +7,6 @@ folgen der Höhe der Wichtelfigur. Jedes Stück kommt als eigene Baugruppe (eige
 import importlib.util
 import os
 
-from models import wichtel as figur
 from pakete import bibliothek, flag, integer, num, sel, txt
 
 _spec = importlib.util.spec_from_file_location("swpaket_wichtel__lade_zimmer",
@@ -15,6 +14,7 @@ _spec = importlib.util.spec_from_file_location("swpaket_wichtel__lade_zimmer",
 _lade = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_lade)
 MOEBEL = _lade.moebel()
+figur = _lade.modul("wichtel")                     # einfache Steckfigur (bis 2.17 im Kern)
 FIGUREN = [("schicht", "Schicht-Wichtel (4 Lagen)"), ("einfach", "einfache Steckfigur")]
 
 STUECKE = [

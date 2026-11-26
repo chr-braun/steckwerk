@@ -5,8 +5,9 @@ import pytest
 
 from conftest import MATERIALS, assert_cut_ready, check
 from steckwerk import Config, bbox, circle
-from models import fahrzeug
-from models.fahrzeug import DEFAULTS, MIN_LENGTH, VEHICLES
+from conftest import lade
+fahrzeug = lade("bewegung", "fahrzeug")
+DEFAULTS, MIN_LENGTH, VEHICLES = fahrzeug.DEFAULTS, fahrzeug.MIN_LENGTH, fahrzeug.VEHICLES
 
 
 @pytest.mark.parametrize("vehicle", VEHICLES)

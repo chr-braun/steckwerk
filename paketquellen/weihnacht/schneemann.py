@@ -11,6 +11,18 @@ from typing import Optional
 
 from steckwerk import (Assembly, Config, Part, arc_points, circle, clean, profile_edge)
 from models._stand import bottom_tab, stand_base, tab_feature_at
+from pakete import num, sel, txt
+from models import _deko as dk
+
+
+SYM = "Symbole: ♥ ★ ❄ 🎄"
+SCHRIFT = "Beschriftung"
+
+
+def _schrift(section=SCHRIFT, **when):
+    extra = dict(when=when) if when else {}
+    return [sel("schrift", "Schriftstil", dk.FONT_STYLES, "normal", section=section, **extra),
+            sel("schreibweise", "Schreibweise", dk.FONT_CASES, "gross", section=section, **extra)]
 
 DEFAULTS = dict(height=60.0)
 
@@ -90,3 +102,7 @@ def build(cfg: Config, name: str = "schneemann", height: Optional[float] = None,
                text=text, schrift=schrift, schreibweise=schreibweise)
     asm.notes.append(f"{name}: Figur in den Sockel stecken.")
     return asm
+
+INFO = dict(label="Schneemann", group="Zubehör", desc="Figur mit Standsockel – auf Wunsch mit Namen.",
+            params=[num("height", "Höhe", 60, 35, 300),
+                    txt("text", "Text auf dem Sockel", "", SYM, 30, section=SCHRIFT, symbols=True)] + _schrift())

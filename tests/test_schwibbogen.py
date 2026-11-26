@@ -4,9 +4,13 @@ import pytest
 from conftest import MATERIALS, assert_cut_ready
 from steckwerk import Config
 from models import _deko as dk
-from models import schwibbogen
+from conftest import lade
+schwibbogen = lade("weihnacht", "schwibbogen")
 import service
 
+
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
 
 @pytest.mark.parametrize("szene", dk.values(schwibbogen.SCENES))
 @pytest.mark.parametrize("kerzen", [1, 4, 7, 11])

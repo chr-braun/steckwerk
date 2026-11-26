@@ -2,18 +2,20 @@
   "standard": 1,
   "id": "bewegung",
   "name": "Bewegung",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "autor": "Christian & Claude",
-  "beschreibung": "Spielzeug für Kinder, das sich bewegt: Hampelmann als Wichtel, Weihnachtsmann, Rentier, Schneemann oder Skelett, dazu Kurbeltier, Turner-Affe, Kreisel und Balancier-Vogel.",
+  "beschreibung": "Spielzeug für Kinder, das sich bewegt: Hampelmann als Wichtel, Weihnachtsmann, Rentier, Schneemann oder Skelett, dazu Kurbeltier, Turner-Affe, Kreisel und Balancier-Vogel. Dazu Steckfahrzeuge (Auto, Lkw, Lok, Schlitten, Bus, Traktor …) und das Zug-Set (bis Steckwerk 2.17 fest in der App).",
   "name_en": "Motion",
-  "beschreibung_en": "Toys for children that move: jumping jack as elf, Santa, reindeer, snowman or skeleton, plus crank animal, acrobat monkey, spinning top and balancing bird.",
-  "steckwerk": "2.8.0",
+  "beschreibung_en": "Toys for children that move: jumping jack as elf, Santa, reindeer, snowman or skeleton, plus crank animal, acrobat monkey, spinning top and balancing bird. Plus slot-together vehicles (car, truck, locomotive, sleigh, bus, tractor …) and the train set (built into the app up to Steckwerk 2.17).",
+  "steckwerk": "2.18.0",
   "modelle": [
     "hampelmann",
     "kurbeltier",
     "turner",
     "kreisel",
-    "vogel"
+    "vogel",
+    "fahrzeug",
+    "zug"
   ],
   "benoetigt": {
     "verzierungen": "2.0.0"

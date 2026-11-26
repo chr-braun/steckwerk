@@ -44,9 +44,9 @@ jedem Paket automatisch mit.
 
 | Bereich | Paket | Was drin ist |
 |---|---|---|
-| Feste und Jahreszeiten | Weihnachten | Christbaumschmuck, Christbaumschmuck mit Steckfach, Namensanhänger in Schreibschrift, Steckkrippe, Zierschlitten, Spitzenschmuck |
+| Feste und Jahreszeiten | Weihnachten | Christbaumschmuck, Schwibbogen, Schneeflocken, Tannenbaum, Schneemann, Namensanhänger in Schreibschrift, Steckkrippe, Zierschlitten, Spitzenschmuck |
 | | Steckstern | Holzstern aus zwei gesteckten Platten, gefalteter Papierstern und Scherenschnitt-Fensterstern mit Filigran |
-| | Wichtel | Wichteltür, Möbel, Wichtelzimmer, Wichtelmarkt, Kamin, Standuhr, Christbaum |
+| | Wichtel | Wichtel, Zaun, Laterne, Briefkasten, Wichteltür, Möbel, Wichtelzimmer, Wichtelmarkt, Kamin, Standuhr, Christbaum |
 | | Halloween | Spukschloss, Kürbislaterne, Grabstein, Spinnennetz, Skelett-Hampelmann, Süßigkeitenschale |
 | | Jahreszeiten | Winterkranz-Medaille, Eisblumenfenster, Blütenmandala, Sommersonne, Herbstkranz |
 | Papier und Basteln | Papier | Steck-Tannenbaum mit Anhängern und Ausmal-Linien, Laternen-Häuschen zum Falten, Steck-Tiere (Rentier, Eisbär, Pinguin), Adventskalender aus 24 Schachteln, Sternengirlande, Fensterbild zum Hinterkleben |
@@ -54,7 +54,7 @@ jedem Paket automatisch mit.
 | | Schmuck | Ohrhänger als Paar in zehn Formen |
 | | Mehrlagig | Schneidebilder mit vier Szenen, Ebenenmotive, Aufsteck-Verzierungen |
 | Spielen und Bewegen | Spiele | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär, Bilderpuzzle |
-| | Bewegung | Hampelmann, Kurbeltier, Turner, Kreisel, Balancier-Vogel |
+| | Bewegung | Steckfahrzeuge und Zug-Set, Hampelmann, Kurbeltier, Turner, Kreisel, Balancier-Vogel |
 | Formen und Kunst | Formen | Steckkörper aus Rippen, Wellenflächen, Stapelvasen |
 | Laden und Markt | Verkauf | Flaschen-Preisschilder mit Logo und Grundpreis |
 | Basis | Grundlagen | Ornamente, Zierleisten und der Passungstest für den richtigen Kerf |

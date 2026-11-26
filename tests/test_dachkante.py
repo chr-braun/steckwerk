@@ -4,10 +4,15 @@ import pytest
 from conftest import MATERIALS, assert_cut_ready
 from steckwerk import Config, signed_area
 from models import _deko as dk
-from models import briefkasten, serie, wichtelhaus
+from models import serie, wichtelhaus
+from conftest import lade
+briefkasten = lade("wichtel", "briefkasten")
 
 KANTEN = [v for v, _ in dk.EAVES if v != "gerade"]
 
+
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
 
 @pytest.mark.parametrize("kante", KANTEN)
 def test_kante_ist_schnittfertig(cfg, kante):

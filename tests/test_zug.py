@@ -3,11 +3,15 @@ import pytest
 
 from conftest import MATERIALS, assert_cut_ready
 from steckwerk import Config
-from models import fahrzeug
+from conftest import lade
+fahrzeug = lade("bewegung", "fahrzeug")
 import service
 
 NEW = ["tender", "personenwagen", "gueterwagen", "bus", "traktor"]
 
+
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
 
 @pytest.mark.parametrize("T,kerf", MATERIALS)
 @pytest.mark.parametrize("vehicle", NEW)

@@ -231,7 +231,7 @@ def test_build_macos_bundle_and_zip(tmp_path):
     assert info["CFBundleExecutable"] == "Steckwerk" and info["CFBundleShortVersionString"] == __version__
     assert info["LSUIElement"] is True
     assert (app / "Resources" / "Steckwerk.icns").read_bytes()[:4] == b"icns"
-    assert (app / "Resources" / "steckwerk" / "models" / "fahrzeug.py").exists()
+    assert (app / "Resources" / "steckwerk" / "models" / "wichtelhaus.py").exists()
     assert not list((app / "Resources" / "steckwerk").glob("tests"))
     z = zipfile.ZipFile(tmp_path / f"Steckwerk-{__version__}-macOS.zip")
     exe = z.getinfo(f"Steckwerk-{__version__}-macOS/Steckwerk.app/Contents/MacOS/Steckwerk")

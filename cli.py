@@ -44,14 +44,13 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
 from steckwerk import Config, ConfigError, __version__  # noqa: E402
-from models import _deko as dk, fahrzeug  # noqa: E402
-from models.ornament import PATTERNS  # noqa: E402
-from service import (CONFIG_INFO, MODEL_INFO, VEHICLE_DEFAULTS, build_assemblies, coerce,  # noqa: E402
+from models import _deko as dk  # noqa: E402
+from service import (CONFIG_INFO, MODEL_INFO, build_assemblies, coerce, vehicle_defaults,  # noqa: E402
                      process, write_results)
 import service  # noqa: E402
 from validator import validate_svg_text  # noqa: E402
 
-CHOICES = list(MODEL_INFO)
+CHOICES = list(MODEL_INFO) + [k for k in service.AUSGELAGERT if k not in MODEL_INFO]
 
 # Parameter → CLI-Schalter (Zuordnung und Ausgabe des Konfigurators)
 FLAGS = {"width": "--width", "height": "--height", "depth": "--depth", "pitch": "--pitch", "n": "--series",
@@ -67,8 +66,8 @@ CONFIG_FLAGS = {"thickness": "--thickness", "kerf": "--kerf", "scale": "--scale"
 def parse_args(argv=None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         prog="steckwerk",
-        description="Parametrische, validierte Lasercut-SVGs: Wichtelhäuser, Zubehör, Christbaumschmuck, "
-                    "Schneeflocken und Steckfahrzeuge.",
+        description="Parametrische, validierte Lasercut-SVGs: Wichtelhäuser, eigene Motive und alle Modelle "
+                    "der installierten Pakete (Weihnachten, Wichtel, Bewegung …).",
         formatter_class=argparse.RawDescriptionHelpFormatter, epilog=__doc__.split("Beispiele", 1)[1])
     ap.add_argument("--model", "-m", choices=CHOICES, default="wichtelhaus", help="Modell (Default: wichtelhaus)")
     ap.add_argument("--konfigurator", action="store_true", help="interaktiv: Modell und Werte abfragen")
@@ -105,14 +104,16 @@ def parse_args(argv=None) -> argparse.Namespace:
     g = ap.add_argument_group("Christbaumschmuck und Schneeflocken")
     g.add_argument("--shape", help="Form: stern, kugel, herz, glocke, baum, mond, anhaenger, lebkuchen, stiefel, zuckerstange, "
                    "geschenk, kerze, engel, zapfen, schneemann, schneeflocke")
-    g.add_argument("--pattern", help="Muster: " + ", ".join(PATTERNS))
+    g.add_argument("--pattern", help="Muster (Christbaumschmuck, Paket Weihnachten): sterne, punkte, streifen, "
+                                     "flocken, herzen, tannen, karo, wellen, filigran, keins")
     g.add_argument("--text", help="Text/Namen; Komma = je Name ein Teil, | = neue Zeile")
     g.add_argument("--hanger", choices=["oese", "loch"], help="Aufhängung")
     g.add_argument("--no-rand", action="store_true", help="ohne gravierte Randlinie")
     g.add_argument("--3d", dest="three_d", action="store_true", help="3D: zwei Hälften zum Zusammenstecken")
     g.add_argument("--count", type=int, help="Anzahl (Ornamente ohne Text, Schneeflocken)")
     g = ap.add_argument_group("Fahrzeuge")
-    g.add_argument("--vehicle", choices=fahrzeug.VEHICLES, help="Fahrzeugtyp")
+    g.add_argument("--vehicle", help="Fahrzeugtyp (Steckfahrzeug, Paket Bewegung): auto, lkw, lok, schlitten, "
+                                     "tender, personenwagen, gueterwagen, bus, traktor")
     g.add_argument("--axles", type=int, choices=[2, 3], help="Achsen (Lkw)")
     g = ap.add_argument_group("Gestaltung und Beschriftung")
     g.add_argument("--option", "-O", action="append", default=[], metavar="NAME=WERT",
@@ -307,8 +308,8 @@ def konfigurator(inp: Callable[[str], str] = input, out: Callable[[str], None] =
             import motive as _mt
             info = dict(info, type="select", options=[dict(value=m["id"], label=m.get("name", m["id"]))
                                                       for m in _mt.library() if m["flaechen"]])
-        dflt = VEHICLE_DEFAULTS[vehicle][key] if (model == "fahrzeug" and vehicle and
-                                                   key in ("length", "width")) else None
+        dflt = vehicle_defaults().get(vehicle, {}).get(key) if (model == "fahrzeug" and vehicle and
+                                                                key in ("length", "width")) else None
         v = _ask(info, inp, out, dflt)
         chosen[key] = v
         if key == "vehicle":

@@ -48,7 +48,8 @@ final class IntegrationTests: XCTestCase {
 
         let schema = try await client.schema()
         let haus = try XCTUnwrap(schema.models["wichtelhaus"])
-        XCTAssertGreaterThan(schema.models.count, 10)
+        // Ohne Pakete (leeres HOME) nur der Kern: Wichtelhaus, Serie, fünf Motiv-Vorlagen, „Alle Modelle“ (seit 2.18)
+        XCTAssertGreaterThanOrEqual(schema.models.count, 8)
         XCTAssertTrue(schema.models.values.flatMap(\.params).allSatisfy { $0.kind != .unknown })
 
         let params = ParameterLogic.requestValues(haus.params, values: ParameterLogic.defaults(for: haus.params))

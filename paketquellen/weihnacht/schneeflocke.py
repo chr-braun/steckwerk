@@ -18,6 +18,7 @@ from typing import List, Optional, Tuple
 from steckwerk import (Assembly, Config, JointFeature, Part, Point, arc_points, circle, clean,
                         mirror_x, rotate)
 from models._shapes import cut_axis_slot
+from pakete import flag, integer, num
 
 DEFAULTS = dict(size=80.0)
 SIN60, COS60 = math.sqrt(3) / 2, 0.5
@@ -207,3 +208,10 @@ def build(cfg: Config, name: str = "schneeflocke", size: Optional[float] = None,
     if three_d:
         asm.notes.append("3D: Flocke B (Schlitz unten, mit Öse) von oben in Flocke A (Schlitz oben) schieben.")
     return asm
+
+INFO = dict(
+    label="Schneeflocken", group="Schmuck",
+    desc="Sechszählige Flocken, jede aus ihrem Zufallswert – mit Öse oder 3D gesteckt.",
+    params=[num("size", "Durchmesser", 80, 30, 250), integer("count", "Anzahl", 3, 1, 60),
+            integer("seed", "Zufallsstartwert", 7, 0, 99999, "Gleicher Wert = gleiches Ergebnis"),
+            flag("three_d", "3D gesteckt", False)])

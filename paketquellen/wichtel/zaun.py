@@ -11,6 +11,7 @@ from typing import List, Optional
 
 from steckwerk import (Assembly, Config, JointFeature, Part, Point, clean, profile_edge, rect,
                         slot_feature)
+from pakete import num
 
 DEFAULTS = dict(width=120.0, height=45.0)
 
@@ -80,3 +81,6 @@ def build(cfg: Config, name: str = "zaun", width: Optional[float] = None,
     asm.notes.append(f"{name}: Zaunfeld mit den Fuß-Tabs in die Leiste stecken; mehrere Felder "
                      f"hintereinander ergeben einen langen Zaun.")
     return asm
+
+INFO = dict(label="Zaun", group="Zubehör", desc="Lattenzaun mit Füßen.",
+            params=[num("width", "Länge", 120, 40, 400), num("height", "Höhe", 45, 20, 150)])

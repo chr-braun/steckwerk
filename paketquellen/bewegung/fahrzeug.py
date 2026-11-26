@@ -26,7 +26,8 @@ from steckwerk import (Assembly, Config, JointFeature, Part, Point, arc_points, 
                         tab_features, tab_segments)
 from models import _deko as dk
 from models._font import CASES, STYLES, fit_text, unsupported
-from models._shapes import star
+from models._shapes import fillet, star  # noqa: F401  (fillet: früher hier)
+from pakete import flag, integer, num, sel, txt
 
 VEHICLES = ["auto", "lkw", "lok", "schlitten", "tender", "personenwagen", "gueterwagen", "bus", "traktor"]
 DEFAULTS = {
@@ -50,43 +51,6 @@ AXLE_PLAY = 0.6          # Lagerbohrung = Achsdiagonale + Spiel
 # ---------------------------------------------------------------------------
 # Geometrie-Helfer
 # ---------------------------------------------------------------------------
-
-def fillet(pts: Sequence[Tuple[float, float, float]], tol: float = 0.05) -> List[Point]:
-    """Polygon aus (x, y, radius) mit abgerundeten Ecken (Radius wird an kurze Kanten angepasst)."""
-    n = len(pts)
-    out: List[Point] = []
-    for i in range(n):
-        ax, ay, _ = pts[i - 1]
-        bx, by, r = pts[i]
-        cx, cy, _ = pts[(i + 1) % n]
-        if r <= 0:
-            out.append((bx, by))
-            continue
-        l1, l2 = math.hypot(ax - bx, ay - by), math.hypot(cx - bx, cy - by)
-        u1 = ((ax - bx) / l1, (ay - by) / l1)
-        u2 = ((cx - bx) / l2, (cy - by) / l2)
-        cosang = max(-1.0, min(1.0, u1[0] * u2[0] + u1[1] * u2[1]))
-        ang = math.acos(cosang)
-        if ang < 1e-3 or ang > math.pi - 1e-3:
-            out.append((bx, by))
-            continue
-        d = r / math.tan(ang / 2)
-        d = min(d, 0.45 * l1, 0.45 * l2)
-        r = d * math.tan(ang / 2)
-        t1 = (bx + u1[0] * d, by + u1[1] * d)
-        t2 = (bx + u2[0] * d, by + u2[1] * d)
-        bis = (u1[0] + u2[0], u1[1] + u2[1])
-        bl = math.hypot(*bis)
-        k = r / math.sin(ang / 2)
-        c = (bx + bis[0] / bl * k, by + bis[1] / bl * k)
-        a1 = math.atan2(t1[1] - c[1], t1[0] - c[0])
-        a2 = math.atan2(t2[1] - c[1], t2[0] - c[0])
-        delta = (a2 - a1 + math.pi) % (2 * math.pi) - math.pi
-        steps = max(2, int(math.ceil(abs(delta) / (2 * math.acos(max(-1.0, 1 - tol / r))))))
-        out += [(c[0] + r * math.cos(a1 + delta * s / steps), c[1] + r * math.sin(a1 + delta * s / steps))
-                for s in range(steps + 1)]
-    return clean(out)
-
 
 def clip(poly: Sequence[Point], a: float, b: float, c: float) -> List[Point]:
     """Sutherland–Hodgman: behält den Teil mit a·x + b·y ≤ c."""
@@ -839,3 +803,35 @@ def build(cfg: Config, name: Optional[str] = None, vehicle: str = "auto", length
         asm.notes.append("Achsen durch die Lagerbohrungen schieben, Räder auf den Vierkant pressen "
                          f"(≈{WHEEL_GAP} mm Luft zur Seitenwand lassen, bei Bedarf einen Tropfen Leim).")
     return asm
+
+
+SYM = "Symbole: ♥ ★ ❄ 🎄"
+SCHRIFT = "Beschriftung"
+
+
+def _schrift():
+    return [sel("schrift", "Schriftstil", dk.FONT_STYLES, "normal", section=SCHRIFT),
+            sel("schreibweise", "Schreibweise", dk.FONT_CASES, "gross", section=SCHRIFT)]
+
+
+INFO = dict(
+    label="Steckfahrzeug", group="Fahrzeuge",
+    desc="Seitenwände + Querteile mit Tabs; Räder drehen auf einer Vierkantachse aus der Platte. "
+         "Aufschrift mit Rahmen und Zierlinien.",
+    params=[sel("vehicle", "Fahrzeug", [("auto", "Auto"), ("lkw", "Lkw"), ("lok", "Lok"),
+                                        ("schlitten", "Schlitten"), ("tender", "Tender (zur Lok)"),
+                                        ("personenwagen", "Personenwagen"), ("gueterwagen", "Güterwagen"),
+                                        ("bus", "Bus"), ("traktor", "Traktor")], "auto"),
+            num("length", "Länge", 120, 80, 400, help="Leer lassen = Standard je Fahrzeug"),
+            num("width", "Breite", 60, 30, 250),
+            integer("axles", "Achsen", 2, 2, 3, "Lkw mit Tandemachse hinten", when={"vehicle": ["lkw"]}),
+            flag("kupplung", "Kupplungslöcher", True, "Lok, Tender und Wagen mit Draht/Schnur verbinden",
+                 when={"vehicle": list(TRAIN)}),
+            txt("text", "Aufschrift", "", "Gravur auf beiden Seiten, | = neue Zeile – " + SYM, 40, symbols=True),
+            sel("textrahmen", "Textrahmen", dk.SIGNS, "ohne", "Schild um die Aufschrift", section=SCHRIFT),
+            ] + _schrift() + [
+            sel("zierlinie", "Zierlinie", dk.TRIMS, "keine", "Linienstil entlang der Seitenkontur – "
+                "Eiszapfen hängen an den Oberkanten", section="Zierlinien")])
+
+# Standardmaße je Fahrzeug für Formulare (die Weboberfläche setzt sie beim Wechsel des Fahrzeugs)
+VEHICLE_DEFAULTS = {k: dict(length=v["length"], width=v["width"]) for k, v in DEFAULTS.items()}

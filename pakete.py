@@ -390,6 +390,12 @@ def _discover():
     return out
 
 
+# Modellnamen, die einem bestimmten Paket gehören (bis 2.17 Kernmodelle): Andere Pakete mit gleichem Modulnamen
+# bekommen wie bisher den Schlüssel <paket>_<name>, egal in welcher Reihenfolge die Pakete geladen werden.
+# So bleibt „schneemann“ der Schneemann aus „Weihnachten“ und „wichtel_schneemann“ der Wichtel-Schneemann.
+RESERVIERT = {"schneemann": "weihnacht"}
+
+
 def register(model_info: Dict[str, Any], models: Dict[str, Any]) -> List[Tuple[str, Dict[str, Any], Optional[str]]]:
     """Lädt alle Pakete und trägt ihre Modelle ein. Liefert (ordner, manifest, fehler) je Paket."""
     for k in [k for k, v in model_info.items() if v.get("paket")]:     # neu laden: alte Einträge weg
@@ -399,7 +405,8 @@ def register(model_info: Dict[str, Any], models: Dict[str, Any]) -> List[Tuple[s
     for folder, m, mods, err in discover():
         if err is None:
             for name, mod in mods.items():
-                key = name if name not in model_info else f"{m['id']}_{name}"
+                frei = name not in model_info and RESERVIERT.get(name, m["id"]) == m["id"]
+                key = name if frei else f"{m['id']}_{name}"
                 if key in model_info:
                     err = f"Modellname {name!r} ist schon vergeben"
                     continue

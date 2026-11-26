@@ -14,6 +14,9 @@ import webui
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+# Nutzt Modelle, die seit 2.18 als Pakete kommen (Christbaumschmuck, Zubehör, Fahrzeuge …)
+pytestmark = pytest.mark.usefixtures("mit_paketen")
+
 def test_themen_json_is_wellformed():
     with open(os.path.join(ROOT, "themen.json"), encoding="utf-8") as fh:
         data = json.load(fh)
