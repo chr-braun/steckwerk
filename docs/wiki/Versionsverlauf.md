@@ -32,6 +32,7 @@ Alles ist seit dem 9. Oktober 2026 entstanden. Die Details stehen im
 | 2.13.0 | 12.11. | Steckwerk Desktop mit aufgeräumter Seitenleiste und Vorlagen-Galerie mit Vorschaubildern; Paketkatalog nach Bereichen; Webseite auf GitHub Pages; nur noch zwei Releases auf GitHub
 | 2.14.0 | 19.11. | Geschnittene Dachkante (Bogen, Spitze, Wellen, Zacken, Zuckerguss, Eiszapfen) für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten |
 | 2.15.0 | 25.11. | Neues Paket Jahreszeiten (Winterkranz-Medaille, Eisblumenfenster, Blütenmandala, Sommersonne, Herbstkranz); Mehrlagig 1.3.0 mit Leuchtender Schattenbox
+| 2.17.0 | 26.11. | Neue Pakete Steckstern 1.0.0 (Holzstern, Papierstern, Fensterstern) und Papier 1.0.0 (Steck-Tannenbaum, Laternen-Häuschen, Steck-Tiere, Adventskalender, Sternengirlande, Fensterbild) im neuen Bereich „Papier und Basteln“ |
 | 2.16.0 | 25.11. | Christbaumschmuck als eigenes Modul im Paket Schmuck 1.1.0 (Weihnachten 2.4.0 ohne Christbaumschmuck); neu: Christbaumschmuck mit Steckfach (Kugel, Lebkuchenhaus, Geschenk; verstecktes Fach für Geldschein oder Gutscheinkarte, drei Lagen) |
 
 ## Pakete

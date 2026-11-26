@@ -71,3 +71,18 @@ def test_papierstern_rueckseite_mit_lampenloch(M):
 def test_papierstern_hinweis_bei_holz(M):
     asm = M["papierstern"].build(Config(thickness=3.0), muster="eisfeder", teile="vorne")
     assert any("Karton" in n for n in asm.notes)
+
+
+@pytest.mark.parametrize("entwurf", ["eisblume", "rosette", "spitze"])
+def test_fensterstern(M, entwurf):
+    cfg = Config(**KARTON)
+    asm = M["fensterstern"].build(cfg, entwurf=entwurf)
+    assert_cut_ready(asm, cfg)
+    assert len(asm.parts) == 1 and len(asm.parts[0].holes) > 100
+
+
+def test_fensterstern_klein_und_falsch(M):
+    cfg = Config(**KARTON)
+    assert_cut_ready(M["fensterstern"].build(cfg, entwurf="rosette", groesse=120), cfg)
+    with pytest.raises(ValueError):
+        M["fensterstern"].build(cfg, entwurf="komet")
