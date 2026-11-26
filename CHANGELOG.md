@@ -4,6 +4,12 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.17.0 – 2026-11-26
+
+- **Neues Paket „Steckstern“ (1.0.0)** im Bereich *Feste und Jahreszeiten*: *Holzstern* aus zwei über Kreuz gesteckten sechszackigen Platten mit vier Filigranmustern (Eiskristall, Winterranke, Perlenspitze, Sternennacht, je Platte wählbar oder von Zacke zu Zacke im Wechsel), für 4 mm Holz. *Papierstern*: gefalteter Fünfzackstern aus zwei Hälften mit Spitzenborte und Ornamenten (Lebensblume, Sternmosaik, Eisfeder, Schneeflocken), Rückhälfte mit Lampenloch, Falzlinien zum Ritzen. *Fensterstern*: flacher Scherenschnitt-Stern mit sehr feinem Filigran als Eisblume (8 Zacken mit Federästen), Rosette (12 Zacken mit Blütenmitte und Perlenring) oder Spitzenstern (6 Zacken mit Wabenspitze und Perlenborte).
+- **Neues Paket „Papier“ (1.0.0)** im neuen Bereich *Papier und Basteln*, alles für Karton 200–300 g und Tonpapier: *Steck-Tannenbaum* für Kinder mit bis zu 36 Anhängern und Ausmal-Linien, *Laternen-Häuschen* zum Falten mit Fenstern für Transparentpapier, *Steck-Tiere* (Rentier, Eisbär, Pinguin), *Adventskalender* aus 24 Würfelschachteln mit Zahl und Motiv, *Sternengirlande* zum Auffädeln und *Fensterbild* (Winterdorf oder Tannenwald mit Reh) zum Hinterkleben.
+- Für Papier legst du am besten ein eigenes Materialprofil an: 0,5 mm, Kerf 0,1 mm, Mindeststeg 0,6 mm.
+
 ## 2.16.0 – 2026-11-25
 
 - **Neues Modul: Christbaumschmuck im Paket „Schmuck“ (1.1.0).** Der edle Christbaumschmuck und der Christbaumschmuck mit Steckfach liegen jetzt zusammen mit den Ohrhängern im Paket *Schmuck*, das du getrennt von Weihnachten nachladen kannst. *Weihnachten 2.4.0* enthält sie nicht mehr. Wer den Christbaumschmuck nutzt, installiert unter Updates das Paket Schmuck.

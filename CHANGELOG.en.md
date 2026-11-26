@@ -4,6 +4,12 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.17.0 – 2026-11-26
+
+- **New package “Slotted star” (1.0.0)** in *Seasons and holidays*: *wooden star* of two six-pointed plates slotted crosswise with four filigree patterns, for 4 mm wood; *paper star*: folded five-pointed star of two halves with lace border and ornaments, back half with lamp hole, fold lines to score; *window star*: flat paper-cut star with very fine filigree as frost flower (8 points), rosette (12 points) or lace star (6 points).
+- **New package “Paper” (1.0.0)** in the new area *Paper and crafts*, for 200–300 g card and construction paper: slot-together Christmas tree for children, folding lantern house, slot-together animals (reindeer, polar bear, penguin), advent calendar of 24 cube boxes, star garland to thread and a window picture (winter village or fir forest) to back with tracing paper.
+- For paper, add your own material profile: 0.5 mm, kerf 0.1 mm, minimum web 0.6 mm.
+
 ## 2.16.0 – 2026-11-25
 
 - **New module: tree ornaments in the “Jewellery” package (1.1.0).** The fine tree ornaments and the tree ornaments with a hidden pocket now live with the earrings in the *Jewellery* package, which you can load separately from Christmas. *Christmas 2.4.0* no longer contains them. If you use the tree ornaments, install the Jewellery package under Updates.
