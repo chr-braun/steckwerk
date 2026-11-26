@@ -1,21 +1,23 @@
 {
   "standard": 1,
-  "erstellt": "2026-11-25",
+  "erstellt": "2026-11-26",
   "programm": {
-    "version": "2.16.0",
-    "datum": "2026-11-25",
+    "version": "2.17.0",
+    "datum": "2026-11-26",
     "hinweise": [
-      "Neues Modul: Christbaumschmuck im Paket „Schmuck“ (1.1.0). Der edle Christbaumschmuck und der Christbaumschmuck mit Steckfach liegen jetzt zusammen mit den Ohrhängern im Paket *Schmuck*, das du getrennt von Weihnachten nachladen kannst. *Weihnachten 2.4.0* enthält sie nicht mehr. Wer den Christbaumschmuck nutzt, installiert unter Updates das Paket Schmuck.",
-      "Christbaumschmuck mit Steckfach (erst Weihnachten 2.3.0, jetzt im Paket Schmuck), neues Modell Christbaumschmuck mit Steckfach: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz."
+      "Neues Paket „Steckstern“ (1.0.0) im Bereich *Feste und Jahreszeiten*: *Holzstern* aus zwei über Kreuz gesteckten sechszackigen Platten mit vier Filigranmustern (Eiskristall, Winterranke, Perlenspitze, Sternennacht, je Platte wählbar oder von Zacke zu Zacke im Wechsel), für 4 mm Holz. *Papierstern*: gefalteter Fünfzackstern aus zwei Hälften mit Spitzenborte und Ornamenten (Lebensblume, Sternmosaik, Eisfeder, Schneeflocken), Rückhälfte mit Lampenloch, Falzlinien zum Ritzen. *Fensterstern*: flacher Scherenschnitt-Stern mit sehr feinem Filigran als Eisblume (8 Zacken mit Federästen), Rosette (12 Zacken mit Blütenmitte und Perlenring) oder Spitzenstern (6 Zacken mit Wabenspitze und Perlenborte).",
+      "Neues Paket „Papier“ (1.0.0) im neuen Bereich *Papier und Basteln*, alles für Karton 200–300 g und Tonpapier: *Steck-Tannenbaum* für Kinder mit bis zu 36 Anhängern und Ausmal-Linien, *Laternen-Häuschen* zum Falten mit Fenstern für Transparentpapier, *Steck-Tiere* (Rentier, Eisbär, Pinguin), *Adventskalender* aus 24 Würfelschachteln mit Zahl und Motiv, *Sternengirlande* zum Auffädeln und *Fensterbild* (Winterdorf oder Tannenwald mit Reh) zum Hinterkleben.",
+      "Für Papier legst du am besten ein eigenes Materialprofil an: 0,5 mm, Kerf 0,1 mm, Mindeststeg 0,6 mm."
     ],
     "hinweise_en": [
-      "New module: tree ornaments in the “Jewellery” package (1.1.0). The fine tree ornaments and the tree ornaments with a hidden pocket now live with the earrings in the *Jewellery* package, which you can load separately from Christmas. *Christmas 2.4.0* no longer contains them. If you use the tree ornaments, install the Jewellery package under Updates.",
-      "Tree ornament with hidden pocket (first Christmas 2.3.0, now in the Jewellery package), new model Tree ornament with hidden pocket: an ornament with a hidden pocket for a banknote folded twice, a gift card (credit card size) or a custom size. *Bauble* with filigree lace border, *gingerbread house* with icing, gable window and heart windows, *present* with bow and star windows. Three layers: front with lace and a finely engraved dedication in script, pocket frame in the middle (open at the top), back with a greeting. The size follows the insert, the clearance is adjustable; there are no cut-outs over the pocket. The ribbon through both loops closes the pocket. Works with 2 to 4 mm wood."
+      "New package “Slotted star” (1.0.0) in *Seasons and holidays*: *wooden star* of two six-pointed plates slotted crosswise with four filigree patterns, for 4 mm wood; *paper star*: folded five-pointed star of two halves with lace border and ornaments, back half with lamp hole, fold lines to score; *window star*: flat paper-cut star with very fine filigree as frost flower (8 points), rosette (12 points) or lace star (6 points).",
+      "New package “Paper” (1.0.0) in the new area *Paper and crafts*, for 200–300 g card and construction paper: slot-together Christmas tree for children, folding lantern house, slot-together animals (reindeer, polar bear, penguin), advent calendar of 24 cube boxes, star garland to thread and a window picture (winter village or fir forest) to back with tracing paper.",
+      "For paper, add your own material profile: 0.5 mm, kerf 0.1 mm, minimum web 0.6 mm."
     ],
     "mac": {
-      "datei": "Steckwerk-2.16.0-macOS.zip",
-      "sha256": "38a01869d7aab1269f6b6cebfdd215790bbdff10e0ea4f3f489a136fa41204c7",
-      "groesse": 1038788
+      "datei": "Steckwerk-2.17.0-macOS.zip",
+      "sha256": "ceffc488f4c48be064c638032fe87193d10d9e08fb3ca4ad54f741fcd5b278af",
+      "groesse": 1039024
     }
   },
   "pakete": [
@@ -167,6 +169,38 @@
       ]
     },
     {
+      "id": "papier",
+      "name": "Papier",
+      "version": "1.0.0",
+      "beschreibung": "Basteln mit Karton und Tonpapier: Steck-Tannenbaum mit Anhängern und Ausmal-Linien für Kinder, Laternen-Häuschen zum Falten mit Fenstern für Transparentpapier, Steck-Tiere (Rentier, Eisbär, Pinguin), Adventskalender aus 24 Schachteln, Sternengirlande und Fensterbild zum Hinterkleben.",
+      "autor": "Christian & Claude",
+      "name_en": "Paper",
+      "beschreibung_en": "Crafts from card and construction paper: slot-together Christmas tree with ornaments and colouring lines for children, folding lantern house with windows for tracing paper, slot-together animals (reindeer, polar bear, penguin), an advent calendar of 24 boxes, a star garland and a window picture to back with tracing paper.",
+      "benoetigt": {
+        "verzierungen": "2.0.0"
+      },
+      "steckwerk": "2.6.0",
+      "datei": "pakete/papier-1.0.0.swpaket",
+      "sha256": "1de4f223c363852ad8f7765439fb9d1d184a6e312d6cd4116e651eb7a360870c",
+      "groesse": 25284,
+      "inhalt": [
+        "Steck-Tannenbaum",
+        "Laternen-Häuschen",
+        "Steck-Tiere",
+        "Adventskalender",
+        "Sternengirlande",
+        "Fensterbild"
+      ],
+      "inhalt_en": [
+        "Slot-together Christmas tree",
+        "Lantern house",
+        "Slot-together animals",
+        "Advent calendar",
+        "Star garland",
+        "Window picture"
+      ]
+    },
+    {
       "id": "schmuck",
       "name": "Schmuck",
       "version": "1.1.0",
@@ -222,6 +256,32 @@
         "Marble maze",
         "Peg solitaire",
         "Jigsaw puzzle"
+      ]
+    },
+    {
+      "id": "steckstern",
+      "name": "Steckstern",
+      "version": "1.0.0",
+      "beschreibung": "Sterne mit aufwendigem Filigran: Holzstern aus zwei gesteckten Platten und gefalteter Papierstern aus Karton mit Spitzenborte, vier Ornamenten und Rosette, dazu flache Scherenschnitt-Fenstersterne.",
+      "autor": "Christian & Claude",
+      "name_en": "Slot-together star",
+      "beschreibung_en": "Stars with elaborate filigree: wooden star of two slotted plates and folded card star with lace border, four ornaments and rosette, plus flat paper-cut window stars.",
+      "benoetigt": {
+        "verzierungen": "2.0.0"
+      },
+      "steckwerk": "2.6.0",
+      "datei": "pakete/steckstern-1.0.0.swpaket",
+      "sha256": "b2aa00c9b3064ba3ff3fc03461ce6f1790c7aef35f01019efb9a68f9e41cd1c2",
+      "groesse": 17567,
+      "inhalt": [
+        "Holzstern",
+        "Papierstern",
+        "Fensterstern"
+      ],
+      "inhalt_en": [
+        "Wooden star",
+        "Paper star",
+        "Window star"
       ]
     },
     {
@@ -421,9 +481,20 @@
       "text_en": "For Advent, Christmas, Halloween and the four seasons.",
       "pakete": [
         "weihnacht",
+        "steckstern",
         "wichtel",
         "halloween",
         "jahreszeiten"
+      ]
+    },
+    {
+      "id": "basteln",
+      "name": "Papier und Basteln",
+      "name_en": "Paper and crafts",
+      "text": "Aus Karton und Tonpapier: zum Falten, Stecken und Leuchten – für Kinder und Erwachsene.",
+      "text_en": "From card and construction paper: to fold, slot and light up – for children and adults.",
+      "pakete": [
+        "papier"
       ]
     },
     {
@@ -481,16 +552,17 @@
     }
   ],
   "desktop": {
-    "version": "2.16.0",
-    "datum": "2026-11-25",
+    "version": "2.17.0",
+    "datum": "2026-11-26",
     "hinweise": [
-      "Neues Modul: Christbaumschmuck im Paket „Schmuck“ (1.1.0). Der edle Christbaumschmuck und der Christbaumschmuck mit Steckfach liegen jetzt zusammen mit den Ohrhängern im Paket *Schmuck*, das du getrennt von Weihnachten nachladen kannst. *Weihnachten 2.4.0* enthält sie nicht mehr. Wer den Christbaumschmuck nutzt, installiert unter Updates das Paket Schmuck.",
-      "Christbaumschmuck mit Steckfach (erst Weihnachten 2.3.0, jetzt im Paket Schmuck), neues Modell Christbaumschmuck mit Steckfach: Anhänger mit verstecktem Fach für einen zweimal gefalteten Geldschein, eine Gutscheinkarte (Scheckkartenformat) oder ein eigenes Maß. *Christbaumkugel* mit Filigran-Spitzenrand, *Lebkuchenhaus* mit Zuckerguss, Giebelfenster und Herzfenstern, *Geschenkpäckchen* mit Schleife und Sternfenstern. Drei Lagen: Vorderseite mit Spitze und fein gravierter Widmung in Schreibschrift, Fachrahmen in der Mitte (oben offen), Rückseite mit Gruß. Die Größe richtet sich nach der Einlage, das Spiel im Fach ist einstellbar; über dem Fach gibt es keine Durchbrüche. Das Band durch beide Ösen verschließt das Fach. Läuft bei 2 bis 4 mm Holz."
+      "Neues Paket „Steckstern“ (1.0.0) im Bereich *Feste und Jahreszeiten*: *Holzstern* aus zwei über Kreuz gesteckten sechszackigen Platten mit vier Filigranmustern (Eiskristall, Winterranke, Perlenspitze, Sternennacht, je Platte wählbar oder von Zacke zu Zacke im Wechsel), für 4 mm Holz. *Papierstern*: gefalteter Fünfzackstern aus zwei Hälften mit Spitzenborte und Ornamenten (Lebensblume, Sternmosaik, Eisfeder, Schneeflocken), Rückhälfte mit Lampenloch, Falzlinien zum Ritzen. *Fensterstern*: flacher Scherenschnitt-Stern mit sehr feinem Filigran als Eisblume (8 Zacken mit Federästen), Rosette (12 Zacken mit Blütenmitte und Perlenring) oder Spitzenstern (6 Zacken mit Wabenspitze und Perlenborte).",
+      "Neues Paket „Papier“ (1.0.0) im neuen Bereich *Papier und Basteln*, alles für Karton 200–300 g und Tonpapier: *Steck-Tannenbaum* für Kinder mit bis zu 36 Anhängern und Ausmal-Linien, *Laternen-Häuschen* zum Falten mit Fenstern für Transparentpapier, *Steck-Tiere* (Rentier, Eisbär, Pinguin), *Adventskalender* aus 24 Würfelschachteln mit Zahl und Motiv, *Sternengirlande* zum Auffädeln und *Fensterbild* (Winterdorf oder Tannenwald mit Reh) zum Hinterkleben.",
+      "Für Papier legst du am besten ein eigenes Materialprofil an: 0,5 mm, Kerf 0,1 mm, Mindeststeg 0,6 mm."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.16.0-macOS.zip",
-      "sha256": "698606d605dfa181bbfdda3755036fa01a64c5f5b50be2d52ffa4161d2761f14",
-      "groesse": 3083559
+      "datei": "Steckwerk-Desktop-2.17.0-macOS.zip",
+      "sha256": "42b39e8164df198e1991f167baa34da5237a1054f95984b03f46c6232d030032",
+      "groesse": 3083804
     }
   }
 }
