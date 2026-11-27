@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.18.2 – 2026-11-27
+
 - **Package updates without restart.** A package update takes effect immediately – including a package's helper modules and libraries, which used to stay on the old code until the next start. The open template is rebuilt with the new code; self-computed thumbnails carry the package version and are recreated after an update.
 - **Seamless app update.** After installing an app update, Steckwerk Desktop restarts by itself and continues exactly where you were: same template, your values, your open project and the selected sheet.
 
