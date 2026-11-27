@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **Faster start.** The templates from *Slotted star* and *Paper* had no bundled thumbnails, so Steckwerk computed them in the gallery right after start – the paper star alone takes about 20 seconds, much longer on older computers. The thumbnails are now included, and a test makes sure every new template ships one.
+
 ## 2.18.0 – 2026-11-26
 
 - **All decorations are now plugins.** The program itself only contains the elf house, the house series, your own motifs and engraving. The models that used to be built in moved to the theme packages: *tree ornaments*, *candle arch*, *snowflakes*, *fir tree* and *snowman* to **Christmas 2.5.0**, *elf*, *fence*, *lantern*, *mailbox* and the *accessory set* to **Elves 1.2.0**, *slot-together vehicle* and *train set* to **Motion 1.1.0**. They keep their names, sit in the same place in sidebar and gallery and build the same parts; saved projects keep working.
