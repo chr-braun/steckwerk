@@ -56,7 +56,8 @@ def test_svg_computes_and_caches(tmp_path, monkeypatch):
     monkeypatch.setattr(vorschau, "MITGELIEFERT", str(tmp_path / "leer"))
     text = vorschau.svg("schneeflocke")
     assert text and text.lstrip().startswith("<svg")
-    assert os.path.isfile(os.path.join(vorschau.zwischenspeicher(), "schneeflocke.svg"))
+    version = service.MODEL_INFO["schneeflocke"]["paket"]["version"]      # Paketmodell: Version im Namen
+    assert os.path.isfile(os.path.join(vorschau.zwischenspeicher(), f"schneeflocke@{version}.svg"))
     assert vorschau.svg("schneeflocke", berechnen_erlaubt=False) == text
 
 

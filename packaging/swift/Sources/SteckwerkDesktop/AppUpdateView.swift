@@ -73,6 +73,9 @@ struct AppUpdateView: View {
                         }
                     }
                     .padding(.top, 4)
+                    Text("Steckwerk Desktop startet dafür von selbst kurz neu und macht genau da weiter, wo du warst – mit derselben Vorlage, deinen Werten und deinem Projekt.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 } else {
                     Text(p.grund.isEmpty ? "Bitte die neue App laden und ersetzen." : p.grund)
                         .font(.caption)
@@ -98,6 +101,9 @@ struct AppUpdateView: View {
                 Task { await updatePakete() }
             }
             .disabled(busy)
+            Text("Pakete werden sofort geladen – ohne Neustart.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 
