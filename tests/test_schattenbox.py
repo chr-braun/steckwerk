@@ -178,3 +178,14 @@ def test_reproduzierbar(SB):
     a = SB.build(cfg, **KLEIN)
     b = SB.build(cfg, **KLEIN)
     assert [p.holes for p in a.parts] == [p.holes for p in b.parts]
+
+
+def test_galerie_vorschau_zeigt_die_szene(SB):
+    linien = SB.vorschau(Config(thickness=3.0))
+    schnitt = [l for l in linien if l[2] == "schnitt"]
+    gravur = [l for l in linien if l[2] == "gravur"]
+    assert len(gravur) >= 100, "Frontrahmen mit Gravur"
+    assert len(schnitt) >= 30, "Szene durch das Fenster sichtbar, nicht nur der leere Rahmen"
+    import vorschau
+    svg = vorschau.kompakt(vorschau._linien_svg(linien))
+    assert 'id="layer-schnitt"' in svg and 'id="layer-gravur"' in svg

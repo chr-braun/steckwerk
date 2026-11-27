@@ -116,9 +116,27 @@ def kompakt(svg: str, grenze: int = 5000) -> str:
     return "".join(out)
 
 
+def _linien_svg(linien) -> str:
+    """[(Punkte, geschlossen, art)] → Blattplan-SVG im Format, das kompakt() liest."""
+    teile = []
+    for pts, zu, art in linien:
+        if len(pts) < 2:
+            continue
+        farbe = "#0000FF" if art == "gravur" else "#000000"
+        d = "M" + " L".join(f"{x:.2f},{y:.2f}" for x, y in pts) + (" Z" if zu else "")
+        teile.append(f'<path stroke="{farbe}" d="{d}"/>')
+    return "<svg>" + "".join(teile) + "</svg>"
+
+
 def berechnen(model_id: str) -> Optional[str]:
+    """Eine Vorlage kann mit einer Funktion vorschau(cfg) eigene Linien fürs Galeriebild liefern
+    (z. B. die fertige Szene statt der ersten Platte), sonst zeigt das Bild die erste Platte."""
     import service
     try:
+        eigen = getattr(service.MODELS.get(model_id), "vorschau", None)
+        if callable(eigen):
+            from steckwerk import Config
+            return kompakt(_linien_svg(eigen(Config())))
         res = service.generate({"model": model_id, "params": {}, "config": {}})
         sheets = [s for a in res.get("assemblies") or [] for s in a.get("sheets") or []]
         return kompakt(sheets[0]["svg"]) if sheets else None

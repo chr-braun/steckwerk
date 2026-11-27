@@ -4,6 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **Shadow box in the gallery (Multi-layer 1.3.1):** the thumbnail of the illuminated shadow box now shows the finished scene through the window – stag, forest, mountains, moon and stars – instead of the empty front frame. Templates can provide a `vorschau(cfg)` function that returns their own lines for the gallery picture.
+
 ## 2.18.2 – 2026-11-27
 
 - **Package updates without restart.** A package update takes effect immediately – including a package's helper modules and libraries, which used to stay on the old code until the next start. The open template is rebuilt with the new code; self-computed thumbnails carry the package version and are recreated after an update.

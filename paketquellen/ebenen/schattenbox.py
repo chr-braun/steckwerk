@@ -25,6 +25,7 @@ from steckwerk import JointFeature, Part, oriented, point_in_polygon, rect, sign
 from models import _deko as dk
 from models._box import build_box
 from models._font import STYLES, unsupported
+import motive as mt
 from pakete import bibliothek, flag, integer, num, sel, txt
 
 _here = os.path.dirname(os.path.abspath(__file__))
@@ -411,3 +412,42 @@ def build(cfg, name="schattenbox", width=200.0, height=240.0, form="bogen", szen
                                   "wirkt die Szene noch tiefer."))
     asm.notes += notes
     return asm
+
+
+# --------------------------------------------------------------------------------------------------
+# Galerie-Vorschau: die fertige Szene durch das Fenster gesehen, statt nur der leeren Front
+# --------------------------------------------------------------------------------------------------
+
+def vorschau(cfg, **params) -> List[Tuple[List[Tuple[float, float]], bool, str]]:
+    """Linien für das Vorschaubild der Galerie: Front mit Gravur und die Szene, wie man sie durch das Fenster
+    sieht (alle Ebenen übereinandergelegt, verdeckte Kanten weggelassen). Liefert [(Punkte, geschlossen, art)]
+    mit art = "schnitt" oder "gravur", y nach unten wie im SVG."""
+    asm = build(cfg, **params)
+    name = asm.name
+    W, H = asm.params["width"], asm.params["height"]
+    vo = asm.part(f"{name}_vorne")
+    lw = E.Leinwand((0, 0, W, H), px=0.25)
+    fenster = lw.flaechen(vo.holes)
+    ebenen = sorted((p for p in asm.parts if p.name.startswith(f"{name}_ebene") and not p.name.endswith("_b")),
+                    key=lambda p: int(p.name.rsplit("ebene", 1)[1]))
+    ebenen.append(asm.part(f"{name}_himmel"))
+    linien: List[Tuple[List[Tuple[float, float]], bool, str]] = []
+
+    def flip(pts):
+        return [(x, H - y) for x, y in pts]
+
+    linien.append((flip(vo.outline), True, "schnitt"))
+    linien += [(flip(h), True, "schnitt") for h in vo.holes]
+    linien += [(flip(s.points), s.closed, "gravur") for s in vo.engrave]
+    davor = lw.leer()
+    for p in ebenen:                                          # vorne → hinten
+        mat = E._andnot(lw.flaechen([p.outline]), lw.flaechen(p.holes) if p.holes else lw.leer())
+        sichtbar = E._andnot(E._and(mat, fenster), davor)
+        for lp in sichtbar.trace():                           # ohne Eckenglättung: keine abgeschnittenen Ecken
+            if abs(mt.area(lp)) < 6.0:
+                continue
+            q = mt.simplify(lp, 0.6)
+            if len(q) >= 3:
+                linien.append(([(lw.x0 + x * lw.px, y * lw.px + (H - lw.y_top)) for x, y in q], True, "schnitt"))
+        davor = davor.union(mat)
+    return linien
