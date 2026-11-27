@@ -53,6 +53,7 @@ jedem Paket automatisch mit.
 | Zuhause und Geschenke | Wohnen | Bilderrahmen, Zierrahmen, Türschild |
 | | Schmuck | Ohrhänger als Paar in zehn Formen |
 | | Mehrlagig | Schneidebilder mit vier Szenen, Ebenenmotive, Aufsteck-Verzierungen |
+| | Schattenbox | Leuchtende Schattenbox mit LED-Lichtkammer und Wechselsatz, fertige Vorlagen Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht |
 | Spielen und Bewegen | Spiele | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär, Bilderpuzzle |
 | | Bewegung | Steckfahrzeuge und Zug-Set, Hampelmann, Kurbeltier, Turner, Kreisel, Balancier-Vogel |
 | Formen und Kunst | Formen | Steckkörper aus Rippen, Wellenflächen, Stapelvasen |

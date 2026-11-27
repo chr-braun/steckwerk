@@ -141,7 +141,7 @@ nur den Satz. Ältere Versionen ignorieren `UEBERSETZUNG`.
 
 Standardmäßig zeigt die Galerie die erste Platte mit den Startwerten. Wirkt die allein nicht (etwa ein leerer
 Rahmen), liefert das Modell eine Funktion `vorschau(cfg)` mit Linien `[(punkte, geschlossen, art)]`,
-`art` = `"schnitt"` oder `"gravur"`, y nach unten wie im SVG. Beispiel: `schattenbox.py` im Paket Mehrlagig zeigt die
+`art` = `"schnitt"` oder `"gravur"`, y nach unten wie im SVG. Beispiel: `schattenbox.py` im Paket Schattenbox zeigt die
 fertige Szene durch das Fenster. Ältere Versionen ignorieren `vorschau`. Das mitgelieferte Bild erzeugt
 `python3 packaging/vorschaubilder.py <modell>`.
 

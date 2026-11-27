@@ -1,0 +1,21 @@
+{
+  "standard": 1,
+  "id": "schattenbox",
+  "name": "Schattenbox",
+  "version": "1.0.0",
+  "autor": "Christian & Claude",
+  "beschreibung": "Leuchtende Schattenbox: Holzkasten mit Zinken und fein graviertem Frontrahmen, darin 3–6 Szenen-Ebenen und ein Hintergrund mit Mond und Sternen oder Transparentpapier. Dahinter leuchtet ein LED-Teelicht oder eine Lichterkette, mit dem Wechselsatz tauschst du die Szene ohne Werkzeug. Mit fertigen Vorlagen für Winterwald, Winterdorf, Spukschloss und Weihnachtsnacht.",
+  "name_en": "Shadow box",
+  "beschreibung_en": "Illuminated shadow box: a finger-jointed wooden box with a finely engraved front frame, holding 3–6 scene layers and a background with moon and stars or tracing paper. An LED tea light or fairy lights glow behind; with the swap set you change the scene without tools. With ready-made templates for winter forest, winter village, haunted castle and Christmas night.",
+  "steckwerk": "2.6.0",
+  "modelle": [
+    "schattenbox",
+    "schattenbox_winterdorf",
+    "schattenbox_spukschloss",
+    "schattenbox_weihnachtsnacht"
+  ],
+  "benoetigt": {
+    "verzierungen": "2.0.0",
+    "ebenen": "1.4.0"
+  }
+}

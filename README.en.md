@@ -49,6 +49,7 @@ Install packages in Steckwerk under **Settings → Packages** with one click. Ba
 | Home and gifts | Home | Picture frames, ornamental frames, door sign |
 | | Jewellery | Earring pairs in ten shapes |
 | | Multi-layer | Cut pictures with four scenes, layered motifs, clip-on decorations |
+| | Shadow box | Illuminated shadow box with LED light chamber and swap set, templates winter forest, winter village, haunted castle, Christmas night |
 | Play and motion | Games | Nine men’s morris, tic-tac-toe, four in a row, marble maze, peg solitaire, jigsaw puzzle |
 | | Motion | Vehicles and train set, jumping jack, crank animal, acrobat, spinning top, balancing bird |
 | Shapes and art | Shapes | Rib sculptures, wave surfaces, stacked vases |

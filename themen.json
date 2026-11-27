@@ -19,7 +19,7 @@
      "themen": [
        {"id": "wohnen", "name": "Wohnen", "name_en": "Living", "gruppen": ["Wohnen"]},
        {"id": "schmuck", "name": "Schmuck", "name_en": "Jewellery", "gruppen": ["Schmuck"]},
-       {"id": "mehrlagig", "name": "Mehrlagig", "name_en": "Layered", "gruppen": ["Mehrlagig"]},
+       {"id": "mehrlagig", "name": "Mehrlagig", "name_en": "Layered", "gruppen": ["Mehrlagig", "Schattenbox"]},
        {"id": "motive", "name": "Eigene Motive", "name_en": "Own motifs", "gruppen": ["Eigene Motive"]}
      ]},
     {"id": "spielen", "name": "Spielen und Bewegen", "name_en": "Play and motion",

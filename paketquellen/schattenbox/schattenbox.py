@@ -17,8 +17,6 @@ LED-Lichterkette (≥ 15 mm). Die Szene wechselt man ohne Werkzeug: Deckel ab, E
 from __future__ import annotations
 
 import math
-import os
-import sys
 from typing import List, Sequence, Tuple
 
 from steckwerk import JointFeature, Part, oriented, point_in_polygon, rect, signed_area, slot_feature
@@ -28,26 +26,10 @@ from models._font import STYLES, unsupported
 import motive as mt
 from pakete import bibliothek, flag, integer, num, sel, txt
 
-_here = os.path.dirname(os.path.abspath(__file__))
-
-
-def _sub(name: str):
-    import importlib.util
-    path = os.path.join(_here, name + ".py")
-    key = "swpaket_ebenen_" + name
-    mod = sys.modules.get(key)
-    if mod is None or getattr(mod, "__file__", None) != path:
-        spec = importlib.util.spec_from_file_location(key, path)
-        mod = importlib.util.module_from_spec(spec)
-        sys.modules[key] = mod
-        spec.loader.exec_module(mod)
-    return mod
-
-
 Z = bibliothek("verzierungen")
 E = Z.E
 K = Z.K
-S = _sub("_szenen")
+S = bibliothek("ebenen", "_szenen")                     # Szenen aus dem Paket Mehrlagig
 
 SZENEN = [("winterwald", "Hirsch im Winterwald"), ("winterdorf", "Winterdorf mit Kirche"),
           ("spukschloss", "Spukschloss mit Hexe"),
@@ -68,7 +50,7 @@ UEBERSTAND = 3.0                                            # Szene reicht so we
 
 INFO = dict(
     label="Leuchtende Schattenbox",
-    group="Mehrlagig",
+    group="Schattenbox",
     desc="Holzkasten mit Zinken und Bildfenster: 3–6 Szenen-Ebenen stehen hintereinander, dahinter leuchtet "
          "ein LED-Teelicht oder eine Lichterkette. Mit Wechselsatz tauschst du die Szene ohne Werkzeug. "
          "Nur LED – keine echte Kerze.",
@@ -92,7 +74,7 @@ INFO = dict(
 )
 
 UEBERSETZUNG = {"en": {
-    "Mehrlagig": "Multi-layer",
+    "Schattenbox": "Shadow box",
     "Leuchtende Schattenbox": "Illuminated shadow box",
     "Holzkasten mit Zinken und Bildfenster: 3–6 Szenen-Ebenen stehen hintereinander, dahinter leuchtet ein "
     "LED-Teelicht oder eine Lichterkette. Mit Wechselsatz tauschst du die Szene ohne Werkzeug. Nur LED – keine "
@@ -412,6 +394,24 @@ def build(cfg, name="schattenbox", width=200.0, height=240.0, form="bogen", szen
                                   "wirkt die Szene noch tiefer."))
     asm.notes += notes
     return asm
+
+
+# --------------------------------------------------------------------------------------------------
+# Fertige Vorlagen (eigene Galerie-Einträge mit anderen Startwerten)
+# --------------------------------------------------------------------------------------------------
+
+PARAM_KEYS = tuple(p["key"] for p in INFO["params"])
+
+
+def vorlage_info(label: str, desc: str, vorgaben: dict) -> dict:
+    """INFO einer fertigen Vorlage: gleiche Einstellungen, andere Startwerte."""
+    params = []
+    for p in INFO["params"]:
+        q = dict(p)
+        if p["key"] in vorgaben:
+            q["default"] = vorgaben[p["key"]]
+        params.append(q)
+    return dict(label=label, group=INFO["group"], desc=desc, params=params)
 
 
 # --------------------------------------------------------------------------------------------------

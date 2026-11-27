@@ -4,7 +4,8 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
-- **Shadow box in the gallery (Multi-layer 1.3.1):** the thumbnail of the illuminated shadow box now shows the finished scene through the window – stag, forest, mountains, moon and stars – instead of the empty front frame. Templates can provide a `vorschau(cfg)` function that returns their own lines for the gallery picture.
+- **New package “Shadow box” 1.0.0:** the illuminated shadow box is now its own plugin and can be installed on its own in Steckwerk Desktop (Multi-layer comes along automatically). New are three ready-made templates: **Winter village**, **Haunted castle** and **Christmas night shadow box**, plus the winter forest shadow box itself. Their gallery pictures show the finished scene through the window instead of the empty front frame – templates can provide a `vorschau(cfg)` function for this.
+- **Multi-layer 1.4.0:** without the shadow box, which moved to the new package. Saved shadow box projects still open.
 
 ## 2.18.2 – 2026-11-27
 
