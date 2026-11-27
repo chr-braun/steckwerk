@@ -17,36 +17,19 @@ LED-Lichterkette (≥ 15 mm). Die Szene wechselt man ohne Werkzeug: Deckel ab, E
 from __future__ import annotations
 
 import math
-import os
-import sys
 from typing import List, Sequence, Tuple
 
 from steckwerk import JointFeature, Part, oriented, point_in_polygon, rect, signed_area, slot_feature
 from models import _deko as dk
 from models._box import build_box
 from models._font import STYLES, unsupported
+import motive as mt
 from pakete import bibliothek, flag, integer, num, sel, txt
-
-_here = os.path.dirname(os.path.abspath(__file__))
-
-
-def _sub(name: str):
-    import importlib.util
-    path = os.path.join(_here, name + ".py")
-    key = "swpaket_ebenen_" + name
-    mod = sys.modules.get(key)
-    if mod is None or getattr(mod, "__file__", None) != path:
-        spec = importlib.util.spec_from_file_location(key, path)
-        mod = importlib.util.module_from_spec(spec)
-        sys.modules[key] = mod
-        spec.loader.exec_module(mod)
-    return mod
-
 
 Z = bibliothek("verzierungen")
 E = Z.E
 K = Z.K
-S = _sub("_szenen")
+S = bibliothek("ebenen", "_szenen")                     # Szenen aus dem Paket Mehrlagig
 
 SZENEN = [("winterwald", "Hirsch im Winterwald"), ("winterdorf", "Winterdorf mit Kirche"),
           ("spukschloss", "Spukschloss mit Hexe"),
@@ -67,7 +50,7 @@ UEBERSTAND = 3.0                                            # Szene reicht so we
 
 INFO = dict(
     label="Leuchtende Schattenbox",
-    group="Mehrlagig",
+    group="Schattenbox",
     desc="Holzkasten mit Zinken und Bildfenster: 3–6 Szenen-Ebenen stehen hintereinander, dahinter leuchtet "
          "ein LED-Teelicht oder eine Lichterkette. Mit Wechselsatz tauschst du die Szene ohne Werkzeug. "
          "Nur LED – keine echte Kerze.",
@@ -91,7 +74,7 @@ INFO = dict(
 )
 
 UEBERSETZUNG = {"en": {
-    "Mehrlagig": "Multi-layer",
+    "Schattenbox": "Shadow box",
     "Leuchtende Schattenbox": "Illuminated shadow box",
     "Holzkasten mit Zinken und Bildfenster: 3–6 Szenen-Ebenen stehen hintereinander, dahinter leuchtet ein "
     "LED-Teelicht oder eine Lichterkette. Mit Wechselsatz tauschst du die Szene ohne Werkzeug. Nur LED – keine "
@@ -411,3 +394,60 @@ def build(cfg, name="schattenbox", width=200.0, height=240.0, form="bogen", szen
                                   "wirkt die Szene noch tiefer."))
     asm.notes += notes
     return asm
+
+
+# --------------------------------------------------------------------------------------------------
+# Fertige Vorlagen (eigene Galerie-Einträge mit anderen Startwerten)
+# --------------------------------------------------------------------------------------------------
+
+PARAM_KEYS = tuple(p["key"] for p in INFO["params"])
+
+
+def vorlage_info(label: str, desc: str, vorgaben: dict) -> dict:
+    """INFO einer fertigen Vorlage: gleiche Einstellungen, andere Startwerte."""
+    params = []
+    for p in INFO["params"]:
+        q = dict(p)
+        if p["key"] in vorgaben:
+            q["default"] = vorgaben[p["key"]]
+        params.append(q)
+    return dict(label=label, group=INFO["group"], desc=desc, params=params)
+
+
+# --------------------------------------------------------------------------------------------------
+# Galerie-Vorschau: die fertige Szene durch das Fenster gesehen, statt nur der leeren Front
+# --------------------------------------------------------------------------------------------------
+
+def vorschau(cfg, **params) -> List[Tuple[List[Tuple[float, float]], bool, str]]:
+    """Linien für das Vorschaubild der Galerie: Front mit Gravur und die Szene, wie man sie durch das Fenster
+    sieht (alle Ebenen übereinandergelegt, verdeckte Kanten weggelassen). Liefert [(Punkte, geschlossen, art)]
+    mit art = "schnitt" oder "gravur", y nach unten wie im SVG."""
+    asm = build(cfg, **params)
+    name = asm.name
+    W, H = asm.params["width"], asm.params["height"]
+    vo = asm.part(f"{name}_vorne")
+    lw = E.Leinwand((0, 0, W, H), px=0.25)
+    fenster = lw.flaechen(vo.holes)
+    ebenen = sorted((p for p in asm.parts if p.name.startswith(f"{name}_ebene") and not p.name.endswith("_b")),
+                    key=lambda p: int(p.name.rsplit("ebene", 1)[1]))
+    ebenen.append(asm.part(f"{name}_himmel"))
+    linien: List[Tuple[List[Tuple[float, float]], bool, str]] = []
+
+    def flip(pts):
+        return [(x, H - y) for x, y in pts]
+
+    linien.append((flip(vo.outline), True, "schnitt"))
+    linien += [(flip(h), True, "schnitt") for h in vo.holes]
+    linien += [(flip(s.points), s.closed, "gravur") for s in vo.engrave]
+    davor = lw.leer()
+    for p in ebenen:                                          # vorne → hinten
+        mat = E._andnot(lw.flaechen([p.outline]), lw.flaechen(p.holes) if p.holes else lw.leer())
+        sichtbar = E._andnot(E._and(mat, fenster), davor)
+        for lp in sichtbar.trace():                           # ohne Eckenglättung: keine abgeschnittenen Ecken
+            if abs(mt.area(lp)) < 6.0:
+                continue
+            q = mt.simplify(lp, 0.6)
+            if len(q) >= 3:
+                linien.append(([(lw.x0 + x * lw.px, y * lw.px + (H - lw.y_top)) for x, y in q], True, "schnitt"))
+        davor = davor.union(mat)
+    return linien

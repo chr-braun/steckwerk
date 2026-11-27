@@ -10,7 +10,7 @@
      "pakete": ["papier"]},
     {"id": "zuhause", "name": "Zuhause und Geschenke", "name_en": "Home and gifts",
      "text": "Rahmen, Schmuck und Bilder zum Verschenken.", "text_en": "Frames, jewellery and pictures to give away.",
-     "pakete": ["wohnen", "schmuck", "ebenen"]},
+     "pakete": ["wohnen", "schmuck", "ebenen", "schattenbox"]},
     {"id": "spielen", "name": "Spielen und Bewegen", "name_en": "Play and motion",
      "text": "Holzspiele und Spielzeug, das sich bewegt.", "text_en": "Wooden games and toys that move.",
      "pakete": ["spiele", "bewegung"]},

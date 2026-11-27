@@ -137,6 +137,14 @@ UEBERSETZUNG = {"en": {
 Montagehinweise der Form `"{name}: Satz."` werden am Satz nach dem Doppelpunkt erkannt, du übersetzt also
 nur den Satz. Ältere Versionen ignorieren `UEBERSETZUNG`.
 
+## Eigenes Galeriebild (optional)
+
+Standardmäßig zeigt die Galerie die erste Platte mit den Startwerten. Wirkt die allein nicht (etwa ein leerer
+Rahmen), liefert das Modell eine Funktion `vorschau(cfg)` mit Linien `[(punkte, geschlossen, art)]`,
+`art` = `"schnitt"` oder `"gravur"`, y nach unten wie im SVG. Beispiel: `schattenbox.py` im Paket Schattenbox zeigt die
+fertige Szene durch das Fenster. Ältere Versionen ignorieren `vorschau`. Das mitgelieferte Bild erzeugt
+`python3 packaging/vorschaubilder.py <modell>`.
+
 ## Gravuren, Muster und Bilder im Paket nutzen
 
 Modelle im Paket können dieselben Bausteine verwenden wie „Eigene Gravur“ in der Oberfläche:

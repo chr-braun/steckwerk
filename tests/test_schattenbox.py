@@ -1,4 +1,4 @@
-"""Mehrlagig 1.3.0: Leuchtende Schattenbox – Zinkenkasten mit Szenen-Ebenen, Lichtkammer und Wechselsatz."""
+"""Paket Schattenbox 1.0.0: Leuchtende Schattenbox – Zinkenkasten mit Szenen-Ebenen, Lichtkammer und Wechselsatz."""
 import os
 
 import pytest
@@ -13,19 +13,25 @@ KLEIN = dict(width=150, height=170)          # schneller, aber mit allen Teilen
 
 
 @pytest.fixture(scope="module")
-def SB(tmp_path_factory):
+def PAKET(tmp_path_factory):
     alt = {k: os.environ.get(k) for k in ("STECKWERK_PAKETE", "STECKWERK_DATEN")}
     d = tmp_path_factory.mktemp("schattenbox")
     os.environ["STECKWERK_PAKETE"] = str(d / "inst")
     os.environ["STECKWERK_DATEN"] = str(d / "daten")
     pakete.install(os.path.join(QUELLEN, "verzierungen"))
-    _, m = pakete.load_folder(os.path.join(QUELLEN, "ebenen"))
-    yield m["schattenbox"]
+    pakete.install(os.path.join(QUELLEN, "ebenen"))
+    _, m = pakete.load_folder(os.path.join(QUELLEN, "schattenbox"))
+    yield m
     for k, v in alt.items():
         if v is None:
             os.environ.pop(k, None)
         else:
             os.environ[k] = v
+
+
+@pytest.fixture(scope="module")
+def SB(PAKET):
+    return PAKET["schattenbox"]
 
 
 def _namen(asm):
@@ -178,3 +184,38 @@ def test_reproduzierbar(SB):
     a = SB.build(cfg, **KLEIN)
     b = SB.build(cfg, **KLEIN)
     assert [p.holes for p in a.parts] == [p.holes for p in b.parts]
+
+
+def test_galerie_vorschau_zeigt_die_szene(SB):
+    linien = SB.vorschau(Config(thickness=3.0))
+    schnitt = [l for l in linien if l[2] == "schnitt"]
+    gravur = [l for l in linien if l[2] == "gravur"]
+    assert len(gravur) >= 100, "Frontrahmen mit Gravur"
+    assert len(schnitt) >= 30, "Szene durch das Fenster sichtbar, nicht nur der leere Rahmen"
+    import vorschau
+    svg = vorschau.kompakt(vorschau._linien_svg(linien))
+    assert 'id="layer-schnitt"' in svg and 'id="layer-gravur"' in svg
+
+
+VORLAGEN = {"schattenbox_winterdorf": "winterdorf", "schattenbox_spukschloss": "spukschloss",
+            "schattenbox_weihnachtsnacht": "weihnachtsnacht"}
+
+
+@pytest.mark.parametrize("mid", sorted(VORLAGEN))
+def test_fertige_vorlagen(PAKET, mid):
+    mod = PAKET[mid]
+    defaults = {p["key"]: p["default"] for p in mod.INFO["params"]}
+    assert defaults["szene"] == VORLAGEN[mid]
+    assert [p["key"] for p in mod.INFO["params"]] == list(mod.B.PARAM_KEYS)
+    cfg = Config(thickness=3.0)
+    import service
+    asm = service.call_build(mod, cfg, width=150, height=170, ebenen=3)   # Parameter kommen über STYLE_KEYS an
+    assert_cut_ready(asm, cfg)
+    assert asm.name == mid and asm.params["szene"] == VORLAGEN[mid] and asm.params["ebenen"] == 3
+    assert len(mod.vorschau(cfg, width=150, height=170, ebenen=3)) > 50
+
+
+def test_jede_vorlage_hat_ein_galeriebild(PAKET):
+    root = os.path.dirname(QUELLEN)
+    for mid in ["schattenbox"] + sorted(VORLAGEN):
+        assert os.path.isfile(os.path.join(root, "vorschau", mid + ".svg")), mid

@@ -4,6 +4,11 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.19.0 – 2026-11-27
+
+- **New package “Shadow box” 1.0.0:** the illuminated shadow box is now its own plugin and can be installed on its own in Steckwerk Desktop (Multi-layer comes along automatically). New are three ready-made templates: **Winter village**, **Haunted castle** and **Christmas night shadow box**, plus the winter forest shadow box itself. Their gallery pictures show the finished scene through the window instead of the empty front frame – templates can provide a `vorschau(cfg)` function for this.
+- **Multi-layer 1.4.0:** without the shadow box, which moved to the new package. Saved shadow box projects still open.
+
 ## 2.18.2 – 2026-11-27
 
 - **Package updates without restart.** A package update takes effect immediately – including a package's helper modules and libraries, which used to stay on the old code until the next start. The open template is rebuilt with the new code; self-computed thumbnails carry the package version and are recreated after an update.

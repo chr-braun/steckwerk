@@ -35,7 +35,8 @@ der App, auf der [Webseite](https://chr-braun.github.io/steckwerk/) und im READM
 | Papier und Basteln | **Papier** (`papier`) | 1.0.0 | **Steck-Tannenbaum** für Kinder: zwei Baumhälften aus Karton über Kreuz gesteckt, ausgeschnittene Sterne und Kreise, bis zu 36 Anhänger (Kugel, Stern, Herz) zum Aufstecken, Stern für die Spitze, Ausmal-Linien – ohne Schere und Kleber. **Laternen-Häuschen** zum Falten: vier Wände in einem Stück mit Bodenlaschen, Dach mit Zuckerguss-Kante und gravierten Ziegeln, Fenster (Sprossen, rund, Herz, Stern) zum Hinterkleben mit Transparentpapier, Platz für ein LED-Teelicht. **Steck-Tiere**: Rentier, Eisbär (Körper plus zwei Beinpaare) und Pinguin (zwei Teile über Kreuz) mit gravierten Augen, Fell und Schal zum Ausmalen. **Adventskalender**: 24 Würfelschachteln mit Steckdeckel, Griffmulde, Zahl und wechselndem Motiv. **Sternengirlande**: filigrane Sterne, Schneeflocken und Herzen zum Auffädeln. **Fensterbild**: Scherenschnitt-Szene im Rahmen (Winterdorf oder Tannenwald mit Reh, Mondsichel, hängende Sterne) zum Hinterkleben mit Transparentpapier. Für Karton 200–300 g (Profil: 0,5 mm, Kerf 0,1, Steg 0,6). | – |
 | Zuhause und Geschenke | **Wohnen** (`wohnen`) | 1.0.0 | **Bilderrahmen** (9 × 13 bis 15 × 20 cm oder eigenes Maß, schlicht oder filigran, mit Sockel oder Schlüsselloch), **Zierrahmen** mit Schild und graviertem Text, **Türschild** mit Namen. | Umrandungen, Türschild |
 | | **Schmuck** (`schmuck`) | 1.1.0 | Edler **Christbaumschmuck** (zwölf Anhänger in Scherenschnitt-Qualität), **Christbaumschmuck mit Steckfach** (Kugel, Lebkuchenhaus, Geschenk; verstecktes Fach für Geldschein oder Gutscheinkarte, drei Lagen), **Ohrhänger** als Paar: Lotusblüte, Flügel, Tropfen, Mond, Sonne, Wolke, Raute, Waben, Regenbogen, Fächer – durchbrochen, als Rahmen oder graviert, auf Wunsch mit Zwischenteil. Bis Weihnachten 2.3.0 lag der Christbaumschmuck im Paket Weihnachten. | – |
-| | **Mehrlagig** (`ebenen`) | 1.3.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Leuchtende Schattenbox**: Zinkenkasten mit Lichtkammer für LED-Teelicht oder Lichterkette, gravierter Frontrahmen, Wechselsatz für eine zweite Szene. **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
+| | **Mehrlagig** (`ebenen`) | 1.4.0 | **Ebenenbild**: Schattenbox mit 3–6 Lagen (Winterwald, Winterdorf, Spukschloss, Weihnachtsnacht). **Ebenenmotiv**: Motiv aus drei Lagen mit Steckstiften. **Aufsteckdeko**: Motive als Kantenreiter, Zapfen, Öse oder Spieß. | – |
+| | **Schattenbox** (`schattenbox`) | 1.0.0 | **Leuchtende Schattenbox**: Zinkenkasten mit fein graviertem Frontrahmen, 3–6 Szenen-Ebenen, Hintergrund mit Mond und Sternen oder Transparentpapier, Lichtkammer für LED-Teelicht oder Lichterkette, Wechselsatz für eine zweite Szene. Fertige Vorlagen **Winterdorf**, **Spukschloss** und **Weihnachtsnacht**. | Mehrlagig, Grundlagen |
 | Spielen und Bewegen | **Spiele** (`spiele`) | 1.1.0 | Mühle, Tic-Tac-Toe, Vier in einer Reihe, Kugellabyrinth, Solitär und das **Puzzle**: Bilderpuzzle mit Nasen, rechteckig oder rund, 4–200 Teile, mit detailreichen Szenen, eigenem Motiv/Logo oder Foto, auf Wunsch mit Rahmen. | – |
 | | **Bewegung** (`bewegung`) | 1.1.0 | **Steckfahrzeug** (Auto, Lkw, Lok, Schlitten, Tender, Wagen, Bus, Traktor) und **Zug-Set** (bis 2.17 fest in der App), Hampelmann (Wichtel, Weihnachtsmann, Rentier, Schneemann, Skelett), Kurbeltier mit Nocken, Turner-Affe, Kreisel, Balancier-Vogel. | – |
 | Formen und Kunst | **Formen** (`formen`) | 1.0.0 | **Steckkörper** (Kugel, Ei, Zwiebelturm, Tanne aus gekreuzten Rippen), **Wellenfläche** als Gitter, gedrehte **Stapelvase**. | – |
@@ -63,11 +64,14 @@ zugeordnet ist.
 
 ![Mehrlagig 1.1 – neue Motive](medien/mehrlagig-1.1-neu.png)
 
-![Mehrlagig 1.3 – Leuchtende Schattenbox (beleuchtete Frontansicht)](medien/mehrlagig-1.3-schattenbox.png)
 
 ### Schmuck
 
 ![Schmuck 1.1 – Christbaumschmuck mit Steckfach (zusammengebaut, Vorderseite, Fachrahmen, Rückseite)](medien/weihnacht-2.3-steckfach.png)
+
+### Schattenbox
+
+![Schattenbox 1.0 – beleuchtete Frontansicht](medien/schattenbox-1.0.png)
 
 ### Weihnachten
 
