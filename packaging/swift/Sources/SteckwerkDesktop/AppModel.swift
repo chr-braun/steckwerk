@@ -160,7 +160,9 @@ final class AppModel: ObservableObject {
             self.client = client
             engineVersion = ping.version
             try await loadSchema()
+            wiederaufnehmen()
             engineState = .running
+            if selectedModelID != nil { schedulePreview() }
             startPinging()
             Task { await loadProjects() }
             if UserDefaults.standard.object(forKey: Self.autoUpdateKey) as? Bool ?? true {
@@ -283,7 +285,60 @@ final class AppModel: ObservableObject {
                              message: "Die neue Version ist installiert. Bitte Steckwerk Desktop von Hand neu starten.")
             return
         }
+        zustandSichern()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { NSApp.terminate(nil) }
+    }
+
+    // MARK: Zustand über den Selbst-Neustart retten
+
+    /// Ansicht, Werte, Projekt und Blatt sichern – die neu gestartete App macht genau dort weiter.
+    func zustandSichern() {
+        Wiederaufnahme(auswahl: selection.map(Self.auswahlText), werte: values, projekt: projekt?.name,
+                       projektGeaendert: projekt?.geaendert ?? false, blatt: selectedSheet).sichern()
+    }
+
+    /// Nach einem Selbst-Neustart (App-Update) den gesicherten Zustand übernehmen.
+    private func wiederaufnehmen() {
+        guard let w = Wiederaufnahme.nehmen(), let schema else { return }
+        for (id, werte) in w.werte where schema.models[id] != nil {
+            values[id] = werte
+        }
+        if let text = w.auswahl, let item = Self.auswahl(aus: text) {
+            if case .model(let id) = item, schema.models[id] == nil { return }
+            openingProject = true
+            selection = item
+            openingProject = false
+            if let name = w.projekt, selectedModelID != nil {
+                projekt = OpenProject(name: name, geaendert: w.projektGeaendert)
+            }
+            selectedSheet = max(0, w.blatt)
+        }
+        statusMessage = "Steckwerk Desktop \(Self.appVersion) – du machst da weiter, wo du warst"
+    }
+
+    nonisolated static func auswahlText(_ item: SidebarItem) -> String {
+        switch item {
+        case .alle: return "alle"
+        case .bereich(let id): return "bereich:" + id
+        case .model(let id): return "model:" + id
+        case .pakete: return "pakete"
+        case .ki: return "ki"
+        case .material: return "material"
+        case .updates: return "updates"
+        }
+    }
+
+    nonisolated static func auswahl(aus text: String) -> SidebarItem? {
+        if text.hasPrefix("bereich:") { return .bereich(String(text.dropFirst("bereich:".count))) }
+        if text.hasPrefix("model:") { return .model(String(text.dropFirst("model:".count))) }
+        switch text {
+        case "alle": return .alle
+        case "pakete": return .pakete
+        case "ki": return .ki
+        case "material": return .material
+        case "updates": return .updates
+        default: return nil
+        }
     }
 
     // MARK: Schema und Werte
@@ -313,6 +368,11 @@ final class AppModel: ObservableObject {
         }
         if selection == nil {
             selection = .alle
+        }
+        // Neue Paketversion ohne Neustart: die offene Vorlage mit dem neuen Code neu rechnen.
+        if selectedModelID != nil {
+            resultIsStale = true
+            schedulePreview()
         }
     }
 

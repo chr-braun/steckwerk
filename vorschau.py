@@ -131,15 +131,18 @@ def svg(model_id: str, berechnen_erlaubt: bool = True) -> Optional[str]:
     import service
     if not _ID.match(model_id or "") or model_id not in service.MODEL_INFO:
         return None
-    for ordner in (MITGELIEFERT, zwischenspeicher()):
-        pfad = os.path.join(ordner, model_id + ".svg")
+    # Selbst berechnete Bilder von Paketmodellen tragen die Paketversion im Namen: nach einem Update (ohne Neustart)
+    # wird neu gerechnet statt das alte Bild zu zeigen.
+    version = (service.MODEL_INFO[model_id].get("paket") or {}).get("version")
+    eigen = model_id + (f"@{version}" if version and re.match(r"^[0-9A-Za-z.\-]{1,20}$", str(version)) else "") + ".svg"
+    for pfad in (os.path.join(MITGELIEFERT, model_id + ".svg"), os.path.join(zwischenspeicher(), eigen)):
         if os.path.isfile(pfad):
             with open(pfad, encoding="utf-8") as fh:
                 return fh.read()
     if not berechnen_erlaubt:
         return None
     with _LOCK:                                              # höchstens eine Berechnung auf einmal: schont alte Rechner
-        pfad = os.path.join(zwischenspeicher(), model_id + ".svg")
+        pfad = os.path.join(zwischenspeicher(), eigen)
         if os.path.isfile(pfad):
             with open(pfad, encoding="utf-8") as fh:
                 return fh.read()

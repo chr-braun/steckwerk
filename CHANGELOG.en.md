@@ -4,6 +4,9 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+- **Package updates without restart.** A package update takes effect immediately – including a package's helper modules and libraries, which used to stay on the old code until the next start. The open template is rebuilt with the new code; self-computed thumbnails carry the package version and are recreated after an update.
+- **Seamless app update.** After installing an app update, Steckwerk Desktop restarts by itself and continues exactly where you were: same template, your values, your open project and the selected sheet.
+
 ## 2.18.1 – 2026-11-27
 
 - **Faster start.** The templates from *Slotted star* and *Paper* had no bundled thumbnails, so Steckwerk computed them in the gallery right after start – the paper star alone takes about 20 seconds, much longer on older computers. The thumbnails are now included, and a test makes sure every new template ships one.

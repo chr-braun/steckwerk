@@ -396,11 +396,22 @@ def _discover():
 RESERVIERT = {"schneemann": "weihnacht"}
 
 
+def vergessen() -> None:
+    """Geladenen Paketcode vergessen, damit ein Update ohne Neustart greift.
+
+    Modelle, ihre Hilfsmodule (Schlüssel „swpaket_<paket>_<modul>“) und Bibliotheken („swbib_…“) prüfen beim
+    Laden nur, ob es das Modul schon gibt – nach einem Update am selben Ort bliebe sonst der alte Code aktiv."""
+    with LADE_SPERRE:
+        for key in [k for k in sys.modules if k.startswith(("swpaket_", "swbib_"))]:
+            sys.modules.pop(key, None)
+
+
 def register(model_info: Dict[str, Any], models: Dict[str, Any]) -> List[Tuple[str, Dict[str, Any], Optional[str]]]:
     """Lädt alle Pakete und trägt ihre Modelle ein. Liefert (ordner, manifest, fehler) je Paket."""
     for k in [k for k, v in model_info.items() if v.get("paket")]:     # neu laden: alte Einträge weg
         model_info.pop(k, None)
         models.pop(k, None)
+    vergessen()
     status = []
     for folder, m, mods, err in discover():
         if err is None:

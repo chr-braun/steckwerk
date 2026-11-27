@@ -4,6 +4,9 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+- **Pakete ohne Neustart aktualisieren.** Ein Paket-Update greift sofort – auch in den Hilfsmodulen und Bibliotheken eines Pakets, die bisher bis zum nächsten Start im alten Stand blieben. Die offene Vorlage wird mit dem neuen Code neu gerechnet, selbst berechnete Vorschaubilder tragen die Paketversion und werden nach einem Update neu erstellt.
+- **App-Update ohne Unterbrechung.** Steckwerk Desktop startet nach dem Installieren eines App-Updates von selbst neu und macht genau da weiter, wo du warst: gleiche Vorlage, deine Werte, dein offenes Projekt und das gewählte Blatt.
+
 ## 2.18.1 – 2026-11-27
 
 - **Schnellerer Start.** Den Vorlagen aus *Steckstern* (Holzstern, Papierstern, Fensterstern) und *Papier* fehlten die mitgelieferten Vorschaubilder. Steckwerk hat sie deshalb direkt nach dem Start in der Galerie selbst berechnet – allein der Papierstern braucht dafür rund 20 Sekunden, auf älteren Rechnern ein Vielfaches. Die Bilder sind jetzt dabei, und ein Test stellt sicher, dass jede neue Vorlage ihr Vorschaubild mitbringt.

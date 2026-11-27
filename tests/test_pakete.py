@@ -102,3 +102,42 @@ def test_webui_install(paketordner):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_update_greift_ohne_neustart(paketordner):
+    """Ein Paket-Update wirkt sofort – auch in Hilfsmodulen und Bibliotheken, die das Paket selbst zwischenspeichert."""
+    inst = paketordner / "inst"
+    bib, pkg = inst / "bibtest", inst / "nutzer"
+    for d in (bib, pkg):
+        d.mkdir(parents=True)
+    (bib / "paket.json").write_text(json.dumps(dict(standard=1, id="bibtest", name="Bib", version="1.0.0",
+                                                    steckwerk="2.4.0", modelle=[], bibliothek="bibliothek")))
+    (pkg / "paket.json").write_text(json.dumps(dict(standard=1, id="nutzer", name="Nutzer", version="1.0.0",
+                                                    steckwerk="2.4.0", modelle=["nutzer"],
+                                                    benoetigt={"bibtest": "1.0.0"})))
+    hilfe = (
+        "import os, sys, importlib.util\n"
+        "def _sub(name):\n"
+        "    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), name + '.py')\n"
+        "    key = 'swpaket_nutzer_' + name\n"
+        "    mod = sys.modules.get(key)\n"
+        "    if mod is None or getattr(mod, '__file__', None) != path:\n"
+        "        spec = importlib.util.spec_from_file_location(key, path)\n"
+        "        mod = importlib.util.module_from_spec(spec)\n"
+        "        sys.modules[key] = mod\n"
+        "        spec.loader.exec_module(mod)\n"
+        "    return mod\n"
+        "from pakete import bibliothek\n"
+        "INFO = dict(label='Nutzer', params=[], wert=(_sub('_hilfe').WERT, bibliothek('bibtest').WERT))\n"
+        "def build(cfg, name='nutzer'):\n"
+        "    raise ValueError('nur zum Laden')\n")
+    (pkg / "nutzer.py").write_text(hilfe)
+
+    def stand(n):
+        (pkg / "_hilfe.py").write_text(f"WERT = {n}\n")
+        (bib / "bibliothek.py").write_text(f"WERT = {n}\n")
+        service.reload_pakete()
+        return service.MODEL_INFO["nutzer"]["wert"]
+
+    assert stand(1) == (1, 1)
+    assert stand(22) == (22, 22), "nach dem Update muss der neue Code greifen, ohne Neustart"
