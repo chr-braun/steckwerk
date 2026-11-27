@@ -4,7 +4,10 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.18.1 – 2026-11-27
+
 - **Schnellerer Start.** Den Vorlagen aus *Steckstern* (Holzstern, Papierstern, Fensterstern) und *Papier* fehlten die mitgelieferten Vorschaubilder. Steckwerk hat sie deshalb direkt nach dem Start in der Galerie selbst berechnet – allein der Papierstern braucht dafür rund 20 Sekunden, auf älteren Rechnern ein Vielfaches. Die Bilder sind jetzt dabei, und ein Test stellt sicher, dass jede neue Vorlage ihr Vorschaubild mitbringt.
+- Steckwerk Desktop speichert den übersetzten Python-Code der Engine jetzt zwischen (~/Library/Caches/Steckwerk). Ab dem zweiten Start meldet sich die Engine dadurch rund dreimal so schnell.
 
 ## 2.18.0 – 2026-11-26
 

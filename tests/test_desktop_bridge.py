@@ -17,7 +17,8 @@ BRIDGE = os.path.join(ROOT, "packaging", "swift", "bridge_start.py")
 def _env(tmp_path):
     env = dict(os.environ)
     env.update(HOME=str(tmp_path / "home"), XDG_STATE_HOME=str(tmp_path / "state"),
-               STECKWERK_DATEN=str(tmp_path / "daten"), PYTHONDONTWRITEBYTECODE="1")
+               STECKWERK_DATEN=str(tmp_path / "daten"), PYTHONDONTWRITEBYTECODE="1",
+               STECKWERK_PYCACHE=str(tmp_path / "pycache"))
     os.makedirs(env["HOME"], exist_ok=True)
     return env
 
@@ -52,6 +53,15 @@ def test_bridge_meldet_port_und_laeuft_im_app_modus(tmp_path):
     finally:
         p.stdin.close()
         assert _wait(p, 5) == 0, "Engine muss enden, wenn stdin schließt"
+
+
+def test_bridge_speichert_uebersetzten_code_ausserhalb_der_app(tmp_path):
+    """Trotz PYTHONDONTWRITEBYTECODE (setzt die App) landet der Bytecode im Zwischenspeicher – schnellerer Start."""
+    p, _ = _start(tmp_path, "--no-reuse")
+    p.stdin.close()
+    assert _wait(p, 5) == 0
+    pyc = [f for _, _, files in os.walk(tmp_path / "pycache") for f in files if f.endswith(".pyc")]
+    assert any(f.startswith("webui.") for f in pyc) and any(f.startswith("service.") for f in pyc)
 
 
 def test_bridge_endet_bei_quit(tmp_path):

@@ -4,7 +4,10 @@ Notable changes to Steckwerk. The German [CHANGELOG.md](CHANGELOG.md) has the fu
 
 ## Unreleased
 
+## 2.18.1 – 2026-11-27
+
 - **Faster start.** The templates from *Slotted star* and *Paper* had no bundled thumbnails, so Steckwerk computed them in the gallery right after start – the paper star alone takes about 20 seconds, much longer on older computers. The thumbnails are now included, and a test makes sure every new template ships one.
+- Steckwerk Desktop now caches the engine's compiled Python code (~/Library/Caches/Steckwerk). From the second start on, the engine is ready about three times faster.
 
 ## 2.18.0 – 2026-11-26
 
