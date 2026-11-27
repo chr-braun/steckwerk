@@ -1,23 +1,21 @@
 {
   "standard": 1,
-  "erstellt": "2026-11-26",
+  "erstellt": "2026-11-27",
   "programm": {
-    "version": "2.18.0",
-    "datum": "2026-11-26",
+    "version": "2.18.1",
+    "datum": "2026-11-27",
     "hinweise": [
-      "Alle Dekos sind jetzt Plugins. Im Programm stecken nur noch das Wichtelhaus, die Häuser-Serie, die eigenen Motive und die Gravur. Die Modelle, die bisher fest eingebaut waren, sind in die Themenpakete umgezogen: *Christbaumschmuck*, *Schwibbogen*, *Schneeflocken*, *Tannenbaum* und *Schneemann* ins Paket Weihnachten 2.5.0, *Wichtel*, *Zaun*, *Laterne*, *Briefkasten* und das *Zubehör-Set* ins Paket Wichtel 1.2.0, *Steckfahrzeug* und *Zug-Set* ins Paket Bewegung 1.1.0. Sie heißen wie vorher, stehen an derselben Stelle in Seitenleiste und Galerie und bauen dieselben Teile; gespeicherte Projekte laufen weiter.",
-      "Fehlt das passende Paket, sagt Steckwerk, welches du installieren musst (Einstellungen → Pakete oder Updates). *Alle Modelle* baut Haus und Serie und dazu die früheren Kernmodelle der installierten Pakete.",
-      "Die neuen Paketversionen brauchen Steckwerk 2.18.0."
+      "Schnellerer Start. Den Vorlagen aus *Steckstern* (Holzstern, Papierstern, Fensterstern) und *Papier* fehlten die mitgelieferten Vorschaubilder. Steckwerk hat sie deshalb direkt nach dem Start in der Galerie selbst berechnet – allein der Papierstern braucht dafür rund 20 Sekunden, auf älteren Rechnern ein Vielfaches. Die Bilder sind jetzt dabei, und ein Test stellt sicher, dass jede neue Vorlage ihr Vorschaubild mitbringt.",
+      "Steckwerk Desktop speichert den übersetzten Python-Code der Engine jetzt zwischen (~/Library/Caches/Steckwerk). Ab dem zweiten Start meldet sich die Engine dadurch rund dreimal so schnell."
     ],
     "hinweise_en": [
-      "All decorations are now plugins. The program itself only contains the elf house, the house series, your own motifs and engraving. The models that used to be built in moved to the theme packages: *tree ornaments*, *candle arch*, *snowflakes*, *fir tree* and *snowman* to Christmas 2.5.0, *elf*, *fence*, *lantern*, *mailbox* and the *accessory set* to Elves 1.2.0, *slot-together vehicle* and *train set* to Motion 1.1.0. They keep their names, sit in the same place in sidebar and gallery and build the same parts; saved projects keep working.",
-      "If the matching package is missing, Steckwerk tells you which one to install (Settings → Packages or Updates). *All models* builds house and series plus the former core models of the installed packages.",
-      "The new package versions need Steckwerk 2.18.0."
+      "Faster start. The templates from *Slotted star* and *Paper* had no bundled thumbnails, so Steckwerk computed them in the gallery right after start – the paper star alone takes about 20 seconds, much longer on older computers. The thumbnails are now included, and a test makes sure every new template ships one.",
+      "Steckwerk Desktop now caches the engine's compiled Python code (~/Library/Caches/Steckwerk). From the second start on, the engine is ready about three times faster."
     ],
     "mac": {
-      "datei": "Steckwerk-2.18.0-macOS.zip",
-      "sha256": "e8745983ae05168d003489edd1c2e81b7ddb655dfdea655c4f51d0f69f590d29",
-      "groesse": 997980
+      "datei": "Steckwerk-2.18.1-macOS.zip",
+      "sha256": "011f1e0cc432c1b948d61252ed560892af15f2d3bac51b273613b69196e70968",
+      "groesse": 1062089
     }
   },
   "pakete": [
@@ -576,17 +574,16 @@
     }
   ],
   "desktop": {
-    "version": "2.18.0",
-    "datum": "2026-11-26",
+    "version": "2.18.1",
+    "datum": "2026-11-27",
     "hinweise": [
-      "Alle Dekos sind jetzt Plugins. Im Programm stecken nur noch das Wichtelhaus, die Häuser-Serie, die eigenen Motive und die Gravur. Die Modelle, die bisher fest eingebaut waren, sind in die Themenpakete umgezogen: *Christbaumschmuck*, *Schwibbogen*, *Schneeflocken*, *Tannenbaum* und *Schneemann* ins Paket Weihnachten 2.5.0, *Wichtel*, *Zaun*, *Laterne*, *Briefkasten* und das *Zubehör-Set* ins Paket Wichtel 1.2.0, *Steckfahrzeug* und *Zug-Set* ins Paket Bewegung 1.1.0. Sie heißen wie vorher, stehen an derselben Stelle in Seitenleiste und Galerie und bauen dieselben Teile; gespeicherte Projekte laufen weiter.",
-      "Fehlt das passende Paket, sagt Steckwerk, welches du installieren musst (Einstellungen → Pakete oder Updates). *Alle Modelle* baut Haus und Serie und dazu die früheren Kernmodelle der installierten Pakete.",
-      "Die neuen Paketversionen brauchen Steckwerk 2.18.0."
+      "Schnellerer Start. Den Vorlagen aus *Steckstern* (Holzstern, Papierstern, Fensterstern) und *Papier* fehlten die mitgelieferten Vorschaubilder. Steckwerk hat sie deshalb direkt nach dem Start in der Galerie selbst berechnet – allein der Papierstern braucht dafür rund 20 Sekunden, auf älteren Rechnern ein Vielfaches. Die Bilder sind jetzt dabei, und ein Test stellt sicher, dass jede neue Vorlage ihr Vorschaubild mitbringt.",
+      "Steckwerk Desktop speichert den übersetzten Python-Code der Engine jetzt zwischen (~/Library/Caches/Steckwerk). Ab dem zweiten Start meldet sich die Engine dadurch rund dreimal so schnell."
     ],
     "mac": {
-      "datei": "Steckwerk-Desktop-2.18.0-macOS.zip",
-      "sha256": "42282448282286f9347b707482716f430706f00b4662de8647260b292fad67c4",
-      "groesse": 3041984
+      "datei": "Steckwerk-Desktop-2.18.1-macOS.zip",
+      "sha256": "91897dc77a4475a5e7f71d48818483c7dba17134f0ed276d0af63a359ec3618d",
+      "groesse": 3107177
     }
   }
 }
