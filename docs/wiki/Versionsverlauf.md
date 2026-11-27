@@ -33,6 +33,7 @@ Alles ist seit dem 9. Oktober 2026 entstanden. Die Details stehen im
 | 2.14.0 | 19.11. | Geschnittene Dachkante (Bogen, Spitze, Wellen, Zacken, Zuckerguss, Eiszapfen) für Wichtelhaus, Anbau, Häuser-Serie und Briefkasten |
 | 2.15.0 | 25.11. | Neues Paket Jahreszeiten (Winterkranz-Medaille, Eisblumenfenster, Blütenmandala, Sommersonne, Herbstkranz); Mehrlagig 1.3.0 mit Leuchtender Schattenbox
 | 2.18.2 | 27.11. | Pakete ohne Neustart aktualisieren (auch Hilfsmodule und Bibliotheken); nach einem App-Update macht Steckwerk Desktop da weiter, wo du warst |
+| 2.19.0 | 27.11. | Neues Paket **Schattenbox** (leuchtende Schattenbox als eigenes Plugin) mit fertigen Vorlagen Winterdorf, Spukschloss und Weihnachtsnacht; Galeriebilder zeigen die fertige Szene |
 | 2.18.1 | 27.11. | Schnellerer Start: Vorschaubilder für Steckstern und Papier mitgeliefert (die Galerie rechnete sie sonst nach jedem Start), übersetzter Python-Code wird zwischengespeichert |
 | 2.18.0 | 26.11. | Alle Dekos als Plugins: Christbaumschmuck, Schwibbogen, Schneeflocken, Tannenbaum, Schneemann → Weihnachten 2.5.0; Wichtel, Zaun, Laterne, Briefkasten, Zubehör-Set → Wichtel 1.2.0; Steckfahrzeug, Zug-Set → Bewegung 1.1.0. Im Programm bleiben Häuser, eigene Motive und Gravur |
 | 2.17.0 | 26.11. | Neue Pakete Steckstern 1.0.0 (Holzstern, Papierstern, Fensterstern) und Papier 1.0.0 (Steck-Tannenbaum, Laternen-Häuschen, Steck-Tiere, Adventskalender, Sternengirlande, Fensterbild) im neuen Bereich „Papier und Basteln“ |

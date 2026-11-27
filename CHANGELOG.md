@@ -4,6 +4,8 @@ Alle nennenswerten Änderungen an Steckwerk. Versionen folgen dem Schema Haupt.N
 
 ## Unveröffentlicht
 
+## 2.19.0 – 2026-11-27
+
 - **Neues Paket „Schattenbox“ 1.0.0:** Die Leuchtende Schattenbox ist jetzt ein eigenes Plugin und lässt sich in Steckwerk Desktop einzeln nachladen (Paket Mehrlagig kommt automatisch mit). Neu sind drei fertige Vorlagen mit eigenen Startwerten: **Schattenbox Winterdorf**, **Schattenbox Spukschloss** und **Schattenbox Weihnachtsnacht**, dazu die Winterwald-Schattenbox selbst. Ihre Galeriebilder zeigen die fertige Szene durch das Fenster statt des leeren Frontrahmens – Vorlagen können dafür eine Funktion `vorschau(cfg)` mitbringen.
 - **Mehrlagig 1.4.0:** ohne die Schattenbox, die ins neue Paket umgezogen ist. Gespeicherte Schattenbox-Projekte öffnen weiter.
 
