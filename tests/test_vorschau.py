@@ -86,3 +86,25 @@ def test_api_vorschau(server, tmp_path, monkeypatch):
     with pytest.raises(urllib.error.HTTPError) as e:
         urllib.request.urlopen(server + "/api/vorschau?id=gibt_es_nicht")
     assert e.value.code == 404
+
+
+def test_every_model_ships_a_thumbnail():
+    """Jede Vorlage aus Kern und paketquellen/ bringt ihr Vorschaubild mit.
+
+    Fehlt eines, rechnet die Engine es beim ersten Öffnen der Galerie – direkt nach dem Start. Bei großen
+    Modellen (Papierstern ~20 s) hält das ältere Rechner minutenlang beschäftigt. Abhilfe:
+    python3 packaging/vorschaubilder.py <modell …>"""
+    ordner = os.path.join(ROOT, "vorschau")
+    vorhanden = {n[:-4] for n in os.listdir(ordner) if n.endswith(".svg")}
+    fehlen = [k for k, info in service.MODEL_INFO.items() if not info.get("paket") and k not in vorhanden]
+    quellen = os.path.join(ROOT, "paketquellen")
+    for pid in sorted(os.listdir(quellen)):
+        manifest = os.path.join(quellen, pid, "paket.json")
+        if not os.path.isfile(manifest):
+            continue
+        with open(manifest, encoding="utf-8") as fh:
+            m = json.load(fh)
+        for name in m.get("modelle", []):
+            if name not in vorhanden and f"{m['id']}_{name}" not in vorhanden:
+                fehlen.append(f"{m['id']}/{name}")
+    assert not fehlen, "Vorschaubild fehlt (packaging/vorschaubilder.py laufen lassen): " + ", ".join(fehlen)

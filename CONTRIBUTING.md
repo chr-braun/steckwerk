@@ -22,6 +22,12 @@ python3 webui.py                                   # Werkbank im Browser
   Test und ins README.
 - **Tests:** jede neue Form oder Option bekommt einen Test in `tests/`; für Geometrie lohnt ein
   Zufallslauf über Materialstärken 1.5–6 mm und Kerf 0–0.3 mm.
+- **Schneller Start auf alten Rechnern:** Beim Start darf nichts Schweres rechnen. Jede Vorlage (Kern und
+  `paketquellen/`) bringt ihr Vorschaubild in `vorschau/` mit: `python3 packaging/vorschaubilder.py <modell …>`.
+  Der Test `test_every_model_ships_a_thumbnail` erzwingt das.
+- **Update in der App:** Jedes Release muss sich in Steckwerk Desktop selbst installieren lassen (App und
+  Pakete). Der Release-Workflow prüft am Ende, dass Programm, Desktop und alle Pakete in der neuen Version im
+  Kanal stehen.
 - Neue Modelle, die nicht jeder braucht, lieber als **Erweiterungspaket** bauen – siehe PAKETE.md.
 
 ## Neue Version

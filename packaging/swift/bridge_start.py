@@ -53,6 +53,26 @@ def _running_port(steckwerk_app, version: str) -> Optional[int]:
     return None
 
 
+def _bytecode_cache() -> None:
+    """Übersetzten Python-Code zwischenspeichern – außerhalb der App, damit deren Signatur unberührt bleibt.
+
+    Die App startet die Engine mit PYTHONDONTWRITEBYTECODE=1; ohne Zwischenspeicher übersetzt Python bei jedem
+    Start alle Module neu. Das kostet auf älteren Macs spürbar Zeit."""
+    if os.environ.get("STECKWERK_PYCACHE") == "0":
+        return
+    if sys.platform == "darwin":
+        base = os.path.expanduser("~/Library/Caches/Steckwerk")
+    else:
+        base = os.path.join(os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"), "steckwerk")
+    ziel = os.environ.get("STECKWERK_PYCACHE") or os.path.join(base, "python")
+    try:
+        os.makedirs(ziel, exist_ok=True)
+    except OSError:
+        return
+    sys.pycache_prefix = ziel
+    sys.dont_write_bytecode = False
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(prog="bridge_start", description="Steckwerk-Engine für Steckwerk Desktop starten")
     ap.add_argument("--root", required=True, help="Ordner mit webui.py")
@@ -71,6 +91,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 2
     sys.path.insert(0, root)
     os.chdir(root)
+    _bytecode_cache()
 
     import steckwerk_app
     import webui

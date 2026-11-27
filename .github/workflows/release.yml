@@ -120,6 +120,31 @@ jobs:
           git diff --cached --quiet && { echo "Kanal unverändert"; exit 0; }
           git commit -m "Kanal: Steckwerk ${{ needs.release.outputs.tag }}"
           git push origin HEAD:updates
+      - name: Update in der App möglich?
+        env:
+          TAG: ${{ needs.release.outputs.tag }}
+        run: |
+          # Pflicht bei jedem Release: Mac-App, Steckwerk Desktop und alle Pakete aus paketquellen/ stehen in
+          # der neuen Version im Kanal – sonst bietet die App das Update nicht an.
+          python - "${TAG#v}" kanal/feed.json <<'PY'
+          import json, os, sys
+          v, feed = sys.argv[1], json.load(open(sys.argv[2], encoding="utf-8"))
+          fehler = []
+          if feed.get("programm", {}).get("version") != v:
+              fehler.append(f"programm.version {feed.get('programm', {}).get('version')} ≠ {v}")
+          d = feed.get("desktop") or {}
+          if d.get("version") != v or not (d.get("mac") or {}).get("sha256"):
+              fehler.append(f"desktop {d.get('version')} ≠ {v} oder ohne Mac-Datei")
+          im_kanal = {p.get("id"): p.get("version") for p in feed.get("pakete", [])}
+          for pid in sorted(os.listdir("paketquellen")):
+              f = os.path.join("paketquellen", pid, "paket.json")
+              if os.path.isfile(f):
+                  m = json.load(open(f, encoding="utf-8"))
+                  if im_kanal.get(m["id"]) != m["version"]:
+                      fehler.append(f"Paket {m['id']} {m['version']} fehlt im Kanal (dort {im_kanal.get(m['id'])})")
+          print("\n".join(fehler) or f"Kanal vollständig für {v}")
+          sys.exit(1 if fehler else 0)
+          PY
 
   aufraeumen:
     name: Alte Releases entfernen
